@@ -30,7 +30,8 @@ Open the link, click **Ask**, then **Code it**. Both should show a **Live** tag 
 If you see the saved example instead, open Vercel → your project → **Logs** and look for the error line.
 
 ## Optional settings (Vercel → Settings → Environment Variables, then Redeploy)
-- `GEMINI_MODEL` — model to use (default `gemini-3.8-flash`; falls back to `gemini-flash-latest`)
+- `GEMINI_MODEL` — main model (default `gemini-3.8-flash`)
+- `GEMINI_FALLBACK_MODEL` — used when the main model is busy or out of quota (default `gemini-flash-lite-latest`)
 - `RATE_LIMIT_PER_HOUR` — requests per visitor per hour (default 20)
 
 To update the page later: upload the changed file to GitHub. Vercel redeploys automatically.

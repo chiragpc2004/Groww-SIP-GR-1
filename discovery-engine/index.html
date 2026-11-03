@@ -382,7 +382,7 @@ renderAnswer(SAVED_ANSWER);
 renderTag(SAVED_TAG);
 $('askOut').addEventListener('click', e => { const b=e.target.closest('.cite'); if(b) openItem(+b.dataset.e); });
 
-const ERR={rate_limited:'You have hit the demo limit for this hour. The saved example still shows how it works.',quota:'The free AI quota is used up for now. Try again later; the saved example shows how it works.',invalid_json:'The model returned an unreadable result. Try again.',upstream_error:'The AI service did not respond. Try again.'};
+const ERR={rate_limited:'You have hit the demo limit for this hour. The saved example still shows how it works.',quota:'The free AI quota is used up for this minute. Wait a minute and try again; the saved example shows how it works.',busy:'The AI model is busy right now. Try again in a minute; the saved example shows how it works.',invalid_json:'The model returned an unreadable result. Try again.',upstream_error:'The AI service did not respond. Try again.'};
 const errText = code => ERR[code] || 'Something went wrong. Try again.';
 async function callAI(payload){
   let r;

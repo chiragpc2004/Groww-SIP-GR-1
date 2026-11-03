@@ -18,6 +18,10 @@ function allowed(ip) {
   list.push(now); HITS.set(ip, list); return true;
 }
 
+// Repeat questions (e.g. the suggested ones) are answered from cache for 6 hours to save quota.
+const CACHE = new Map();
+const CACHE_MS = 6 * 3600e3;
+
 function askPrompt(q) {
   return `You are a product researcher analysing public Indian investor posts about SIPs. Answer the question using ONLY the evidence posts below.
 Rules: cite posts inline as [#id] for every claim; group findings into at most 3 numbered patterns; say plainly where evidence is thin; never recommend funds, stocks, or whether anyone should invest, stop or continue; no predictions. Under 200 words. Plain text, no markdown headings or bold.
@@ -38,9 +42,10 @@ POST:
 async function gemini(prompt, json) {
   const key = process.env.GEMINI_API_KEY || process.env.GEMINI_APP_KEY;   // accepts either spelling
   if (!key) throw Object.assign(new Error('GEMINI_API_KEY is not set in Vercel'), { code: 'missing_key' });
-  const models = [process.env.GEMINI_MODEL || 'gemini-3.8-flash', 'gemini-flash-latest'];
+  // One call per model: retries count against the small free-tier quota (5 requests/minute).
+  const models = [process.env.GEMINI_MODEL || 'gemini-3.8-flash', process.env.GEMINI_FALLBACK_MODEL || 'gemini-flash-lite-latest'];
   let lastErr;
-  for (const model of models) for (let attempt = 0; attempt < 2; attempt++) {
+  for (const model of models) {
     let r;
     try {
       r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
@@ -53,21 +58,17 @@ async function gemini(prompt, json) {
         }),
       });
     } catch (e) {
-      lastErr = Object.assign(new Error(`network: ${e.message}`), { code: 'network' }); break;
+      lastErr = Object.assign(new Error(`network: ${e.message}`), { code: 'network' }); continue;
     }
     const raw = await r.text();
     if (!r.ok) {
       console.error(`[${model}] HTTP ${r.status}: ${raw.slice(0, 400)}`);
-      if (r.status === 429) throw Object.assign(new Error('quota'), { code: 'quota' });
+      if (r.status === 429) { lastErr = Object.assign(new Error('quota'), { code: 'quota' }); continue; }   // fallback model has its own quota
       if (r.status === 400 && /API key/i.test(raw)) throw Object.assign(new Error('bad key'), { code: 'bad_key' });
       if (r.status === 403) throw Object.assign(new Error('key not allowed'), { code: 'bad_key' });
-      if (r.status === 503 || r.status === 500) {             // overloaded: wait, retry once, then next model
-        lastErr = Object.assign(new Error('busy'), { code: 'model_busy' });
-        if (attempt === 0) { await new Promise(t => setTimeout(t, 2000)); continue; }
-        break;
-      }
+      if (r.status === 503 || r.status === 500) { lastErr = Object.assign(new Error('busy'), { code: 'model_busy' }); continue; }
       lastErr = Object.assign(new Error(`HTTP ${r.status}`), { code: r.status === 404 ? 'model_not_found' : 'upstream_' + r.status });
-      break;                                      // try the next model
+      continue;                                   // try the next model
     }
     const body = JSON.parse(raw);
     const cand = body.candidates?.[0];
@@ -75,7 +76,6 @@ async function gemini(prompt, json) {
     if (text) return text;
     console.error(`[${model}] empty reply, finishReason=${cand?.finishReason}, block=${body.promptFeedback?.blockReason}`);
     lastErr = Object.assign(new Error('empty'), { code: 'empty_' + (cand?.finishReason || body.promptFeedback?.blockReason || 'unknown') });
-    break;
   }
   throw lastErr || Object.assign(new Error('no model'), { code: 'model_not_found' });
 }
@@ -89,7 +89,12 @@ module.exports = async (req, res) => {
     if (body.mode === 'ask') {
       const q = String(body.question || '').trim().slice(0, 500);
       if (q.length < 5) return res.status(400).json({ error: 'question_too_short' });
-      return res.status(200).json({ text: await gemini(askPrompt(q), false) });
+      const k = q.toLowerCase().replace(/\s+/g, ' ');
+      const hit = CACHE.get(k);
+      if (hit && Date.now() - hit.t < CACHE_MS) return res.status(200).json({ text: hit.text, cached: true });
+      const text = await gemini(askPrompt(q), false);
+      CACHE.set(k, { text, t: Date.now() });
+      return res.status(200).json({ text });
     }
     if (body.mode === 'code') {
       const t = String(body.post || '').trim().slice(0, 2000);
@@ -104,6 +109,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     console.error('AI call failed:', e.code, e.message);
     if (e.code === 'quota') return res.status(429).json({ error: 'quota' });
+    if (e.code === 'model_busy') return res.status(503).json({ error: 'busy' });
     return res.status(502).json({ error: 'upstream_error', reason: e.code || 'unknown' });
   }
 };
