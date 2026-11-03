@@ -142,6 +142,79 @@ async function gemini(prompt, json) {
   throw lastErr || Object.assign(new Error('no model'), { code: 'model_not_found' });
 }
 
+
+// ---------- streaming (Ask only) ----------
+// Reads an upstream SSE body and calls onDelta(text) for each new piece.
+async function readSSE(body, pick, onDelta) {
+  const reader = body.getReader(); const dec = new TextDecoder(); let buf = '', full = '';
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (!line.startsWith('data:')) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === '[DONE]') continue;
+      try { const t = pick(JSON.parse(data)); if (t) { full += t; onDelta(t); } } catch {}
+    }
+  }
+  return full;
+}
+
+// Opens a streaming response from Groq, then Gemini models. Returns {body, pick, by} for the first that answers OK.
+async function openStream(prompt) {
+  const gk = process.env.GROQ_API_KEY;
+  if (gk) {
+    const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${gk}` },
+        body: JSON.stringify({ model, temperature: 0.2, max_tokens: 2048, stream: true, messages: [{ role: 'user', content: prompt }] }),
+      });
+      if (r.ok) return { body: r.body, by: 'groq', pick: j => j.choices?.[0]?.delta?.content || '' };
+      console.error(`[groq stream] HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`);
+    } catch (e) { console.error('[groq stream] network', e.message); }
+  }
+  const key = process.env.GEMINI_API_KEY || process.env.GEMINI_APP_KEY;
+  if (!key) throw Object.assign(new Error('no key'), { code: 'missing_key' });
+  const models = [process.env.GEMINI_MODEL || 'gemini-3.8-flash', process.env.GEMINI_FALLBACK_MODEL || 'gemini-flash-lite-latest'];
+  let lastErr;
+  for (const model of models) {
+    let r;
+    try {
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 8192 } }),
+      });
+    } catch (e) { lastErr = Object.assign(new Error(e.message), { code: 'network' }); continue; }
+    if (r.ok) return { body: r.body, by: model, pick: j => (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('') };
+    const raw = await r.text();
+    console.error(`[${model} stream] HTTP ${r.status}: ${raw.slice(0, 300)}`);
+    if (r.status === 400 && /API key/i.test(raw)) throw Object.assign(new Error('bad key'), { code: 'bad_key' });
+    lastErr = Object.assign(new Error(`HTTP ${r.status}`), { code: r.status === 429 ? 'quota' : r.status === 503 || r.status === 500 ? 'model_busy' : r.status === 404 ? 'model_not_found' : 'upstream_' + r.status });
+  }
+  throw lastErr || Object.assign(new Error('no model'), { code: 'model_not_found' });
+}
+
+async function streamAsk(q, res) {
+  const k = q.toLowerCase().replace(/\s+/g, ' ');
+  const hit = CACHE.get(k);
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('X-Accel-Buffering', 'no');
+  if (hit && Date.now() - hit.t < CACHE_MS) { res.setHeader('X-Answer-Source', 'cache'); res.status(200); res.write(hit.text); return res.end(); }
+  const t0 = Date.now();
+  const up = await openStream(askPrompt(q));          // throws before any byte is sent -> JSON error
+  res.setHeader('X-Answer-Source', up.by); res.status(200);
+  if (res.flushHeaders) res.flushHeaders();
+  const full = await readSSE(up.body, up.pick, t => res.write(t));
+  console.log(`streamed by ${up.by} in ${Date.now() - t0} ms`);
+  if (full.trim()) CACHE.set(k, { text: full, t: Date.now() });
+  res.end();
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
@@ -151,6 +224,7 @@ module.exports = async (req, res) => {
     if (body.mode === 'ask') {
       const q = String(body.question || '').trim().slice(0, 500);
       if (q.length < 5) return res.status(400).json({ error: 'question_too_short' });
+      if (body.stream) return await streamAsk(q, res);
       const k = q.toLowerCase().replace(/\s+/g, ' ');
       const hit = CACHE.get(k);
       if (hit && Date.now() - hit.t < CACHE_MS) return res.status(200).json({ text: hit.text, cached: true });
@@ -170,6 +244,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'unknown_mode' });
   } catch (e) {
     console.error('AI call failed:', e.code, e.message);
+    if (res.headersSent) { try { res.end(); } catch {} return; }
     if (e.code === 'quota') return res.status(429).json({ error: 'quota' });
     if (e.code === 'model_busy') return res.status(503).json({ error: 'busy' });
     return res.status(502).json({ error: 'upstream_error', reason: e.code || 'unknown' });
