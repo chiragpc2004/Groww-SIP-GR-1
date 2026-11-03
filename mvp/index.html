@@ -59,7 +59,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .glinks{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;font-weight:600}
 .glinks a{color:var(--green-ink);text-decoration:none}
 .fine{font-size:12px;color:var(--muted)}
-.phone{position:sticky;top:24px;width:390px;height:min(844px,calc(100vh - 48px));min-height:640px;border-radius:52px;padding:12px;background:#0B0C0E;box-shadow:0 30px 80px rgba(0,0,0,.25),inset 0 0 0 2px #2A2C30;flex:none;position:relative}
+.phone{position:sticky;top:84px;width:390px;height:min(844px,calc(100vh - 108px));min-height:620px;border-radius:52px;padding:12px;background:#0B0C0E;box-shadow:0 30px 80px rgba(0,0,0,.25),inset 0 0 0 2px #2A2C30;flex:none;position:relative}
 .screen-wrap{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:var(--bg);isolation:isolate}
 .sbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;font-size:15px;font-weight:600;color:var(--head);position:relative;z-index:5;background:var(--bg)}
 .island{position:absolute;left:50%;top:10px;width:118px;height:32px;margin-left:-59px;border-radius:20px;background:#000;z-index:6}
@@ -205,7 +205,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @media (max-width:860px){.demo-fab{display:block}}
 
 /* full-page views for mentors */
-.page{min-height:100%;background:var(--page)} .page .wrap{max-width:1040px;margin:0 auto;padding:28px max(20px,env(safe-area-inset-right,0px)) 64px max(20px,env(safe-area-inset-left,0px));display:grid;gap:20px}
+.page{background:var(--page)} .page .wrap{max-width:1040px;margin:0 auto;padding:28px max(20px,env(safe-area-inset-right,0px)) 64px max(20px,env(safe-area-inset-left,0px));display:grid;gap:20px}
 .page h1{margin:0;font-size:28px;color:var(--head);letter-spacing:-.02em;line-height:1.2}
 .page p{margin:0;max-width:70ch}
 .back{font-weight:600;color:var(--green-ink);text-decoration:none;font-size:14px}
@@ -265,16 +265,61 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 .sms.on{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.2,1)}
 .sms .ic{width:36px;height:36px;border-radius:9px;background:#34C759;display:grid;place-items:center;flex:none;color:#fff;font-weight:700}
 .sms b{display:block;font-size:14px} .sms span{font-size:13.5px;color:#3E4150} .sms small{margin-left:auto;font-size:12px;color:#7C7E8C;flex:none}
+/* site shell */
+.site{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.sw{max-width:1160px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:28px;min-height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--head);font-weight:700;font-size:15px;flex:none}
+.brand .mk{width:30px;height:30px;border-radius:9px;background:var(--green);display:grid;place-items:center}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--amber);background:var(--amber-soft);padding:3px 8px;border-radius:999px}
+.nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav a{text-decoration:none;color:var(--muted);font-weight:500;font-size:14px;padding:8px 12px;border-radius:8px;white-space:nowrap}
+.nav a:hover{color:var(--head);background:var(--surface)} .nav a[aria-current="page"]{color:var(--head);background:var(--surface)}
+.nav a.ext{margin-left:auto}
+.foot{border-top:1px solid var(--line);background:var(--bg)}
+.foot .sw{min-height:0;padding-block:22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 28px;font-size:12.5px;color:var(--muted)}
+.foot a{color:var(--muted);text-decoration:none;font-weight:500} .foot a:hover{color:var(--head)}
+.foot .fl{display:flex;gap:18px;flex-wrap:wrap}
+@media (max-width:760px){.sw{gap:12px;flex-wrap:wrap;padding-block:8px}.nav{order:3;flex-basis:100%;margin:0 -12px}.nav a.ext{margin-left:0}}
+@media (max-width:600px){body.app-on .site,body.app-on .foot{display:none}}
+/* content pages */
+.ph{display:grid;gap:10px;padding-top:12px}
+.ph h1{font-size:clamp(28px,4vw,40px);line-height:1.12;letter-spacing:-.025em;margin:0;color:var(--head)}
+.ph .lede{font-size:16.5px;color:var(--muted);max-width:62ch}
+.h2{font-size:20px;color:var(--head);margin:18px 0 0;letter-spacing:-.01em}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:grid;gap:6px}
+.stat b{font-size:30px;letter-spacing:-.03em;color:var(--head)} .stat span{font-size:13.5px;color:var(--ink)}
+.moments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mcard{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:grid;gap:12px;align-content:start}
+.mcard h3{margin:0;font-size:16px;color:var(--head)}
+.mcard .tl{display:grid;gap:4px;font-size:13.5px} .mcard .tl em{font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.mcard .today em{color:var(--muted)} .mcard .now em{color:var(--green-ink)} .mcard .today span{color:var(--muted)} .mcard .now span{color:var(--head)}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:var(--bg);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.fstep{padding:18px;display:grid;gap:6px;align-content:start;border-left:1px solid var(--line);position:relative}
+.fstep:first-child{border-left:0}
+.fstep small{font:600 11.5px var(--mono);color:var(--green-ink)} .fstep b{font-size:14.5px;color:var(--head)} .fstep span{font-size:13px;color:var(--muted)}
+.fstep.gate{background:var(--green-soft)}
+.nevers{display:flex;flex-wrap:wrap;gap:8px}
+.nevers span{font-size:13.5px;padding:8px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--head)}
+.nevers span::before{content:"✕ ";color:var(--red);font-weight:700}
+.ctas{display:flex;gap:10px;flex-wrap:wrap}
+.ctas a{text-decoration:none}
+.lim{display:grid;gap:8px;margin:0;padding-left:18px;color:var(--ink);font-size:14px}
+@media (max-width:860px){.stats,.moments{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.fstep{border-left:0;border-top:1px solid var(--line)}.fstep:first-child{border-top:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<header class="site"><div class="sw">
+  <a class="brand" href="#"><span class="mk"><svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>SIP Recovery Assistant <span class="badge">Concept</span></a>
+  <nav class="nav" aria-label="Main"><a href="#" data-nav="demo">Live demo</a><a href="#about" data-nav="about">How it works</a><a href="#quality" data-nav="quality">Quality report</a><a class="ext" href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a></nav>
+</div></header>
 
 <!-- ================= APP (phone) ================= -->
 <div id="appView" class="stage">
   <aside class="guide" aria-label="Demo guide">
-    <div class="kick">Groww case study · concept MVP</div>
-    <h1>SIP Recovery Assistant</h1>
+    <div class="kick">Live demo</div>
+    <h1>Keep a SIP alive through a bad month</h1>
     <p>Many first-time investors lose their SIP without ever deciding to stop: a payment fails in a tight month, the alert doesn't say what to do next, and the SIP quietly lapses. This assistant steps in at those moments.</p>
     <div class="modes" role="group" aria-label="Compare"><button type="button" data-mode-btn="before" aria-pressed="false">Today</button><button type="button" data-mode-btn="after" aria-pressed="true">With the assistant</button></div>
     <p class="mode-note" id="modeNote">Pick a moment below, then tap the notification on the phone. Switch to Today to compare.</p>
@@ -287,8 +332,6 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
       <li><span class="cm">5</span><span><b>Cancel, explained.</b> Still two taps, never hidden, and it first says the money stays invested.</span></li>
     </ol>
     <p class="fine">Sample data only; nothing here changes a real SIP.</p>
-    <div class="glinks"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>
-    <p class="fine">Independent student case study. Not affiliated with or endorsed by Groww. Not investment advice.</p>
   </aside>
 
   <div class="phone" id="phone" data-mode="after">
@@ -420,9 +463,10 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 
 <!-- ================= QUALITY REPORT ================= -->
 <div id="qualityView" class="page" hidden><div class="wrap">
-  <a class="back" href="#">← Back to the app</a>
-  <div class="kick">Eval gate</div>
-  <h1>24 test questions, run live against the assistant</h1>
+  <div class="ph"><div class="kick">Quality report</div>
+  <h1>Every answer is tested before anyone sees it</h1>
+  <p class="lede">24 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer.</p></div>
+  <div class="stats"><div class="stat"><b>24</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div class="stat"><b>7</b><span>checks on every answer: no advice, no predictions or urgency, verified rules only, matching dates and amounts, plus three AI-reviewer checks</span></div><div class="stat"><b>0</b><span>unsafe answers allowed: a failed check shows a safe fallback instead</span></div></div>
   <p style="color:var(--muted)">Each case runs through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer. A case passes when the right kind of response comes back and it contains what it must and nothing it mustn't. A full run uses about 40 model calls; on the free tier the page pauses when the quota is hit, so it can take 10 minutes or more.</p>
   <div class="pcard"><div class="kpis" id="evKpis"></div></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="pbtn" id="runEval">Run all 24</button><button class="pbtn ghost" id="copyEval" disabled>Copy results</button><span class="fine" id="evNote"></span></div>
@@ -430,18 +474,44 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 </div></div>
 
 <!-- ================= HOW IT WORKS ================= -->
-<div id="aboutView" class="page" hidden><div class="wrap"><div class="about">
-  <a class="back" href="#">← Back to the app</a>
-  <div class="kick">How it works</div>
-  <h1>Rules decide what's possible. AI only explains it.</h1>
-  <p>Research for this case study found that first-time investors often lose their SIP without deciding to stop: a payment fails in a tight month, the alert doesn't say what to do, and a friend's advice decides what happens next. Groww's published rules leave a narrow window: a skip within 2 days of the debit misses that month, cancelling is locked within 7 days, and 3 missed, failed or skipped instalments in a row cancel the SIP automatically.</p>
-  <h2>Where it appears</h2>
-  <ul><li><b>Payment failed:</b> from the failure notification, straight to the SIP with a Pay Now button and the "missed X of 3" tracker.</li><li><b>Tight month ahead:</b> from the SIP screen, while a skip or edit still counts for this month.</li><li><b>About to cancel:</b> the cancel flow first shows what happens to invested money, then cancels in two taps.</li></ul>
-  <h2>Three layers</h2>
-  <ol><li><b>Rules engine (code).</b> Calculates every date, deadline and option from Groww's help pages. The AI can't change these.</li><li><b>AI explainer.</b> Reads the question in the user's own words and explains using only the engine's facts, citing rule IDs.</li><li><b>Eval gate.</b> Fund-pick and prediction requests are declined by code. Every AI answer then passes code checks (no fund names or advice, no predictions or urgency, only verified rules, dates and amounts that match) and an AI reviewer (facts, cancel described correctly, neutral). If anything fails, a safe fallback is shown.</li></ol>
-  <h2>Limits</h2>
-  <ul><li>Dummy data only; nothing here changes a real SIP. Buttons that would act show a demo notice.</li><li>Rules checked against Groww's help pages on 3–4 Nov 2026. Automatic retries, exact bank fees and fund-specific skip limits aren't documented, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li><li>Independent student case study, not affiliated with Groww. Not investment advice.</li></ul>
-</div></div></div>
+<div id="aboutView" class="page" hidden><div class="wrap">
+  <div class="ph"><div class="kick">How it works</div>
+    <h1>Rules decide what's possible. AI explains it.</h1>
+    <p class="lede">First-time investors often lose a SIP without ever deciding to stop. A payment fails in a tight month, the alert doesn't say what to do next, and a few missed months later the SIP is gone. The Recovery Assistant steps in at those moments with the user's own dates and options.</p>
+    <div class="ctas"><a class="pbtn" href="#">Try the live demo</a><a class="pbtn ghost" href="#quality">See the quality report</a></div>
+  </div>
+
+  <h2 class="h2">Three rules that decide whether a SIP survives</h2>
+  <div class="stats">
+    <div class="stat"><b>3 in a row</b><span>Three missed, failed or skipped instalments in a row cancel the SIP automatically.</span></div>
+    <div class="stat"><b>2 days</b><span>A skip or edit within 2 days of the debit doesn't count for that month.</span></div>
+    <div class="stat"><b>7 days</b><span>Cancelling is locked within 7 days of the next instalment.</span></div>
+  </div>
+  <p class="fine">From Groww's published help pages, checked 3–4 Nov 2026.</p>
+
+  <h2 class="h2">Where it steps in</h2>
+  <div class="moments" id="aboutMoments"></div>
+
+  <h2 class="h2">How an answer is made</h2>
+  <div class="flow">
+    <div class="fstep"><small>01</small><b>The question</b><span>In the user's own words, English or Hinglish.</span></div>
+    <div class="fstep"><small>02</small><b>Policy check</b><span>Fund picks and predictions are declined by code, before any AI call.</span></div>
+    <div class="fstep"><small>03</small><b>Rules engine</b><span>Code calculates every date, deadline and option. The AI can't change them.</span></div>
+    <div class="fstep"><small>04</small><b>AI explains</b><span>Drafts an answer using only the engine's facts, citing the rules it used.</span></div>
+    <div class="fstep gate"><small>05</small><b>7 checks</b><span>Code checks and an AI reviewer. Pass: answer shown. Fail: a safe fallback.</span></div>
+  </div>
+
+  <h2 class="h2">What it will never do</h2>
+  <div class="nevers"><span>Recommend funds or stocks</span><span>Predict returns or recovery</span><span>Use urgency or fear</span><span>Argue against cancelling</span><span>Act without the user</span><span>State a rule it can't confirm</span></div>
+
+  <h2 class="h2">Limits of this demo</h2>
+  <ul class="lim"><li>Sample data only; buttons that would change a SIP show a demo notice.</li><li>Automatic retries, exact bank fees and fund-specific skip limits aren't documented by Groww, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li></ul>
+</div></div>
+
+<footer class="foot"><div class="sw">
+  <span>Independent student case study for a product fellowship. Not affiliated with or endorsed by Groww. Sample data only. Not investment advice.</span>
+  <span class="fl"><a href="#">Live demo</a><a href="#about">How it works</a><a href="#quality">Quality report</a><a href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a></span>
+</div></footer>
 
 <script src="rules.js"></script>
 <script>
@@ -460,7 +530,13 @@ let S, EV, FIT = null, MODE = 'after', REASON = null;
 const AI_CACHE = {};
 
 /* ---------- views (app vs mentor pages) ---------- */
-function route(){ const h=location.hash.slice(1); $('appView').hidden = h==='quality'||h==='about'; $('qualityView').hidden=h!=='quality'; $('aboutView').hidden=h!=='about'; if(h==='quality') loadGold(); window.scrollTo(0,0); }
+function route(){ const h=location.hash.slice(1); const v = h==='quality'||h==='about' ? h : 'demo';
+  $('appView').hidden = v!=='demo'; $('qualityView').hidden=v!=='quality'; $('aboutView').hidden=v!=='about';
+  document.body.classList.toggle('app-on', v==='demo');
+  document.querySelectorAll('[data-nav]').forEach(a=>a.dataset.nav===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  if(v==='quality') loadGold();
+  if(v==='about' && !$('aboutMoments').children.length) $('aboutMoments').innerHTML=Object.values(STORY).map(st=>`<div class="mcard"><h3>${esc(st.t)}</h3><div class="tl today"><em>Today</em><span>${esc(st.today.replace(/^Today: /,''))}</span></div><div class="tl now"><em>With the assistant</em><span>${esc(st.now.replace(/^Now: /,''))}</span></div></div>`).join('');
+  window.scrollTo(0,0); }
 addEventListener('hashchange', route);
 
 /* ---------- screen stack ---------- */
