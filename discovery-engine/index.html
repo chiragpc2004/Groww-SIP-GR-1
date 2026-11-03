@@ -1,4 +1,13 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SIP Discovery Engine</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2300B386'/%3E%3Cpath d='M7 22l7-7 5 5 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SIP Discovery Engine">
+<meta property="og:description" content="Why do first-time SIP investors stop? Ask 7,600 investor conversations, with every answer cited and quality-checked.">
+<meta property="og:url" content="https://nextleap-groww-sip-discovery-engine.vercel.app/">
+<meta property="og:image" content="https://nextleap-groww-sip-discovery-engine.vercel.app/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#00B386">
 <meta name="description" content="AI-coded analysis of 7,600 public investor posts on why first-time SIP investors pause or stop.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
 <style>
@@ -146,6 +155,11 @@ textarea:focus,select:focus,input:focus{outline:none;border-color:var(--accent);
 .disc::before{content:"i";flex:none;width:16px;height:16px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font:600 10px var(--f-ui);margin-top:2px}
 
 /* ---------- findings ---------- */
+.quotes{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.quotes figure{margin:0;display:grid;gap:4px;padding-left:12px;border-left:2px solid var(--accent-line)}
+.quotes blockquote{margin:0;font-size:13.5px;line-height:1.5;color:var(--head);font-style:italic}
+.quotes .tr{font-size:12px;color:var(--muted)}
+.quotes figcaption{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
 .top3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:920px){.top3{grid-template-columns:1fr}}
 .opp{padding:20px 22px;display:grid;gap:12px;align-content:start}
@@ -388,12 +402,19 @@ const sum = o => Object.values(o).reduce((a,b)=>a+b,0);
 /* ---------- findings ---------- */
 const NAMES = {O1:'First red number reads as "it isn\'t working"',O2:'Unsure what stop, pause and redeem do',O3:'Tight month, all-or-nothing options',O4:'Payment and app failures erode trust',O5:'Switching funds or plans',O6:'Fund house halts the SIP'};
 const BLURB = {O1:'A value below the amount invested in the first months gets read as a loss or a bad fund choice.',O2:'People ask whether cancelling loses their money, or stop when they meant to skip.',O3:'Skip only works up to 2 days before the debit; 3 misses cancel the SIP. Most don\'t know skip exists.'};
+const BYID_Q = e => (D.items.find(i=>i.e===e)||{}).s;
+const QUOTES = {
+  O1:[[401,'I stopped SIPs the moment I lost only 3000 rupees… at least FD doesn’t eat my money.'],[24,'I got 549 but when I redeem it goes down… I got only 525. What is happening?'],[301,'I started investing 2 months ago. I stopped 3k SIP this month, since market is falling.']],
+  O2:[[419,'Agar SIP band karna pade to kya main sirf SIP band karke invested reh sakta hoon?','If I have to stop my SIP, can I stay invested?'],[439,'Is mutual fund like share… when I need I will redeem money, otherwise not?'],[433,'Maine SIP band kar di, amount investment se bhi kam hai. Ghate mein paise nikal loon ya wait karoon?','I stopped my SIP and it is below what I invested. Withdraw at a loss or wait?']],
+  O3:[[10,'I tried a lot to skip my SIPs for a month… it shows it can be done 2 days before SIP date, but it doesn’t work.'],[377,'Lost my job, how to pause SIP?'],[409,'I want to stop my ELSS SIP because there is no option to reduce the amount.']],
+};
 const maxS = Math.max(...D.opps.map(o=>o.share));
 D.opps.slice(0,3).forEach(o => $('top3').insertAdjacentHTML('beforeend',
   `<article class="card opp"><div class="opp-h"><span class="rank">#${D.opps.indexOf(o)+1}</span><span class="pill">${o.id==='O1'?'Most common':'Highly fixable'}</span></div>
    <div class="pct num">${o.share}%<small>of accounts</small></div><div class="meter"><i style="width:${o.share/maxS*100}%"></i></div>
    <h3>${esc(NAMES[o.id])}</h3><p class="small muted">${esc(BLURB[o.id]||'')}</p>
-   <button class="linkbtn" data-jump="${o.id}">View ${o.mentions} posts →</button></article>`));
+   <div class="quotes">${(QUOTES[o.id]||[]).map(([e,q,tr])=>`<figure><blockquote>“${esc(q)}”</blockquote>${tr?`<span class="tr">${esc(tr)}</span>`:''}<figcaption><button class="cite" data-e="${e}">#${e}</button> ${SRC[BYID_Q(e)]||''}</figcaption></figure>`).join('')}</div>
+   <button class="linkbtn" data-jump="${o.id}">View all ${o.mentions} posts →</button></article>`));
 const OPP_CODES = {O1:['PERF','MARKET'],O2:['CONFUSION'],O3:['CASH','PAUSE_UX','GOAL_DONE'],O4:['TECH','TRUST'],O5:['SWITCH','COST'],O6:['AMC_RULE']};
 D.opps.forEach(o => $('oppRows').insertAdjacentHTML('beforeend',
   `<tr><td>${esc(NAMES[o.id])}</td><td class="n">${o.share}%</td><td class="n">≤ ${o.first_timer_items}</td><td class="n">${o.acted_share}%</td>
@@ -417,7 +438,7 @@ function render(){ const f=filtered(); $('count').textContent = `${f.length} pos
 ['fReason','fSource','fFirst'].forEach(id => $(id).addEventListener('change', () => { codeSet=null; render(); }));
 $('fText').addEventListener('input', () => { codeSet=null; render(); });
 render();
-$('top3').addEventListener('click', e => { const b=e.target.closest('[data-jump]'); if(!b) return;
+$('top3').addEventListener('click', e => { const c=e.target.closest('.cite'); if(c){ openItem(+c.dataset.e); return; } const b=e.target.closest('[data-jump]'); if(!b) return;
   codeSet = OPP_CODES[b.dataset.jump]; ['fReason','fSource','fText'].forEach(id=>$(id).value=''); $('fFirst').checked=false; render(); location.hash='evidence'; window.scrollTo(0,0); });
 function openItem(e){
   codeSet=null; ['fReason','fSource','fText'].forEach(id=>$(id).value=''); $('fFirst').checked=false; render();
