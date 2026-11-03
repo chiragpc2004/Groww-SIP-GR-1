@@ -1,0 +1,108 @@
+[
+ {
+  "id":"O1",
+  "opportunity":"O1 First red number read as \"SIP isn't working\"",
+  "mentions":62,
+  "share":28,
+  "first_timer_items":10,
+  "acted_share":50,
+  "fixability":4,
+  "lever":"B: cancel \/ redeem",
+  "sources":{
+   "reddit_comment":29,
+   "reddit_post":21,
+   "youtube":9,
+   "play_store":2,
+   "tradingqna":1
+  },
+  "score":0.92
+ },
+ {
+  "id":"O2",
+  "opportunity":"O2 Mechanics confusion: stop vs pause vs redeem",
+  "mentions":38,
+  "share":17,
+  "first_timer_items":5,
+  "acted_share":53,
+  "fixability":5,
+  "lever":"B: cancel \/ redeem (wrong action)",
+  "sources":{
+   "youtube":27,
+   "reddit_comment":7,
+   "play_store":3,
+   "reddit_post":1
+  },
+  "score":0.74
+ },
+ {
+  "id":"O3",
+  "opportunity":"O3 Cash squeeze with only all-or-nothing options",
+  "mentions":42,
+  "share":19,
+  "first_timer_items":1,
+  "acted_share":52,
+  "fixability":5,
+  "lever":"B: pause\u2192C: 3 missed = auto-cancel",
+  "sources":{
+   "reddit_post":18,
+   "reddit_comment":9,
+   "youtube":6,
+   "play_store":5,
+   "tradingqna":3,
+   "app_store":1
+  },
+  "score":0.66
+ },
+ {
+  "id":"O4",
+  "opportunity":"O4 Transaction failures erode trust",
+  "mentions":39,
+  "share":18,
+  "first_timer_items":1,
+  "acted_share":92,
+  "fixability":3,
+  "lever":"C: involuntary + B",
+  "sources":{
+   "play_store":17,
+   "reddit_post":16,
+   "reddit_comment":4,
+   "app_store":1,
+   "youtube":1
+  },
+  "score":0.49
+ },
+ {
+  "id":"O5",
+  "opportunity":"O5 Fund-switching and cost optimisation",
+  "mentions":47,
+  "share":21,
+  "first_timer_items":0,
+  "acted_share":74,
+  "fixability":1,
+  "lever":"Often re-enters (D) \u2014 low metric impact",
+  "sources":{
+   "reddit_comment":35,
+   "reddit_post":7,
+   "tradingqna":3,
+   "play_store":1,
+   "youtube":1
+  },
+  "score":0.34
+ },
+ {
+  "id":"O6",
+  "opportunity":"O6 Fund-house \/ regulatory suspensions",
+  "mentions":16,
+  "share":7,
+  "first_timer_items":0,
+  "acted_share":94,
+  "fixability":1,
+  "lever":"C: involuntary, not addressable",
+  "sources":{
+   "reddit_comment":8,
+   "reddit_post":7,
+   "tradingqna":1
+  },
+  "score":0.17
+ }
+]

@@ -1,0 +1,443 @@
+0 self redeemed TECH
+1 self redeemed TECH
+2 self redeemed TECH
+3 self redeemed TRUST
+4 self skipped TECH
+5 self stopped TECH MANUAL
+6 na na NA
+7 na na NA
+8 self redeemed TECH
+9 self involuntary TECH CASH
+10 self skip_attempt CASH PAUSE_UX
+11 self redeemed TECH
+12 self want_pause PAUSE_UX
+13 na na NA
+14 na na NA
+15 self stopped CONFUSION
+16 self redeemed TECH
+17 self redeemed TRUST SWITCH
+18 self redeemed TECH
+19 self stopped PAUSE_UX
+20 self redeemed TECH
+21 na na NA
+22 na na NA
+23 self redeemed CONFUSION TRUST
+24 self redeemed PERF FIRST
+25 self redeemed TECH
+26 self want_pause PAUSE_UX
+27 self redeemed TECH
+28 self redeemed PERF FIRST
+29 na na NA
+30 self redeemed TECH CONFUSION
+31 self skip_attempt TECH PAUSE_UX
+32 info stop PAUSE_UX
+33 info stop PAUSE_UX
+34 na na NA
+35 info paused CASH
+36 asker considering MARKET
+37 info stop PAUSE_UX
+38 na na NA
+39 na na NA
+40 advice stopped COST
+41 advice stopped COST
+42 commentary stopped MARKET
+43 self considering COST
+44 advice stopped COST
+45 advice stopped COST
+46 na na NA
+47 info stop AMC_RULE
+48 info stop AMC_RULE
+49 na na NA
+50 na na NA
+51 info stop PAUSE_UX
+52 info stop AMC_RULE
+53 info stop AMC_RULE
+54 na na NA
+55 na na NA
+56 na na NA
+57 na na NA
+58 info pause PAUSE_UX
+59 na na NA
+60 na na NA
+61 info pause PAUSE_UX
+62 self stopped CASH VARIABLE
+63 self involuntary AMC_RULE
+64 info stop AMC_RULE
+65 self stopped COST
+66 na na NA
+67 na na NA
+68 na na NA
+69 self stopped COST
+70 na na NA
+71 commentary stopped MARKET PERF
+72 na na NA
+73 na na NA
+74 self want_pause PAUSE_UX
+75 self want_pause PAUSE_UX
+76 na na NA
+77 info failed TECH CASH
+78 na na NA
+79 na na NA
+80 self want_pause PAUSE_UX
+81 self involuntary AMC_RULE
+82 self paused AMC_RULE
+83 self paused SWITCH
+84 na na NA
+85 self redeemed PERF GOAL_DONE
+86 na na NA
+87 self considering PERF MARKET
+88 prestart considering PERF
+89 na na NA
+90 self failed TECH
+91 self involuntary TECH
+92 self involuntary AMC_RULE
+93 na na NA
+94 na na NA
+95 self considering TRUST
+96 self redeemed TECH
+97 na na NA
+98 self want_pause PAUSE_UX
+99 info pause PAUSE_UX
+100 info pause PAUSE_UX
+101 self involuntary AMC_RULE
+102 advice considering CASH MARKET
+103 self stopped SWITCH
+104 self stopped CASH COST
+105 advice redeemed CASH
+106 advice paused MARKET
+107 advice considering PERF
+108 advice redeemed MARKET
+109 self continued MARKET
+110 na na NA
+111 advice paused CASH
+112 advice paused CASH
+113 advice continued CASH
+114 self reduced PERF CASH
+115 self paused CASH
+116 advice paused CASH
+117 self reduced PERF MARKET
+118 self stopped GOAL_DONE CASH
+119 self stopped PERF
+120 advice reduced CASH
+121 na na NA
+122 self stopped SWITCH
+123 self considering COST
+124 advice reduced PERF CHECKING
+125 advice na PERF
+126 self paused PERF
+127 self stopped SWITCH
+128 na na NA
+129 self stopped SWITCH
+130 advice continued CHECKING
+131 na na NA
+132 na na NA
+133 self stopped SWITCH
+134 advice stop AMC_RULE
+135 info stop AMC_RULE
+136 self stopped CASH RESTART
+137 self stopped TRUST
+138 self stopped PERF
+139 self stopped RESTART
+140 self stopped SWITCH
+141 self stopped PERF
+142 self stopped PERF
+143 info stop AMC_RULE
+144 self stopped SWITCH GOAL_DONE
+145 info stop AMC_RULE
+146 self stopped PERF SWITCH
+147 advice paused PERF
+148 na na NA
+149 self stopped PERF
+150 self stopped SWITCH RESTART
+151 advice stopped COST
+152 self stopped PERF INFLUENCED
+153 self stopped SWITCH
+154 self stopped PERF
+155 self stopped SWITCH
+156 self considering SWITCH
+157 self stopped SWITCH
+158 self stopped SWITCH
+159 self considering PERF MARKET
+160 self considering SWITCH
+161 self stopped PERF
+162 advice stopped SWITCH
+163 advice stopped SWITCH
+164 advice stopped SWITCH
+165 self na COST
+166 advice continued PERF
+167 na na NA
+168 advice continued PERF
+169 self continued NA
+170 self continued NA
+171 self stopped SWITCH
+172 self considering SWITCH
+173 na na NA
+174 advice stopped SWITCH
+175 self stopped GOAL_DONE
+176 info stop AMC_RULE
+177 self involuntary AMC_RULE
+178 info stop AMC_RULE
+179 info stop AMC_RULE
+180 self stopped INFLUENCED PERF
+181 info stop AMC_RULE
+182 info stop AMC_RULE
+183 advice stopped COST
+184 self stopped TECH SWITCH
+185 advice continued PERF
+186 info stop AMC_RULE
+187 self stopped SWITCH
+188 self stopped GOAL_DONE
+189 na na NA
+190 self stopped COST
+191 self stopped GOAL_DONE
+192 advice paused SWITCH
+193 self stopped MARKET RESTART
+194 info stop AMC_RULE
+195 info stop PAUSE_UX
+196 self stopped SWITCH
+197 self considering SWITCH CONFUSION
+198 info stop AMC_RULE
+199 self stopped SWITCH
+200 na na NA
+201 self considering PERF CONFUSION
+202 self stopped PERF
+203 self stopped PERF
+204 advice stopped COST
+205 self stopped INFLUENCED PERF
+206 self stopped SWITCH
+207 self considering PERF FIRST
+208 self stopped GOAL_DONE
+209 self stopped SWITCH
+210 self stopped SWITCH
+211 self stopped PERF SWITCH
+212 self stopped PERF SWITCH
+213 info stop AMC_RULE
+214 self considering PERF CONFUSION
+215 na na NA
+216 info stop AMC_RULE
+217 info stop AMC_RULE
+218 advice stopped CASH SWITCH
+219 advice stopped COST
+220 advice stopped SWITCH
+221 self considering SWITCH
+222 info stop AMC_RULE
+223 self involuntary TECH CONFUSION
+224 advice stopped SWITCH
+225 info stop TRUST
+226 advice continued PERF
+227 info stop AMC_RULE
+228 self continued NA
+229 na na NA
+230 self considering COST
+231 advice stopped SWITCH
+232 self stopped CASH
+233 advice stopped SWITCH
+234 advice considering MARKET PERF
+235 na na NA
+236 na na NA
+237 na na NA
+238 self involuntary AMC_RULE
+239 self involuntary AMC_RULE
+240 advice stopped COST
+241 self continued MARKET
+242 self stopped SWITCH
+243 self stopped SWITCH
+244 self continued NA
+245 info stop AMC_RULE
+246 self involuntary AMC_RULE
+247 na na NA
+248 info stop AMC_RULE
+249 info stop AMC_RULE
+250 info stop AMC_RULE
+251 advice stopped SWITCH
+252 advice continued MARKET
+253 na na NA
+254 na na NA
+255 na na NA
+256 self involuntary AMC_RULE
+257 self want_pause PAUSE_UX
+258 self considering PERF CASH FIRST
+259 self considering PERF
+260 self considering PERF MARKET
+261 self considering MARKET
+262 self considering MARKET INFLUENCED
+263 self paused CASH
+264 self considering PERF MARKET
+265 self paused PAUSE_UX
+266 self considering MARKET
+267 info pause PAUSE_UX
+268 self involuntary AMC_RULE
+269 self involuntary TECH
+270 self involuntary TECH
+271 self stopped TRUST
+272 self stopped AMC_RULE
+273 na na NA
+274 self stopped TRUST
+275 na na NA
+276 self stopped TECH
+277 self stopped TECH
+278 self involuntary CASH MISSED3
+279 self stopped TECH
+280 self stopped TECH
+281 self stopped TECH
+282 self stopped TECH
+283 advice continued PERF
+284 info stop AMC_RULE
+285 na na NA
+286 na na NA
+287 na na NA
+288 advice skipped CASH
+289 info stop TECH
+290 advice continued PERF MARKET
+291 self considering PERF
+292 self stopped RESTART
+293 self considering PERF
+294 self considering PERF
+295 self considering CASH
+296 self stopped SWITCH
+297 na na NA
+298 self considering PERF MARKET
+299 self considering MARKET
+300 advice continued MARKET
+301 self stopped MARKET PERF FIRST
+302 self considering PERF
+303 self considering SWITCH
+304 self stopped SWITCH
+305 info stop AMC_RULE
+306 advice reduced SWITCH
+307 self considering AMC_RULE CONFUSION
+308 advice redeemed CASH MARKET
+309 advice continued GOAL_DONE
+310 na na NA
+311 advice continued SWITCH
+312 advice considering CASH
+313 advice continued PERF
+314 advice na PERF
+315 self involuntary AMC_RULE
+316 self involuntary AMC_RULE
+317 advice continued MARKET
+318 advice continued PERF
+319 self stopped PERF FIRST
+320 asker considering MARKET
+321 advice continued PERF MARKET
+322 advice continued CASH
+323 self considering PERF
+324 self considering PERF FIRST
+325 info stop AMC_RULE
+326 na na NA
+327 info stop AMC_RULE
+328 na na NA
+329 self considering PERF SWITCH
+330 info stop AMC_RULE
+331 info stop AMC_RULE
+332 advice paused CASH
+333 advice reduced CASH
+334 na na NA
+335 na na NA
+336 self stopped TRUST
+337 advice reduced CASH
+338 na na NA
+339 na na NA
+340 na na NA
+341 na na NA
+342 na na NA
+343 na na NA
+344 na na NA
+345 na na NA
+346 na na NA
+347 na na NA
+348 self stopped TRUST
+349 self stopped CONFUSION
+350 na na NA
+351 na na NA
+352 na na NA
+353 na na NA
+354 advice continued PERF
+355 na na NA
+356 na na NA
+357 na na NA
+358 advice na CASH
+359 na na NA
+360 na na NA
+361 info stop TECH
+362 advice na CASH
+363 na na NA
+364 advice continued MARKET
+365 self considering PERF CONFUSION FIRST
+366 na na NA
+367 self considering PERF INFLUENCED
+368 self involuntary AMC_RULE
+369 na na NA
+370 na na NA
+371 self want_pause PAUSE_UX
+372 self considering MARKET
+373 self started CONFUSION FIRST
+374 self stopped TECH FIRST
+375 self considering CASH
+376 self considering CASH
+377 self paused CASH
+378 self considering CASH
+379 self considering CASH
+380 self considering CASH
+381 self considering COST INFLUENCED
+382 na na NA
+383 commentary stopped MARKET
+384 info stop AMC_RULE
+385 self stopped SWITCH
+386 prestart considering NA
+387 self continued NA
+388 na na NA
+389 self stopped PERF MARKET
+390 advice paused MARKET
+391 self stopped CASH PERF
+392 self stopped PERF
+393 self stopped PERF
+394 commentary na MARKET
+395 self stopped PERF
+396 self considering PERF FIRST
+397 commentary stopped MARKET
+398 self continued MARKET
+399 advice continued MARKET
+400 commentary na MARKET
+401 self stopped PERF INFLUENCED
+402 advice continued MARKET
+403 commentary na MARKET
+404 advice continued MARKET
+405 self stopped COST CONFUSION
+406 self considering CONFUSION
+407 self involuntary CONFUSION
+408 self stopped CONFUSION
+409 self stopped PAUSE_UX
+410 na na NA
+411 self stopped CONFUSION
+412 self stopped CONFUSION
+413 self stopped CONFUSION
+414 self considering CONFUSION
+415 self considering CONFUSION
+416 self considering CONFUSION
+417 self considering CONFUSION
+418 self stopped PAUSE_UX
+419 self considering CONFUSION
+420 self stopped CONFUSION
+421 self stopped CONFUSION
+422 self want_pause PAUSE_UX
+423 self stopped CONFUSION
+424 self want_pause PAUSE_UX
+425 self want_pause PAUSE_UX
+426 self redeemed CONFUSION
+427 self stopped TECH CONFUSION
+428 self redeemed CONFUSION
+429 self stopped CONFUSION
+430 self considering CONFUSION
+431 self considering CONFUSION
+432 self stopped CONFUSION
+433 self stopped PERF CONFUSION FIRST
+434 self considering CONFUSION
+435 advice na CONFUSION
+436 advice na CONFUSION
+437 self considering CONFUSION INFLUENCED
+438 na na NA
+439 self considering CONFUSION FIRST
+440 self considering CONFUSION FIRST
+441 advice na CONFUSION
+442 advice na CONFUSION
