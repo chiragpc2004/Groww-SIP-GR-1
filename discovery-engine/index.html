@@ -549,7 +549,7 @@ function showNote(id,msg){ const n=$(id); n.textContent=msg; n.hidden=!msg; n.cl
 $('askBtn').onclick = async () => {
   const q=$('q').value.trim(); if(q.length<5){ showNote('askNote','Type a question first.'); return; }
   busyBtn($('askBtn'),true,'Asking'); showNote('askNote','');
-  $('askTag').className='tag live'; $('askTag').textContent='Live'; $('askMeta').textContent='Reading 219 posts…';
+  $('askTag').className='tag live'; $('askTag').textContent='Live'; $('askMeta').textContent='Finding the most relevant posts…';
   setLoading();
   try{ const {text,cached}=await callAI({mode:'ask',question:q}); renderAnswer(text); $('askMeta').textContent=cached?'Cached answer':'Just now'; status(true,'AI online'); }
   catch(e){

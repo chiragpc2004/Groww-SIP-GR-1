@@ -32,6 +32,9 @@ If you see the saved example instead, open Vercel → your project → **Logs** 
 ## Optional settings (Vercel → Settings → Environment Variables, then Redeploy)
 - `GEMINI_MODEL` — main model (default `gemini-3.8-flash`)
 - `GEMINI_FALLBACK_MODEL` — used when the main model is busy or out of quota (default `gemini-flash-lite-latest`)
+- `GROQ_API_KEY` — optional; if set, Groq answers first (much faster) and Gemini is the fallback
+- `GROQ_MODEL` — Groq model (default `openai/gpt-oss-120b`)
+- `TOP_K` — how many of the most relevant posts each question sends to the model (default 60)
 - `RATE_LIMIT_PER_HOUR` — requests per visitor per hour (default 20)
 
 To update the page later: upload the changed file to GitHub. Vercel redeploys automatically.

@@ -6,7 +6,37 @@ const DATA = require('../data/engine_data.json');
 const SRC = { play_store: 'Play Store', app_store: 'App Store', reddit_post: 'Reddit', reddit_comment: 'Reddit', tradingqna: 'TradingQ&A', youtube: 'YouTube' };
 const CODES = ['PERF', 'MARKET', 'CONFUSION', 'CASH', 'PAUSE_UX', 'TECH', 'TRUST', 'SWITCH', 'COST', 'GOAL_DONE', 'AMC_RULE', 'CHECKING', 'NA'];
 const POOL = DATA.items.filter(i => ['self', 'asker', 'prestart'].includes(i.a));
-const EVIDENCE = POOL.map(i => `#${i.e} [${SRC[i.s]}; ${i.ac}; ${i.r}; ${i.f.includes('FIRST') ? 'new investor' : ''}] ${i.t}`).join('\n');
+const line = i => `#${i.e} [${SRC[i.s]}; ${i.ac}; ${i.r}; ${i.f.includes('FIRST') ? 'new investor' : ''}] ${i.t}`;
+
+// Retrieval: send only the posts most relevant to the question (smaller prompt = much faster answers).
+const TOP_K = Number(process.env.TOP_K || 60);
+const CODE_WORDS = {
+  PERF: ['loss', 'losing', 'red', 'negative', 'return', 'returns', 'profit', 'xirr', 'down', 'working', 'value', 'fd'],
+  MARKET: ['market', 'crash', 'fall', 'falling', 'dip', 'correction'],
+  CASH: ['money', 'tight', 'salary', 'job', 'emergency', 'afford', 'expense', 'expenses', 'loan', 'emi', 'cash', 'financial', 'financially', 'income', 'month'],
+  PAUSE_UX: ['skip', 'pause', 'paused', 'reduce', 'date', 'flexible', 'option', 'options'],
+  CONFUSION: ['cancel', 'cancelling', 'canceling', 'redeem', 'withdraw', 'understand', 'misunderstand', 'confused', 'how', 'happens', 'stop', 'stopping'],
+  TECH: ['fail', 'failed', 'autopay', 'mandate', 'debit', 'bug', 'app', 'payment'],
+  TRUST: ['trust', 'platform', 'groww'],
+  SWITCH: ['switch', 'switching', 'another', 'better', 'compare', 'stocks'],
+  COST: ['direct', 'regular', 'commission', 'expense', 'fees'],
+};
+const tok = s => (s.toLowerCase().match(/[a-z0-9]+/g) || []).filter(w => w.length > 2);
+const POST_TOK = POOL.map(i => new Set(tok(i.t)));
+function relevant(q) {
+  const qw = tok(q), qs = new Set(qw);
+  const codes = Object.keys(CODE_WORDS).filter(c => CODE_WORDS[c].some(w => qs.has(w)));
+  const wantsNew = ['first', 'new', 'beginner', 'beginners', 'year', 'started'].some(w => qs.has(w));
+  const scored = POOL.map((i, k) => {
+    let sc = 0;
+    for (const w of qs) if (POST_TOK[k].has(w)) sc += 1;
+    const rc = i.r.split(';');
+    codes.forEach(c => { if (rc[0] === c) sc += 4; else if (rc.includes(c)) sc += 2; });
+    if (wantsNew && i.f.includes('FIRST')) sc += 3;
+    return [sc, i];
+  }).sort((a, b) => b[0] - a[0]);
+  return scored.slice(0, TOP_K).map(x => x[1]);
+}
 
 // Best-effort per-visitor limit (resets when the server instance restarts).
 const HITS = new Map();
@@ -23,13 +53,14 @@ const CACHE = new Map();
 const CACHE_MS = 6 * 3600e3;
 
 function askPrompt(q) {
+  const posts = relevant(q);
   return `You are a product researcher analysing public Indian investor posts about SIPs. Answer the question using ONLY the evidence posts below.
 Rules: cite posts inline as [#id] for every claim; group findings into at most 3 numbered patterns; say plainly where evidence is thin; never recommend funds, stocks, or whether anyone should invest, stop or continue; no predictions. Under 200 words. Plain text, no markdown headings or bold.
 
 QUESTION: ${q}
 
-EVIDENCE (${POOL.length} posts):
-${EVIDENCE}`;
+EVIDENCE (the ${posts.length} posts most relevant to this question, out of ${POOL.length}):
+${posts.map(line).join('\n')}`;
 }
 function codePrompt(t) {
   return `Code this investor post about SIPs. Reply with only JSON: {"relevant":true|false,"speaker":"self"|"advice"|"info"|"na","action":"stopped"|"redeemed"|"paused"|"reduced"|"considering"|"want_pause"|"involuntary"|"continued"|"na","primary_reason":one of ${JSON.stringify(CODES)},"secondary_reasons":[codes],"first_timer":"yes"|"no"|"unclear","influenced_by":"social_media"|"friends_family"|"none"|"unclear","checks_or_looks_at":short phrase or null,"unmet_need":one short sentence,"confidence":0-1}
@@ -37,6 +68,37 @@ Codebook: PERF=returns look poor or value below invested; MARKET=market fall or 
 
 POST:
 """${t}"""`;
+}
+
+// Optional fast provider: Groq (OpenAI-compatible). Used first when GROQ_API_KEY is set.
+async function groq(prompt, json) {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+  const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+  try {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model, temperature: 0.2, max_tokens: 2048,
+        messages: [{ role: 'user', content: prompt }],
+        ...(json ? { response_format: { type: 'json_object' } } : {}),
+      }),
+    });
+    const raw = await r.text();
+    if (!r.ok) { console.error(`[groq ${model}] HTTP ${r.status}: ${raw.slice(0, 300)}`); return null; }   // fall back to Gemini
+    const text = JSON.parse(raw).choices?.[0]?.message?.content?.trim();
+    return text || null;
+  } catch (e) { console.error('[groq] network', e.message); return null; }
+}
+
+async function generate(prompt, json) {
+  const t0 = Date.now();
+  const fast = await groq(prompt, json);
+  if (fast) { console.log(`answered by groq in ${Date.now() - t0} ms`); return fast; }
+  const text = await gemini(prompt, json);
+  console.log(`answered by gemini in ${Date.now() - t0} ms`);
+  return text;
 }
 
 async function gemini(prompt, json) {
@@ -92,14 +154,14 @@ module.exports = async (req, res) => {
       const k = q.toLowerCase().replace(/\s+/g, ' ');
       const hit = CACHE.get(k);
       if (hit && Date.now() - hit.t < CACHE_MS) return res.status(200).json({ text: hit.text, cached: true });
-      const text = await gemini(askPrompt(q), false);
+      const text = await generate(askPrompt(q), false);
       CACHE.set(k, { text, t: Date.now() });
       return res.status(200).json({ text });
     }
     if (body.mode === 'code') {
       const t = String(body.post || '').trim().slice(0, 2000);
       if (t.length < 15) return res.status(400).json({ error: 'post_too_short' });
-      const raw = await gemini(codePrompt(t), true);
+      const raw = await generate(codePrompt(t), true);
       let result;
       try { result = JSON.parse(raw.replace(/^```(json)?|```$/g, '').trim()); }
       catch { return res.status(502).json({ error: 'invalid_json' }); }
