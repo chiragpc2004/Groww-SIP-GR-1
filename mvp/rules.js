@@ -79,7 +79,7 @@
         lastFailure: null, missedInARow: 0,
       },
       {
-        id: 'cancel', label: 'About to cancel', moment: 'cancel',
+        id: 'cancel', label: 'Home expenses', moment: 'cancel',
         who: 'Salaried, ₹2,000 SIP, home expenses, thinking of stopping (like P2 and P6)',
         amount: 2000, sipDay: new Date(add(today, 12)).getUTCDate(), salaryDay: 3, monthsRunning: 11,
         invested: 22000, currentValue: 21300, status: 'upcoming', failureReason: null,

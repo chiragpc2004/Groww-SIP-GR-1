@@ -2,393 +2,536 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <title>SIP Recovery Assistant</title>
-<meta name="description" content="Demo: helps first-time SIP investors act on a failed or at-risk instalment, with every answer checked before it's shown.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2300B386'/%3E%3Cpath d='M9 17l5 5 9-11' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="description" content="Concept demo: helps first-time SIP investors act on a failed or at-risk instalment, with every answer checked before it's shown.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SIP Assistant">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <meta property="og:title" content="SIP Recovery Assistant">
 <meta property="og:description" content="When a SIP instalment fails or a month gets tight: your options, in your dates, with every answer checked.">
-<meta name="theme-color" content="#00B386">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500&display=swap">
 <style>
-/* Layout: same product shell as the discovery engine; scenario strip on top, then situation + options (rules) beside the ask panel (AI). */
+/* Layout: desktop = mentor panel beside a phone frame; phone = the app full-screen. Inside: a native screen stack with bottom sheets. */
 :root{
-  --bg:#F6F7F9; --card:#FFFFFF; --sunk:#F2F4F6; --line:#E6E8EC; --line-2:#D9DCE1;
-  --head:#121417; --ink:#3F4350; --muted:#767A87;
-  --accent:#00B386; --accent-ink:#00875F; --accent-soft:#E7F7F1; --accent-line:#BDEBDB;
-  --amber:#A86200; --amber-soft:#FFF5E3; --red:#C93838; --red-soft:#FDEEEE;
-  --shadow:0 1px 2px rgba(18,20,23,.04),0 4px 16px rgba(18,20,23,.05);
-  --f-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"Roboto Mono",ui-monospace,Menlo,monospace; --r:14px;
+  --page:#EEF0F3; --bg:#FFFFFF; --surface:#F6F7F9; --line:#ECEDEF; --line-2:#DADCE0;
+  --head:#121417; --ink:#44475B; --muted:#7C7E8C;
+  --green:#00B386; --green-ink:#008A66; --green-soft:#E6F7F1;
+  --red:#E05A3C; --red-soft:#FDEEEA; --amber:#B36B00; --amber-soft:#FFF4E2;
+  --scrim:rgba(18,20,23,.45); --sheet-shadow:0 -8px 32px rgba(0,0,0,.12);
+  --f:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --mono:"Roboto Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F1113; --card:#17191C; --sunk:#1D2024; --line:#272A2F; --line-2:#33373D;
-  --head:#F3F4F6; --ink:#C7CAD1; --muted:#8B8F99;
-  --accent:#00D09C; --accent-ink:#36E0B4; --accent-soft:#0F2B24; --accent-line:#1E4D40;
-  --amber:#F2B451; --amber-soft:#30250F; --red:#FF8080; --red-soft:#381B1B;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); color-scheme:dark}}
+  --page:#08090A; --bg:#121212; --surface:#1C1D20; --line:#26282C; --line-2:#34373C;
+  --head:#F2F3F5; --ink:#C5C7CE; --muted:#8A8D96;
+  --green:#00D09C; --green-ink:#2FE0B2; --green-soft:#0E2C24;
+  --red:#FF7A5C; --red-soft:#3A1D17; --amber:#F2B451; --amber-soft:#33270F;
+  --scrim:rgba(0,0,0,.6); --sheet-shadow:0 -8px 32px rgba(0,0,0,.5); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F1113; --card:#17191C; --sunk:#1D2024; --line:#272A2F; --line-2:#33373D;
-  --head:#F3F4F6; --ink:#C7CAD1; --muted:#8B8F99;
-  --accent:#00D09C; --accent-ink:#36E0B4; --accent-soft:#0F2B24; --accent-line:#1E4D40;
-  --amber:#F2B451; --amber-soft:#30250F; --red:#FF8080; --red-soft:#381B1B;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); color-scheme:dark}
-*{box-sizing:border-box} [hidden]{display:none!important}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-ui);-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
-.gut{max-width:1160px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-h1,h2,h3{color:var(--head);margin:0;text-wrap:balance;letter-spacing:-.015em}
-h1{font-size:clamp(24px,3vw,30px);font-weight:700;line-height:1.2}
-h2{font-size:16px;font-weight:600} h3{font-size:15px;font-weight:600}
-p{margin:0;max-width:68ch} .muted{color:var(--muted)} .small{font-size:13px} .num{font-variant-numeric:tabular-nums}
-a{color:var(--accent-ink)} :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-/* bar */
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:1px solid var(--line)}
-.bar .gut{display:flex;align-items:center;gap:28px;min-height:60px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.mark{width:30px;height:30px;border-radius:9px;background:var(--accent);display:grid;place-items:center}
-.brand b{color:var(--head);font-size:15px;font-weight:700}
-.tabs{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
-.tabs a{text-decoration:none;color:var(--muted);font-weight:500;font-size:14px;padding:19px 12px 17px;border-bottom:2px solid transparent;white-space:nowrap}
-.tabs a:hover{color:var(--head)} .tabs a[aria-current="page"]{color:var(--head);border-color:var(--accent)}
-.demo{font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-soft);padding:4px 10px;border-radius:999px;flex-shrink:0}
-@media (max-width:760px){.bar .gut{gap:0;padding-block:10px 0}.brand{flex:1}.tabs{order:3;flex-basis:100%}.tabs a{padding:12px 10px}}
-main .gut{padding-block:28px 72px;display:grid;gap:24px}
-[data-view]{display:grid;gap:24px}
-.kicker{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink)}
-.lede{color:var(--muted);font-size:15px}
-.notice{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
-.notice b{color:var(--head)}
-/* cards */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
-.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line)}
-.card-b{padding:18px 20px;display:grid;gap:14px}
-.btn{font:600 14px var(--f-ui);border-radius:10px;padding:10px 18px;border:0;background:var(--accent);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-.btn.ghost{background:var(--card);color:var(--head);border:1px solid var(--line-2)}
-.btn:disabled{opacity:.5;cursor:default}
-.spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-input,select,textarea{font:inherit;color:var(--head);background:var(--card);border:1px solid var(--line-2);border-radius:10px;padding:8px 10px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
-.pill.ok{background:var(--accent-soft);color:var(--accent-ink)} .pill.no{background:var(--sunk);color:var(--muted)}
-.pill.warn{background:var(--amber-soft);color:var(--amber)} .pill.bad{background:var(--red-soft);color:var(--red)}
-.rule{font:500 11.5px var(--f-mono);color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:0 5px}
-/* scenarios */
-.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-@media (max-width:820px){.scen{grid-template-columns:1fr}}
-.sc{text-align:left;font:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;display:grid;gap:4px;box-shadow:var(--shadow);color:var(--ink)}
-.sc b{color:var(--head);font-size:14.5px} .sc span{font-size:12.5px;color:var(--muted)}
-.sc .m{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink)}
-.sc[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-details.edit{background:var(--card);border:1px solid var(--line);border-radius:12px}
-details.edit summary{cursor:pointer;padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--head)}
-.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:4px 16px 16px}
-@media (max-width:820px){.form{grid-template-columns:1fr 1fr}}
-.form label{display:grid;gap:4px;font-size:12px;font-weight:500;color:var(--muted)}
-/* workspace */
-.work{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
-@media (max-width:920px){.work{grid-template-columns:1fr}}
-.sit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.sit div{padding:12px 14px;border-left:1px solid var(--line);display:grid;gap:2px}
-.sit div:first-child{border-left:0}
-.sit span{font-size:12px;color:var(--muted)} .sit b{font-size:16px;color:var(--head)}
-@media (max-width:520px){.sit{grid-template-columns:1fr}.sit div{border-left:0;border-top:1px solid var(--line)}.sit div:first-child{border-top:0}}
-.dots{display:flex;gap:5px;align-items:center;margin-top:3px}
-.dots i{width:22px;height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--line-2)}
-.dots i.on{background:var(--red);border-color:var(--red)}
-.status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--head)}
-.warnbox{display:flex;gap:10px;background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:500}
-.warnbox::before{content:"!";flex:none;width:20px;height:20px;border-radius:50%;background:var(--amber);color:var(--card);display:grid;place-items:center;font-weight:700;font-size:12px}
-.opts{display:grid;gap:10px}
-.opt{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
-.opt.off{background:var(--sunk)} .opt.fit{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.opt-h{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.opt-h b{color:var(--head);font-size:14.5px}
-.opt .when{font-size:13px;font-weight:500;color:var(--head)} .opt .det{font-size:13px;color:var(--muted)}
-.opt-f{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px}
-.opt-f a{margin-left:auto}
-.fit-tag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink)}
-/* ask */
-.askbox{display:flex;gap:10px;align-items:flex-end;background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 14px}
-.askbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.askbox textarea{border:0;background:transparent;padding:6px 0;min-height:46px;resize:none;width:100%;box-shadow:none!important}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.qchip{font:500 13px var(--f-ui);color:var(--ink);background:var(--card);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;cursor:pointer;text-align:left}
-.qchip:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
-.ans{border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.ans-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--sunk);border-bottom:1px solid var(--line);font-size:13px}
-.ans-h b{color:var(--head)}
-.ans-b{padding:14px 16px;color:var(--head);font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
-.ans-b.empty{color:var(--muted)}
-.skel{display:grid;gap:9px} .skel i{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--sunk),var(--line),var(--sunk));background-size:200% 100%;animation:sh 1.2s infinite}
-.skel i:nth-child(2){width:88%} .skel i:nth-child(3){width:70%} @keyframes sh{to{background-position:-200% 0}}
-.checks{display:grid;gap:6px;padding:12px 16px;border-top:1px solid var(--line)}
-.ttl{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--head)}
-.chk i{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;margin-top:1px}
-.chk.ok i{background:var(--accent-soft);color:var(--accent-ink)} .chk.ok i::before{content:"✓"}
-.chk.warn i{background:var(--amber-soft);color:var(--amber)} .chk.warn i::before{content:"!"}
-.chk.bad i{background:var(--red-soft);color:var(--red)} .chk.bad i::before{content:"✕"}
-.chk small{color:var(--muted)}
-.verdict{font-size:12.5px;font-weight:600} .verdict.ok{color:var(--accent-ink)} .verdict.warn{color:var(--amber)} .verdict.bad{color:var(--red)}
-.note{font-size:13px;color:var(--amber)}
-/* eval */
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
-.kpi{padding:14px 18px;display:grid;gap:2px;border-left:1px solid var(--line)} .kpi:first-child{border-left:0}
+  --page:#08090A; --bg:#121212; --surface:#1C1D20; --line:#26282C; --line-2:#34373C;
+  --head:#F2F3F5; --ink:#C5C7CE; --muted:#8A8D96;
+  --green:#00D09C; --green-ink:#2FE0B2; --green-soft:#0E2C24;
+  --red:#FF7A5C; --red-soft:#3A1D17; --amber:#F2B451; --amber-soft:#33270F;
+  --scrim:rgba(0,0,0,.6); --sheet-shadow:0 -8px 32px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent} [hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 var(--f);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- desktop stage ---------- */
+.stage{min-height:100%;display:flex;gap:56px;align-items:center;justify-content:center;padding:32px max(24px,env(safe-area-inset-right,0px)) 32px max(24px,env(safe-area-inset-left,0px))}
+.guide{width:340px;display:grid;gap:18px;align-content:start}
+.guide h1{margin:0;font-size:26px;line-height:1.2;color:var(--head);letter-spacing:-.02em}
+.guide p{margin:0;color:var(--muted);font-size:14px}
+.kick{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink)}
+.gcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:6px}
+.gopt{display:grid;gap:2px;width:100%;text-align:left;padding:12px 14px;border-radius:10px}
+.gopt b{color:var(--head);font-size:14px} .gopt span{font-size:12.5px;color:var(--muted)}
+.gopt[aria-pressed="true"]{background:var(--green-soft)} .gopt[aria-pressed="true"] b{color:var(--green-ink)}
+.glinks{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;font-weight:600}
+.glinks a{color:var(--green-ink);text-decoration:none}
+.fine{font-size:12px;color:var(--muted)}
+.phone{width:390px;height:844px;border-radius:52px;padding:12px;background:#0B0C0E;box-shadow:0 30px 80px rgba(0,0,0,.25),inset 0 0 0 2px #2A2C30;flex:none;position:relative}
+.screen-wrap{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:var(--bg);isolation:isolate}
+.sbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;font-size:15px;font-weight:600;color:var(--head);position:relative;z-index:5;background:var(--bg)}
+.island{position:absolute;left:50%;top:10px;width:118px;height:32px;margin-left:-59px;border-radius:20px;background:#000;z-index:6}
+.sicons{display:flex;gap:6px;align-items:center}
+.app{position:absolute;inset:44px 0 0 0}
+@media (max-width:860px){.guide{display:none}}
+@media (max-width:600px){
+  .stage{padding:0;display:block;min-height:100%}
+  .phone{width:100%;height:100dvh;border-radius:0;padding:0;box-shadow:none;background:var(--bg)}
+  .screen-wrap{border-radius:0}
+  .sbar,.island{display:none}
+  .app{inset:env(safe-area-inset-top,0px) 0 0 0}
+}
+
+/* ---------- screen stack ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);will-change:transform}
+.scr.on{transform:none} .scr.under{transform:translateX(-28%)}
+.scr.root{transform:none}
+.top{flex:none;display:flex;align-items:center;gap:6px;min-height:52px;padding:0 8px;border-bottom:1px solid transparent}
+.top.lined{border-color:var(--line)}
+.top h2{margin:0;font-size:17px;font-weight:600;color:var(--head);flex:1;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:40px;height:40px;border-radius:20px;display:grid;place-items:center;color:var(--head);flex:none}
+.ib:active{background:var(--surface)}
+.body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.pad{padding:0 16px}
+.sec{font-size:13px;font-weight:600;color:var(--muted);padding:20px 16px 8px;letter-spacing:.01em}
+
+/* home */
+.hello{padding:6px 16px 4px;display:flex;align-items:center;gap:12px}
+.av{width:36px;height:36px;border-radius:18px;background:var(--green-soft);color:var(--green-ink);display:grid;place-items:center;font-weight:700;font-size:14px}
+.hello b{color:var(--head);font-size:17px;flex:1}
+.seg{display:flex;gap:22px;padding:8px 16px 0;border-bottom:1px solid var(--line);font-size:14.5px;font-weight:600}
+.seg span{padding:10px 0;color:var(--muted)} .seg span.on{color:var(--head);box-shadow:inset 0 -2px 0 var(--green)}
+.hold{margin:16px;padding:16px;border:1px solid var(--line);border-radius:16px;display:grid;gap:12px}
+.hold-row{display:flex;justify-content:space-between;gap:12px}
+.hold-row div{display:grid;gap:2px} .hold-row span{font-size:12.5px;color:var(--muted)} .hold-row b{font-size:17px;color:var(--head)}
+.neg{color:var(--red)!important} .pos{color:var(--green-ink)!important}
+.sipcard{margin:0 16px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;display:grid;gap:10px;width:calc(100% - 32px);text-align:left}
+.sipcard:active{background:var(--surface)}
+.fund{display:flex;gap:12px;align-items:center}
+.flogo{width:40px;height:40px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;flex:none;color:var(--green-ink);font-weight:700;font-size:13px}
+.fund b{display:block;color:var(--head);font-size:15px;font-weight:600}
+.fund span{font-size:12.5px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.chip.red{background:var(--red-soft);color:var(--red)} .chip.green{background:var(--green-soft);color:var(--green-ink)} .chip.amber{background:var(--amber-soft);color:var(--amber)} .chip.grey{background:var(--surface);color:var(--muted)}
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.tabbar span{display:grid;justify-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted)}
+.tabbar span.on{color:var(--head)} .tabbar svg{width:22px;height:22px}
+
+/* notification */
+.notif{position:absolute;left:10px;right:10px;top:8px;z-index:40;visibility:hidden;background:rgba(250,250,251,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,.18);transform:translateY(calc(-100% - 90px));transition:transform .45s cubic-bezier(.2,.9,.2,1),visibility 0s .45s;text-align:left;width:calc(100% - 20px);color:#121417}
+.notif.on{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.2,1)}
+.notif .ic{width:36px;height:36px;border-radius:9px;background:#00B386;display:grid;place-items:center;flex:none}
+.notif b{display:block;font-size:14px} .notif span{font-size:13.5px;color:#3E4150} .notif small{margin-left:auto;font-size:12px;color:#7C7E8C;flex:none}
+
+/* SIP detail */
+.hero{padding:8px 16px 16px;display:grid;gap:14px}
+.amt{display:flex;align-items:baseline;gap:8px} .amt b{font-size:28px;color:var(--head);letter-spacing:-.02em} .amt span{color:var(--muted);font-size:14px}
+.banner{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:12px 14px;font-size:13.5px}
+.banner.red{background:var(--red-soft);color:var(--head)} .banner.amber{background:var(--amber-soft);color:var(--head)} .banner.green{background:var(--green-soft);color:var(--head)}
+.banner .bi{flex:none;width:22px;height:22px;border-radius:11px;display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff;margin-top:1px}
+.banner.red .bi{background:var(--red)} .banner.amber .bi{background:var(--amber)} .banner.green .bi{background:var(--green)}
+.banner b{display:block;font-size:14px}
+.miss{display:grid;gap:8px;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.miss-h{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:var(--head);font-weight:600}
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bars i{height:6px;border-radius:3px;background:var(--surface);border:1px solid var(--line-2)} .bars i.on{background:var(--red);border-color:var(--red)}
+.miss p{margin:0;font-size:12.5px;color:var(--muted)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border-radius:12px;font-weight:600;font-size:15.5px}
+.btn.primary{background:var(--green);color:#fff} .btn.primary:active{filter:brightness(.94)}
+.btn.outline{border:1px solid var(--line-2);color:var(--head)}
+.btn.danger{color:var(--red);border:1px solid var(--line-2)}
+.btn:disabled{opacity:.45}
+.list{border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);min-height:60px}
+.row:active{background:var(--surface)}
+.row .ri{width:36px;height:36px;border-radius:18px;background:var(--surface);display:grid;place-items:center;flex:none;color:var(--head)}
+.row .rt{flex:1;min-width:0} .row .rt b{display:block;font-size:15px;font-weight:600;color:var(--head)} .row .rt span{display:block;font-size:12.5px;color:var(--muted)}
+.row.ai .ri{background:var(--green-soft);color:var(--green-ink)}
+.row.danger .rt b{color:var(--red)}
+.chev{color:var(--muted);flex:none}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px}
+.kv div{display:grid;gap:2px} .kv span{font-size:12.5px;color:var(--muted)} .kv b{font-size:15px;color:var(--head);font-weight:600}
+
+/* sheets */
+.scrim{position:absolute;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:var(--sheet-shadow);transform:translateY(105%);transition:transform .34s cubic-bezier(.2,.8,.2,1);max-height:88%;display:flex;flex-direction:column}
+.sheet.on{transform:none}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line-2);margin:8px auto 4px;flex:none}
+.sheet-h{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 20px;flex:none}
+.sheet-h h3{margin:0;flex:1;font-size:18px;color:var(--head);letter-spacing:-.01em}
+.sheet-b{overflow-y:auto;padding:0 20px calc(20px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+.sheet-b p{margin:0;font-size:14px;color:var(--ink)}
+.oprow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;width:100%;text-align:left;padding:14px 0;border-bottom:1px solid var(--line)}
+.oprow:last-child{border-bottom:0}
+.oprow b{color:var(--head);font-size:15px;font-weight:600} .oprow .w{grid-column:1;font-size:13px;color:var(--ink)} .oprow .d{grid-column:1/-1;font-size:12.5px;color:var(--muted)}
+.oprow.off b{color:var(--muted)}
+.oprow.fit{background:var(--green-soft);margin:0 -20px;padding:14px 20px;border-radius:0}
+.fitlbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green-ink);grid-column:1/-1}
+.rules{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.rule{font:500 11px var(--mono);border:1px solid var(--line-2);border-radius:6px;padding:0 5px;color:var(--muted)}
+.rules a{color:var(--green-ink);font-weight:600;text-decoration:none;margin-left:auto}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:14.5px;color:var(--head)}
+.choice i{width:20px;height:20px;border-radius:10px;border:2px solid var(--line-2);flex:none}
+.choice[aria-checked="true"]{border-color:var(--green)} .choice[aria-checked="true"] i{border:6px solid var(--green)}
+.facts{display:grid;gap:10px;background:var(--surface);border-radius:14px;padding:14px}
+.fact{display:flex;gap:10px;font-size:13.5px;color:var(--head)} .fact i{flex:none;width:18px;height:18px;border-radius:9px;background:var(--green-soft);color:var(--green-ink);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;margin-top:1px}
+.fact i::before{content:"✓"}
+
+/* assistant */
+.ctx{margin:4px 16px 0;padding:10px 12px;border-radius:12px;background:var(--surface);display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--muted)}
+.ctx b{color:var(--head);font-weight:600}
+.chat{display:grid;gap:12px;padding:14px 16px}
+.msg{max-width:86%;padding:10px 14px;border-radius:18px;font-size:14.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.me{justify-self:end;background:var(--green);color:#fff;border-bottom-right-radius:6px}
+.msg.bot{justify-self:start;background:var(--surface);color:var(--head);border-bottom-left-radius:6px}
+.msg.bot.fb{background:var(--amber-soft)}
+.typing{display:flex;gap:4px;padding:14px} .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bob 1s infinite} .typing i:nth-child(2){animation-delay:.15s} .typing i:nth-child(3){animation-delay:.3s}
+@keyframes bob{0%,80%,100%{opacity:.3;transform:none}40%{opacity:1;transform:translateY(-3px)}}
+.qc{justify-self:start;max-width:86%;margin-top:-6px}
+.qc summary{list-style:none;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.qc summary::-webkit-details-marker{display:none}
+.qc.ok summary{background:var(--green-soft);color:var(--green-ink)} .qc.warn summary{background:var(--amber-soft);color:var(--amber)}
+.qc ul{list-style:none;margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;display:grid;gap:6px;font-size:12.5px}
+.qc li{display:flex;gap:8px} .qc li i{font-style:normal;font-weight:700;width:14px;flex:none}
+.qc li.ok i{color:var(--green-ink)} .qc li.bad i{color:var(--red)} .qc li.warn i{color:var(--amber)}
+.sugg{display:flex;gap:8px;overflow-x:auto;padding:8px 16px;scrollbar-width:none;flex:none}
+.sugg button{flex:none;font-size:13px;font-weight:500;color:var(--head);border:1px solid var(--line-2);border-radius:999px;padding:7px 12px;background:var(--bg)}
+.inbar{flex:none;display:flex;gap:8px;align-items:flex-end;padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg)}
+.inbar textarea{flex:1;font:inherit;font-size:15px;color:var(--head);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:10px 14px;resize:none;max-height:110px;min-height:44px;line-height:1.4}
+.inbar textarea:focus{outline:none;border-color:var(--green)}
+.send{width:44px;height:44px;border-radius:22px;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.send:disabled{opacity:.4}
+.disc{font-size:11.5px;color:var(--muted);text-align:center;padding:0 24px 4px}
+
+/* toast */
+.toast{position:absolute;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:50;background:#1F2125;color:#fff;border-radius:12px;padding:12px 14px;font-size:13.5px;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+
+/* mobile demo button + sheet */
+.demo-fab{position:absolute;left:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:15;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:11.5px;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:999px;padding:5px 10px;display:none}
+@media (max-width:860px){.demo-fab{display:block}}
+
+/* full-page views for mentors */
+.page{min-height:100%;background:var(--page)} .page .wrap{max-width:1040px;margin:0 auto;padding:28px max(20px,env(safe-area-inset-right,0px)) 64px max(20px,env(safe-area-inset-left,0px));display:grid;gap:20px}
+.page h1{margin:0;font-size:28px;color:var(--head);letter-spacing:-.02em;line-height:1.2}
+.page p{margin:0;max-width:70ch}
+.back{font-weight:600;color:var(--green-ink);text-decoration:none;font-size:14px}
+.pcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{padding:14px 18px;border-left:1px solid var(--line);display:grid;gap:2px} .kpi:first-child{border-left:0}
 .kpi b{font-size:22px;color:var(--head)} .kpi span{font-size:12.5px;color:var(--muted)}
 @media (max-width:720px){.kpis{grid-template-columns:1fr 1fr}.kpi:nth-child(3){border-left:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}}
-.tw{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
-th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
-td{color:var(--head)} td.mono{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-td .why{display:block;font-size:12px;color:var(--muted);margin-top:4px}
-.about{display:grid;gap:14px;max-width:72ch}
-.about li{margin-bottom:6px}
-footer{border-top:1px solid var(--line);background:var(--card)}
-footer .gut{padding-block:16px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.tw{overflow-x:auto} table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top} th{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(--muted)} td .why{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.pbtn{font-weight:600;font-size:14px;border-radius:10px;padding:10px 18px;background:var(--green);color:#fff} .pbtn.ghost{background:var(--bg);color:var(--head);border:1px solid var(--line-2)} .pbtn:disabled{opacity:.5}
+.about{max-width:72ch;display:grid;gap:12px} .about h2{margin:8px 0 0;font-size:18px;color:var(--head)} .about li{margin-bottom:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<header class="bar"><div class="gut">
-  <div class="brand"><div class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>SIP Recovery Assistant</b></div>
-  <nav class="tabs" aria-label="Sections"><a href="#assistant" data-tab="assistant">Assistant</a><a href="#quality" data-tab="quality">Quality report</a><a href="#about" data-tab="about">How it works</a></nav>
-  <span class="demo">Demo · not investment advice</span>
-</div></header>
 
-<main><div class="gut">
+<!-- ================= APP (phone) ================= -->
+<div id="appView" class="stage">
+  <aside class="guide" aria-label="Demo guide">
+    <div class="kick">Groww case study · concept MVP</div>
+    <h1>SIP Recovery Assistant</h1>
+    <p>A feature concept for the mutual-funds section of an investing app. It appears when a SIP instalment fails, a month gets tight, or someone taps Cancel, and explains what they can still do.</p>
+    <div class="gcard" id="gScen"></div>
+    <p class="fine">Tap through it like an app: open the SIP, see your options, ask the assistant, or try cancelling. Dummy data only; nothing changes a real SIP.</p>
+    <div class="glinks"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>
+    <p class="fine">Independent student case study. Not affiliated with or endorsed by Groww. Not investment advice.</p>
+  </aside>
 
-<div data-view="assistant">
-  <div style="display:grid;gap:8px">
-    <div class="kicker">Groww case study · MVP</div>
-    <h1>Your SIP had a bad month. Here's what you can still do.</h1>
-    <p class="lede">Pick a situation or enter your own details. The options and deadlines are calculated from Groww's published rules. Ask anything in your own words; every answer is checked before you see it.</p>
-  </div>
+  <div class="phone">
+    <div class="screen-wrap" id="device">
+      <div class="island" aria-hidden="true"></div>
+      <div class="sbar" aria-hidden="true"><span>9:41</span><span class="sicons"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x=".5" y=".5" width="22" height="11" rx="3" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="1.5" height="4" rx=".75" fill="currentColor" opacity=".5"/></svg></span></div>
 
-  <div class="scen" id="scen"></div>
-  <details class="edit" id="editBox"><summary>Edit the SIP details (dummy data only)</summary>
-    <form class="form" id="form" onsubmit="return false">
-      <label>Monthly amount (₹)<input id="fAmount" type="number" min="100" step="100"></label>
-      <label>Debit day of month<input id="fSip" type="number" min="1" max="31"></label>
-      <label>Pay arrives on day<input id="fSal" type="number" min="1" max="31"></label>
-      <label>Last instalment<select id="fStatus"><option value="upcoming">Paid, next one upcoming</option><option value="failed">Failed (low balance)</option></select></label>
-      <label>Missed in a row (incl. last)<select id="fMissed"><option>0</option><option>1</option><option>2</option></select></label>
-      <label>Invested so far (₹)<input id="fInv" type="number" min="0" step="100"></label>
-      <label>Current value (₹)<input id="fVal" type="number" min="0" step="100"></label>
-      <label>&nbsp;<button class="btn ghost" id="applyBtn" type="button">Update</button></label>
-    </form>
-  </details>
+      <div class="app" id="app">
+        <button class="notif" id="notif" type="button" aria-label="Notification: SIP instalment failed. Open">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span style="flex:1;min-width:0"><b id="nTitle">SIP instalment failed</b><span id="nBody"></span></span><small>now</small>
+        </button>
+        <button class="demo-fab" id="demoFab" type="button">Demo scenarios ▴</button>
 
-  <div class="work">
-    <section class="card" aria-labelledby="sitH">
-      <div class="card-h"><h2 id="sitH">Your SIP right now</h2><span class="small muted" id="todayLbl"></span></div>
-      <div class="card-b">
-        <div class="status" id="statusLine"></div>
-        <div class="sit" id="sit"></div>
-        <div id="warns"></div>
-        <div class="ttl">Your options · calculated from Groww's rules</div>
-        <div class="opts" id="opts"></div>
-      </div>
-    </section>
+        <!-- Home -->
+        <section class="scr root on" id="s-home" aria-label="Mutual funds">
+          <div class="hello"><div class="av">AK</div><b>Mutual Funds</b><button class="ib" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg></button></div>
+          <div class="seg"><span>Explore</span><span class="on">Dashboard</span><span>SIPs</span><span>Watchlist</span></div>
+          <div class="body">
+            <div class="hold">
+              <div class="hold-row"><div><span>Current value</span><b class="num" id="hCur"></b></div><div style="text-align:right"><span>Total returns</span><b class="num" id="hRet"></b></div></div>
+              <div class="hold-row"><div><span>Invested</span><b class="num" style="font-size:15px" id="hInv"></b></div><div style="text-align:right"><span>Active SIPs</span><b class="num" style="font-size:15px">1</b></div></div>
+            </div>
+            <div class="sec">Your SIPs</div>
+            <button class="sipcard" id="sipCard" type="button">
+              <div class="fund"><div class="flogo">EQ</div><div style="flex:1;min-width:0"><b>Example Equity Fund</b><span>Direct · Growth · Monthly SIP</span></div><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="num" style="color:var(--head);font-weight:600" id="cAmt"></span><span id="cChip"></span></div>
+            </button>
+            <div class="sec">Explore</div>
+            <div class="pad fine" style="color:var(--muted);font-size:13px">Fund discovery and other sections are out of scope for this demo.</div>
+          </div>
+          <nav class="tabbar" aria-hidden="true">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Stocks</span>
+            <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Mutual Funds</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>Pay</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-5 8-5s6.5 1 8 5"/></svg>Profile</span>
+          </nav>
+        </section>
 
-    <section class="card" aria-labelledby="askH">
-      <div class="card-h"><h2 id="askH">Ask about your SIP</h2><span class="small muted">English or Hinglish</span></div>
-      <div class="card-b">
-        <div class="askbox"><textarea id="q" rows="2" aria-label="Your question"></textarea><button class="btn" id="askBtn">Ask</button></div>
-        <div class="chips" id="chips"></div>
-        <div class="note" id="askNote" hidden></div>
-        <div class="ans" aria-live="polite">
-          <div class="ans-h"><b>Answer</b><span id="ansTag" class="pill no">Waiting for a question</span></div>
-          <div class="ans-b empty" id="ans">Ask a question, or tap one of the suggestions above.</div>
-          <div class="checks" id="checks" hidden></div>
+        <!-- SIP detail -->
+        <section class="scr" id="s-sip" aria-label="SIP details">
+          <div class="top"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2><button class="ib" aria-label="More"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></div>
+          <div class="body">
+            <div class="hero">
+              <div class="fund"><div class="flogo">EQ</div><div><b>Example Equity Fund</b><span>Direct · Growth</span></div></div>
+              <div class="amt"><b class="num" id="dAmt"></b><span>monthly</span></div>
+              <div id="dBanner"></div>
+              <div class="miss" id="dMiss"></div>
+              <div id="dCta" style="display:grid;gap:10px"></div>
+            </div>
+            <div class="kv"><div><span>Next instalment</span><b class="num" id="dNext"></b></div><div><span>Instalments paid</span><b class="num" id="dPaid"></b></div><div><span>Invested</span><b class="num" id="dInv"></b></div><div><span>Current value</span><b class="num" id="dCur"></b></div></div>
+            <div class="sec">Manage SIP</div>
+            <div class="list">
+              <button class="row ai" data-open="assistant" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9z"/></svg></span><span class="rt"><b>Ask about this SIP</b><span>Plain answers, checked against the rules</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+              <button class="row" data-sheet="options" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></span><span class="rt"><b>All options this month</b><span id="rOptSub">Pay, skip, lower, move date</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+              <button class="row" data-detail="skip" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5l9 7-9 7V5zM19 5v14" stroke-linejoin="round"/></svg></span><span class="rt"><b>Skip instalment</b><span id="rSkipSub"></span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+              <button class="row" data-detail="reduce" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4l10-10-4-4L4 16v4z" stroke-linejoin="round"/></svg></span><span class="rt"><b>Edit SIP</b><span>Change amount or date</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+              <button class="row danger" data-cancel type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6" stroke-linecap="round"/></svg></span><span class="rt"><b>Cancel SIP</b><span id="rCancelSub"></span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Assistant -->
+        <section class="scr" id="s-assistant" aria-label="SIP assistant">
+          <div class="top lined"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP assistant <span class="chip grey" style="vertical-align:2px;margin-left:4px">Beta</span></h2><button class="ib" data-sheet="options" aria-label="Your options"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></button></div>
+          <div class="body" id="chatBody">
+            <div class="ctx"><span>About</span><b id="ctxTxt"></b></div>
+            <div class="chat" id="chat"></div>
+          </div>
+          <div class="disc">Explains your SIP and the rules only. Not investment advice.</div>
+          <div class="sugg" id="sugg"></div>
+          <div class="inbar"><textarea id="q" rows="1" placeholder="Ask in English or Hinglish" aria-label="Your question"></textarea><button class="send" id="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </section>
+
+        <!-- sheets -->
+        <div class="scrim" id="scrim"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+          <div class="grab"></div>
+          <div class="sheet-h"><h3 id="sheetTitle"></h3><button class="ib" id="sheetClose" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button></div>
+          <div class="sheet-b" id="sheetBody"></div>
         </div>
-        <p class="small muted">Explains your situation and Groww's rules only. It never recommends funds, predicts returns or tells you whether to keep investing. Cancelling is always your choice.</p>
+        <div class="toast" id="toast" role="status"></div>
       </div>
-    </section>
+    </div>
   </div>
 </div>
 
-<div data-view="quality" hidden>
-  <div style="display:grid;gap:8px">
-    <div class="kicker">Eval gate</div>
-    <h1>24 test questions, run live against the assistant</h1>
-    <p class="lede">Each case runs through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer. A case passes when the right kind of response comes back and it contains what it must and nothing it mustn't. Running all 24 uses about 40 model calls and takes a few minutes on the free tier.</p>
-  </div>
-  <div class="kpis" id="evKpis"></div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <button class="btn" id="runEval">Run all 24</button>
-    <button class="btn ghost" id="copyEval" disabled>Copy results</button>
-    <span class="small muted" id="evNote"></span>
-  </div>
-  <section class="card"><div class="tw"><table>
-    <thead><tr><th>Case</th><th>Type</th><th>Scenario</th><th>Question</th><th>Expected</th><th>Result</th></tr></thead>
-    <tbody id="evRows"></tbody>
-  </table></div></section>
-</div>
+<!-- ================= QUALITY REPORT ================= -->
+<div id="qualityView" class="page" hidden><div class="wrap">
+  <a class="back" href="#">← Back to the app</a>
+  <div class="kick">Eval gate</div>
+  <h1>24 test questions, run live against the assistant</h1>
+  <p style="color:var(--muted)">Each case runs through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer. A case passes when the right kind of response comes back and it contains what it must and nothing it mustn't. A full run uses about 40 model calls; on the free tier the page pauses when the quota is hit, so it can take 10 minutes or more.</p>
+  <div class="pcard"><div class="kpis" id="evKpis"></div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="pbtn" id="runEval">Run all 24</button><button class="pbtn ghost" id="copyEval" disabled>Copy results</button><span class="fine" id="evNote"></span></div>
+  <div class="pcard tw"><table><thead><tr><th>Case</th><th>Type</th><th>Scenario</th><th>Question</th><th>Expected</th><th>Result</th></tr></thead><tbody id="evRows"></tbody></table></div>
+</div></div>
 
-<div data-view="about" hidden>
-  <div class="about">
-    <div class="kicker">How it works</div>
-    <h1>Rules decide what's possible. AI only explains it.</h1>
-    <p>Research for this case study found that first-time investors often lose their SIP without deciding to stop: a payment fails in a tight month, the alert doesn't say what to do, and a friend's advice decides what happens next. Groww's rules leave a narrow window: a skip within 2 days of the debit misses that month, cancelling is locked within 7 days, and 3 missed, failed or skipped instalments in a row cancel the SIP automatically.</p>
-    <h2>Three layers</h2>
-    <ol>
-      <li><b>Rules engine (code).</b> Calculates every date, deadline and option from Groww's published help pages. The AI can't change these.</li>
-      <li><b>AI explainer.</b> Reads the question in the user's own words and explains their situation using only the engine's facts, citing rule IDs.</li>
-      <li><b>Eval gate.</b> Requests for fund picks or predictions are declined by code. Every AI answer then passes code checks (no fund names or advice, no predictions or urgency, only verified rules, dates and amounts that match) and an AI reviewer (facts, cancel described correctly, neutral). If anything fails, a safe fallback is shown instead.</li>
-    </ol>
-    <h2>What a non-AI version would miss</h2>
-    <p>A fixed FAQ answers the question it expected. "Is my SIP gone?", "Will they charge me again?" and "agar cancel karun to paisa milega?" need different answers built from the same rules and the user's own dates.</p>
-    <h2>Limits</h2>
-    <ul>
-      <li>Dummy data only. No account access; nothing here changes a real SIP.</li>
-      <li>Rules checked against Groww's help pages on 3–4 Nov 2026. Automatic retries, exact bank fees and fund-specific skip limits aren't documented, so the assistant says it can't confirm them.</li>
-      <li>Working days skip weekends but not bank holidays.</li>
-      <li>Not investment advice. Independent student case study, not affiliated with Groww.</li>
-    </ul>
-  </div>
-</div>
-
-</div></main>
-<footer><div class="gut"><span>Independent student case study for a product fellowship. Not affiliated with or endorsed by Groww. Dummy data only.</span><span>Not investment advice.</span></div></footer>
+<!-- ================= HOW IT WORKS ================= -->
+<div id="aboutView" class="page" hidden><div class="wrap"><div class="about">
+  <a class="back" href="#">← Back to the app</a>
+  <div class="kick">How it works</div>
+  <h1>Rules decide what's possible. AI only explains it.</h1>
+  <p>Research for this case study found that first-time investors often lose their SIP without deciding to stop: a payment fails in a tight month, the alert doesn't say what to do, and a friend's advice decides what happens next. Groww's published rules leave a narrow window: a skip within 2 days of the debit misses that month, cancelling is locked within 7 days, and 3 missed, failed or skipped instalments in a row cancel the SIP automatically.</p>
+  <h2>Where it appears</h2>
+  <ul><li><b>Payment failed:</b> from the failure notification, straight to the SIP with a Pay Now button and the "missed X of 3" tracker.</li><li><b>Tight month ahead:</b> from the SIP screen, while a skip or edit still counts for this month.</li><li><b>About to cancel:</b> the cancel flow first shows what happens to invested money, then cancels in two taps.</li></ul>
+  <h2>Three layers</h2>
+  <ol><li><b>Rules engine (code).</b> Calculates every date, deadline and option from Groww's help pages. The AI can't change these.</li><li><b>AI explainer.</b> Reads the question in the user's own words and explains using only the engine's facts, citing rule IDs.</li><li><b>Eval gate.</b> Fund-pick and prediction requests are declined by code. Every AI answer then passes code checks (no fund names or advice, no predictions or urgency, only verified rules, dates and amounts that match) and an AI reviewer (facts, cancel described correctly, neutral). If anything fails, a safe fallback is shown.</li></ol>
+  <h2>Limits</h2>
+  <ul><li>Dummy data only; nothing here changes a real SIP. Buttons that would act show a demo notice.</li><li>Rules checked against Groww's help pages on 3–4 Nov 2026. Automatic retries, exact bank fees and fund-specific skip limits aren't documented, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li><li>Independent student case study, not affiliated with Groww. Not investment advice.</li></ul>
+</div></div></div>
 
 <script src="rules.js"></script>
 <script>
 const R = window.SIPRules;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-/* ---------- tabs ---------- */
-const VIEWS=['assistant','quality','about'];
-function show(v){ if(!VIEWS.includes(v)) v='assistant'; document.querySelectorAll('[data-view]').forEach(e=>e.hidden=e.dataset.view!==v);
-  document.querySelectorAll('[data-tab]').forEach(a=>a.dataset.tab===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current')); }
-addEventListener('hashchange',()=>show(location.hash.slice(1))); show(location.hash.slice(1));
-
-/* ---------- scenarios ---------- */
 const today = R.istToday();
 const SAMPLES = R.sampleScenarios(today);
 const MOMENT = {failed:'Payment failed', tight:'Tight month ahead', cancel:'About to cancel'};
 const QUESTIONS = {
-  failed:['My SIP payment failed. Does this mean my SIP is cancelled?','Will Groww charge me for the failed payment?','Can I just skip next month instead?','payment fail ho gaya ab kya karu'],
-  tight:['I have a big credit card bill this month. What are my options?','If I skip, when is the last day to do it?','Can I cancel my SIP today?','Which fund should I switch to?'],
-  cancel:['If I cancel my SIP, do I lose the money I already invested?','Is there a way to pause for a few months instead?','I lost my job and I\'m scared. What should I do with my SIP?','agar cancel karun to paisa wapas milega kya?'],
+  failed:['Does this mean my SIP is cancelled?','Will Groww charge me for this?','Can I just skip next month?','payment fail ho gaya ab kya karu'],
+  tight:['Big card bill this month. What are my options?','When is the last day to skip?','Can I cancel today?','Which fund should I switch to?'],
+  cancel:['If I cancel, do I lose my money?','Can I pause for a few months instead?','I lost my job. What should I do with my SIP?','agar cancel karun to paisa wapas milega?'],
 };
-let S = {...SAMPLES[0]}, EV = null;
-SAMPLES.forEach(s=>{ const b=document.createElement('button'); b.className='sc'; b.type='button'; b.dataset.id=s.id;
-  b.innerHTML=`<span class="m">${MOMENT[s.moment]}</span><b>${esc(s.label)}</b><span>${esc(s.who)}</span>`;
-  b.onclick=()=>{ S={...s}; fillForm(); render(); resetAnswer(); }; $('scen').append(b); });
+let S, EV, FIT = null;
 
-function fillForm(){ $('fAmount').value=S.amount; $('fSip').value=S.sipDay; $('fSal').value=S.salaryDay; $('fStatus').value=S.status; $('fMissed').value=S.missedInARow; $('fInv').value=S.invested; $('fVal').value=S.currentValue; }
-$('applyBtn').onclick=()=>{ const n=id=>Number($(id).value);
-  S={...S,id:'custom',amount:n('fAmount')||1000,sipDay:Math.min(31,Math.max(1,n('fSip')||5)),salaryDay:Math.min(31,Math.max(1,n('fSal')||1)),status:$('fStatus').value,
-     failureReason:$('fStatus').value==='failed'?'insufficient_balance':null,lastFailure:$('fStatus').value==='failed'?today-864e5:null,
-     missedInARow:Math.max($('fStatus').value==='failed'?1:0,n('fMissed')),invested:n('fInv'),currentValue:n('fVal')};
-  render(); resetAnswer(); };
+/* ---------- views (app vs mentor pages) ---------- */
+function route(){ const h=location.hash.slice(1); $('appView').hidden = h==='quality'||h==='about'; $('qualityView').hidden=h!=='quality'; $('aboutView').hidden=h!=='about'; if(h==='quality') loadGold(); window.scrollTo(0,0); }
+addEventListener('hashchange', route);
 
-/* ---------- render rules output ---------- */
-function render(){
-  document.querySelectorAll('.sc').forEach(b=>b.setAttribute('aria-pressed', b.dataset.id===S.id));
-  EV = R.evaluate(S, today); const f = EV.facts;
-  $('todayLbl').textContent = 'Today: ' + f.today;
-  $('statusLine').innerHTML = S.status==='failed'
-    ? `<span class="pill bad">Instalment failed</span><span>${esc(f.amount)} on ${esc(R.fmt(S.lastFailure))} · insufficient balance</span>`
-    : `<span class="pill ok">Active</span><span>${esc(f.amount)} a month · next debit ${esc(f.next_debit)}</span>`;
-  const miss = S.missedInARow;
-  $('sit').innerHTML = `<div><span>Next debit</span><b class="num">${esc(f.next_debit)}</b><span>in ${f.days_to_next_debit} days</span></div>
-    <div><span>Missed in a row</span><b class="num">${miss} of 3</b><span class="dots">${[0,1,2].map(i=>`<i class="${i<miss?'on':''}"></i>`).join('')}</span></div>
-    <div><span>Invested · value now</span><b class="num">${esc(f.invested_so_far)}</b><span>${esc(f.current_value)} today</span></div>`;
-  $('warns').innerHTML = EV.warnings.map(w=>`<div class="warnbox">${esc(w.replace(' (R3)',''))}</div>`).join('');
-  $('opts').innerHTML = EV.options.map(o=>`<article class="opt ${o.available?'':'off'}" id="opt-${o.id}">
-    <div class="opt-h"><b>${esc(o.title)}</b><span class="pill ${o.risk?'warn':o.available?'ok':'no'}">${o.risk?'Would cancel SIP':o.available?'Available':'Not now'}</span></div>
-    <div class="when">${esc(o.when)}</div><div class="det">${esc(o.detail)}</div>
-    <div class="opt-f">${o.rules.map(r=>`<span class="rule" title="${esc(R.RULES[r]||'')}">${r}</span>`).join('')}<a href="${o.help}" target="_blank" rel="noopener">Groww help ↗</a></div></article>`).join('');
-  $('chips').innerHTML=''; (QUESTIONS[S.moment]||QUESTIONS.tight).forEach(q=>{ const b=document.createElement('button'); b.className='qchip'; b.type='button'; b.textContent=q; b.onclick=()=>{ $('q').value=q; ask(); }; $('chips').append(b); });
+/* ---------- screen stack ---------- */
+const stack=['home'];
+function push(id){ const cur=$('s-'+stack.at(-1)); cur.classList.add('under'); const nx=$('s-'+id); nx.classList.add('on'); stack.push(id); if(id==='assistant') setTimeout(()=>$('q').focus({preventScroll:true}),350); }
+function pop(){ if(stack.length<2) return; const cur=$('s-'+stack.pop()); cur.classList.remove('on'); $('s-'+stack.at(-1)).classList.remove('under'); }
+function resetStack(){ while(stack.length>1) pop(); }
+document.addEventListener('click', e=>{ if(e.target.closest('[data-back]')) pop(); });
+
+/* ---------- sheets & toast ---------- */
+function openSheet(title, html){ $('sheetTitle').textContent=title; $('sheetBody').innerHTML=html; $('scrim').classList.add('on'); $('sheet').classList.add('on'); $('sheetBody').scrollTop=0; }
+function closeSheet(){ $('scrim').classList.remove('on'); $('sheet').classList.remove('on'); }
+$('scrim').onclick=closeSheet; $('sheetClose').onclick=closeSheet;
+let tT; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('on'),2600); }
+
+/* ---------- scenario ---------- */
+function setScenario(s){
+  S={...s}; EV=R.evaluate(S,today); FIT=null; closeSheet(); resetStack(); renderAll(); resetChat();
+  document.querySelectorAll('[data-scen]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.scen===S.id));
+  $('notif').classList.remove('on');
+  if(S.moment==='failed') setTimeout(()=>$('notif').classList.add('on'),500);
+  if(S.moment==='cancel') setTimeout(()=>{ push('sip'); },400);
+  if(S.moment==='tight') setTimeout(()=>{ push('sip'); },400);
+}
+function scenButtons(){ return SAMPLES.map(s=>`<button class="gopt" type="button" data-scen="${s.id}"><b>${MOMENT[s.moment]} · ${esc(s.label)}</b><span>${esc(s.who)}</span></button>`).join(''); }
+$('gScen').innerHTML=scenButtons();
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-scen]'); if(b){ setScenario(SAMPLES.find(s=>s.id===b.dataset.scen)); } });
+$('demoFab').onclick=()=>openSheet('Demo scenarios', `<p class="fine" style="color:var(--muted)">Pick a situation. Dummy data only.</p><div style="display:grid;gap:6px">${scenButtons()}</div><div class="glinks" style="padding-top:4px"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>`);
+
+/* ---------- render ---------- */
+const O = id => EV.options.find(o=>o.id===id);
+function renderAll(){
+  const f=EV.facts, diff=S.currentValue-S.invested, pct=S.invested?diff/S.invested*100:0;
+  $('hCur').textContent=f.current_value; $('hInv').textContent=f.invested_so_far;
+  $('hRet').textContent=`${diff<0?'-':'+'}${R.inr(Math.abs(diff))} (${pct.toFixed(1)}%)`; $('hRet').className='num '+(diff<0?'neg':'pos');
+  $('cAmt').textContent=`${f.amount} · next on ${f.next_debit}`;
+  $('cChip').innerHTML = S.status==='failed' ? '<span class="chip red">Instalment failed</span>' : (S.moment==='tight' ? `<span class="chip amber">Debit in ${f.days_to_next_debit} days</span>` : '<span class="chip green">Active</span>');
+  $('nBody').textContent = S.status==='failed' ? `Your ${f.amount} SIP couldn't be debited (insufficient balance). Tap to see what you can still do.` : '';
+  $('dAmt').textContent=f.amount; $('dNext').textContent=f.next_debit; $('dPaid').textContent=String(Math.max(0,(S.monthsRunning||1)-S.missedInARow));
+  $('dInv').textContent=f.invested_so_far; $('dCur').textContent=f.current_value; $('dCur').className='num '+(diff<0?'neg':'pos');
+  const pay=O('pay');
+  $('dBanner').innerHTML = S.status==='failed'
+    ? `<div class="banner red"><span class="bi">!</span><div><b>Instalment of ${f.amount} failed on ${R.fmt(S.lastFailure)}</b>Insufficient balance. Your SIP is still active.${pay&&pay.available?` You can pay until ${f.pay_now_deadline}.`:''}</div></div>`
+    : S.moment==='tight' ? `<div class="banner amber"><span class="bi">i</span><div><b>${f.amount} will be debited on ${f.next_debit}</b>Short this month? Skipping or lowering the amount still counts for this instalment if you do it now.</div></div>` : '';
+  const m=S.missedInARow;
+  $('dMiss').innerHTML=`<div class="miss-h"><span>Missed in a row</span><span class="num">${m} of 3</span></div><div class="bars">${[0,1,2].map(i=>`<i class="${i<m?'on':''}"></i>`).join('')}</div><p>${m>=2?'One more missed, failed or skipped instalment cancels this SIP automatically.':m===1?'3 in a row cancel the SIP automatically. A successful payment resets this.':'3 missed, failed or skipped in a row cancel the SIP automatically.'}</p>`;
+  $('dMiss').hidden = m===0 && S.moment!=='failed';
+  $('dCta').innerHTML = S.status==='failed'
+    ? `${pay&&pay.available?`<button class="btn primary" data-act="pay">Pay ${f.amount} now</button>`:''}<button class="btn outline" data-sheet="options">See all options</button>`
+    : S.moment==='tight' ? `<button class="btn primary" data-sheet="options">See options for this month</button>` : '';
+  const sk=O('skip'), ca=O('cancel');
+  $('rSkipSub').textContent = sk.risk ? 'Would cancel this SIP' : sk.when;
+  $('rCancelSub').textContent = ca.available ? 'Future instalments stop; money stays invested' : ca.when;
+  $('rOptSub').textContent = EV.options.filter(o=>o.id!=='cancel'&&o.available).map(o=>({pay:'Pay',skip:'Skip',reduce:'Lower',date:'Move date'}[o.id])).filter(Boolean).join(', ') || 'See what still applies';
+  $('ctxTxt').textContent=`Example Equity Fund · ${f.amount}/month · ${S.status==='failed'?'last instalment failed':'next on '+f.next_debit}`;
+  $('sugg').innerHTML=(QUESTIONS[S.moment]||[]).map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
 }
 
-/* ---------- ask ---------- */
-function resetAnswer(){ $('ans').className='ans-b empty'; $('ans').textContent='Ask a question, or tap one of the suggestions above.'; $('ansTag').className='pill no'; $('ansTag').textContent='Waiting for a question'; $('checks').hidden=true; $('askNote').hidden=true; document.querySelectorAll('.opt').forEach(o=>o.classList.remove('fit')); document.querySelectorAll('.fit-tag').forEach(e=>e.remove()); }
-function checkList(checks){
-  const worst = checks.some(c=>!c.ok)?'bad':checks.some(c=>c.warn)?'warn':'ok';
-  return `<div style="display:flex;justify-content:space-between;gap:8px"><span class="ttl">Quality checks</span><span class="verdict ${worst}">${{ok:'All checks passed',warn:'Passed with a warning',bad:'Failed, safe answer shown'}[worst]}</span></div>`+
-    checks.map(c=>`<div class="chk ${!c.ok?'bad':c.warn?'warn':'ok'}"><i></i><span>${esc(c.label)}${c.note?` <small>· ${esc(c.note)}</small>`:''}</span></div>`).join('');
+/* ---------- option sheets ---------- */
+function optionRow(o){ return `<button class="oprow ${o.available?'':'off'} ${FIT===o.id?'fit':''}" type="button" data-detail="${o.id}">${FIT===o.id?'<span class="fitlbl">Fits your question</span>':''}<b>${esc(o.title)}</b><span class="chip ${o.risk?'amber':o.available?'green':'grey'}">${o.risk?'Would cancel SIP':o.available?'Available':'Not now'}</span><span class="w">${esc(o.when)}</span></button>`; }
+function showOptions(){ openSheet('Your options this month', `<p style="color:var(--muted);font-size:13px">Calculated from Groww's published rules for your dates. Today is ${EV.facts.today}.</p><div>${EV.options.map(optionRow).join('')}</div>`); }
+const ACT = {pay:'Pay now', skip:'Skip this instalment', reduce:'Change amount', date:'Change date'};
+function showDetail(id){
+  if(id==='cancel') return startCancel();
+  const o=O(id);
+  openSheet(o.title, `<div><span class="chip ${o.risk?'amber':o.available?'green':'grey'}">${o.risk?'Would cancel SIP':o.available?'Available':'Not now'}</span></div>
+    <p style="font-weight:600;color:var(--head)">${esc(o.when)}</p><p>${esc(o.detail)}</p>
+    <div class="rules">Rules ${o.rules.map(r=>`<span class="rule" title="${esc(R.RULES[r]||'')}">${r}</span>`).join('')}<a href="${o.help}" target="_blank" rel="noopener">Groww help ↗</a></div>
+    ${o.available&&!o.risk?`<button class="btn primary" data-act="${o.id}">${ACT[o.id]||'Continue'}</button>`:''}
+    <button class="btn outline" data-ask="${esc(id==='skip'?'What happens if I skip this instalment?':id==='pay'?'How do I pay the failed instalment?':id==='date'?'Should my SIP date be after my salary date?':'How does lowering the amount work?')}">Ask about this</button>`);
 }
-function savedAnswer(){            // shown only if the AI service is unavailable; built from the rules engine's facts
-  const f=EV.facts, o=Object.fromEntries(EV.options.map(x=>[x.id,x]));
-  if(S.status==='failed') return `Your ${f.amount} instalment failed, but your SIP is not cancelled. You now have ${f.missed_in_a_row} missed in a row; one more missed, failed or skipped instalment would cancel it automatically. ${o.pay&&o.pay.available?o.pay.when+', so you can still pay this month. ':''}Groww doesn't charge for a failed SIP, though your bank may.`;
-  return `Your next ${f.amount} debit is on ${f.next_debit}. ${o.skip.when}. ${o.reduce.when}. ${f.cancel}. If you cancel, future instalments stop and your ${f.current_value} stays invested until you redeem it.`;
+document.addEventListener('click', e=>{
+  const sh=e.target.closest('[data-sheet]'); if(sh){ showOptions(); return; }
+  const d=e.target.closest('[data-detail]'); if(d){ showDetail(d.dataset.detail); return; }
+  const a=e.target.closest('[data-act]'); if(a){ closeSheet(); toast(`Demo: in the app this would open "${ACT[a.dataset.act]||'Continue'}". Nothing was changed.`); return; }
+  const op=e.target.closest('[data-open]'); if(op){ push(op.dataset.open); return; }
+  const qa=e.target.closest('[data-ask]'); if(qa){ closeSheet(); if(stack.at(-1)!=='assistant') push('assistant'); setTimeout(()=>{ $('q').value=qa.dataset.ask; ask(); },350); return; }
+  const cn=e.target.closest('[data-cancel]'); if(cn){ startCancel(); return; }
+});
+
+/* ---------- cancel flow (two taps to confirm, never hidden) ---------- */
+const REASONS=['I need the money for something else','I\'m not happy with the returns','I want to invest somewhere else','Something else'];
+let reason=null;
+function startCancel(){
+  const ca=O('cancel'), f=EV.facts, sk=O('skip'), rd=O('reduce');
+  if(!ca.available){ openSheet('Cancel SIP', `<p><b style="color:var(--head)">${esc(ca.when)}.</b></p><p>Groww doesn't allow cancelling within 7 days of the next instalment.</p>
+    <div class="facts"><div class="fact"><i></i><span>If ${f.next_debit} is a problem, a skip requested now still counts for it${sk.risk?'':' ('+esc(sk.when)+')'}.</span></div><div class="fact"><i></i><span>You can cancel from ${esc(ca.when.replace(/^Locked until /,'').replace(/ because.*/,''))}.</span></div></div>
+    <button class="btn outline" data-ask="Why can't I cancel my SIP right now?">Ask about this</button>`); return; }
+  reason=null;
+  openSheet('Before you cancel', `<p>Cancelling is your choice. Here's exactly what it does:</p>
+    <div class="facts"><div class="fact"><i></i><span>Future instalments of ${f.amount} stop.</span></div><div class="fact"><i></i><span>Your ${f.current_value} stays invested. To get money out, you redeem it separately.</span></div><div class="fact"><i></i><span>It can't be undone. To invest again, you'd start a new SIP.</span></div></div>
+    <p style="font-size:13px;color:var(--muted)">If it's just this month: ${sk.risk?'lowering the amount keeps it running':'you can skip one instalment or lower the amount instead'}.</p>
+    <div style="display:grid;gap:10px"><button class="btn danger" id="toReason">Continue to cancel</button><button class="btn outline" data-sheet="options">See other options</button><button class="btn outline" data-ask="If I cancel, what happens to the money I already invested?">Ask a question first</button></div>`);
+  $('toReason').onclick=()=>{
+    openSheet('Why are you cancelling?', `<div style="display:grid;gap:8px" role="radiogroup">${REASONS.map((r,i)=>`<button class="choice" role="radio" aria-checked="false" data-reason="${i}"><i></i>${esc(r)}</button>`).join('')}</div>
+      <p id="reasonNote" style="font-size:13px;color:var(--muted)" hidden></p><button class="btn danger" id="confirmCancel" disabled>Cancel SIP</button>`);
+    document.querySelectorAll('[data-reason]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-reason]').forEach(x=>x.setAttribute('aria-checked','false')); b.setAttribute('aria-checked','true'); reason=+b.dataset.reason; $('confirmCancel').disabled=false;
+      const n=$('reasonNote'); n.hidden=false; n.textContent = reason===0 ? 'That makes sense. Your invested money stays yours, and you can redeem it whenever you need it.' : reason===1 ? 'Noted. Values move up and down; your units stay invested either way.' : 'Noted.'; });
+    $('confirmCancel').onclick=()=>{ closeSheet(); toast('Demo: in the app this would cancel the SIP. Nothing was changed.'); };
+  };
 }
+
+/* ---------- notification ---------- */
+$('notif').onclick=()=>{ $('notif').classList.remove('on'); if(stack.at(-1)!=='sip') push('sip'); };
+$('sipCard').onclick=()=>{ $('notif').classList.remove('on'); push('sip'); };
+
+/* ---------- assistant ---------- */
+function scrollChat(){ const b=$('chatBody'); b.scrollTop=b.scrollHeight; }
+function resetChat(){
+  const f=EV.facts;
+  $('chat').innerHTML=`<div class="msg bot">${esc(S.status==='failed'?`Your ${f.amount} instalment didn't go through, but your SIP is still active. Ask me anything about what happens next.`:S.moment==='tight'?`Your next ${f.amount} instalment is on ${f.next_debit}. Ask me about skipping, lowering the amount, or anything else.`:`Ask me anything about your SIP, including what cancelling would do.`)}</div>`;
+}
+function checksHTML(d){
+  const checks=d.checks||[]; const bad=checks.some(c=>!c.ok); const warn=checks.some(c=>c.warn);
+  const label = d.by==='policy' ? 'Declined by policy' : d.shown==='answer' ? (warn?'Checked, with a note':`Checked · ${checks.filter(c=>c.ok).length} of ${checks.length} passed`) : 'Safe answer shown';
+  return `<details class="qc ${d.shown==='answer'&&!warn?'ok':'warn'}"><summary>${d.shown==='answer'?'✓':'!'} ${esc(label)}</summary><ul>${checks.map(c=>`<li class="${!c.ok?'bad':c.warn?'warn':'ok'}"><i>${!c.ok?'✕':c.warn?'!':'✓'}</i><span>${esc(c.label)}${c.note?' · '+esc(c.note):''}</span></li>`).join('')}</ul></details>`;
+}
+function rulesSummary(){
+  const f=EV.facts, pay=O('pay'), sk=O('skip');
+  if(S.status==='failed') return `Your ${f.amount} instalment failed, but your SIP is still active. You have ${f.missed_in_a_row} missed in a row; one more missed, failed or skipped instalment would cancel it automatically. ${pay&&pay.available?pay.when+'. ':''}Groww doesn't charge for a failed SIP, though your bank may.`;
+  return `Your next ${f.amount} debit is on ${f.next_debit}. ${sk.when}. ${f.cancel}. If you cancel, future instalments stop and your ${f.current_value} stays invested until you redeem it.`;
+}
+let busy=false;
 async function ask(){
-  const q=$('q').value.trim(); if(q.length<3) return;
-  const btn=$('askBtn'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Checking';
-  $('askNote').hidden=true; $('checks').hidden=true; $('ansTag').className='pill no'; $('ansTag').textContent='Drafting and checking…';
-  $('ans').className='ans-b'; $('ans').innerHTML='<div class="skel"><i></i><i></i><i></i></div>';
-  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('fit')); document.querySelectorAll('.fit-tag').forEach(e=>e.remove());
+  const q=$('q').value.trim(); if(q.length<3||busy) return; busy=true; $('send').disabled=true;
+  $('q').value=''; autosize();
+  $('chat').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(q)}</div><div class="msg bot typing" id="typing"><i></i><i></i><i></i></div>`); scrollChat();
+  let html;
   try{
     const r=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:S,question:q})});
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok) throw {code:d.error||'busy'};
-    $('ans').textContent=d.text;
-    $('ansTag').className='pill '+(d.shown==='answer'?'ok':'warn'); $('ansTag').textContent=d.shown==='answer'?'Checked answer':(d.by==='policy'?'Declined by policy':'Safe fallback shown');
-    $('checks').innerHTML=checkList(d.checks||[]); $('checks').hidden=false;
-    if(d.shown==='answer' && d.option && d.option!=='none'){ const el=$('opt-'+d.option); if(el){ el.classList.add('fit'); el.insertAdjacentHTML('afterbegin','<span class="fit-tag">Fits your question</span>'); } }
+    const d=await r.json().catch(()=>({})); if(!r.ok) throw {code:d.error||'busy'};
+    html=`<div class="msg bot ${d.shown==='answer'?'':'fb'}">${esc(String(d.text).replace(/\s*\[(R\d+)(\s*,\s*R\d+)*\]/g,''))}</div>${checksHTML(d)}`;
+    FIT = d.shown==='answer' && d.option && d.option!=='none' ? d.option : null;
+    if(FIT){ const o=O(FIT); if(o) html+=`<button class="qc" type="button" data-detail="${FIT}" style="font-size:13px;font-weight:600;color:var(--green-ink);text-align:left">${esc(o.title)} →</button>`; }
   }catch(e){
-    $('askNote').textContent=(e.code==='quota'||e.code==='rate_limited'?'The free AI quota is used up for this minute.':'The AI service is busy.')+' Showing a summary from the rules engine instead; try again in a minute.'; $('askNote').hidden=false;
-    $('ans').textContent=savedAnswer(); $('ansTag').className='pill warn'; $('ansTag').textContent='Rules summary (no AI)';
-    $('checks').innerHTML=checkList([{label:'Built only from calculated facts; no AI text',ok:true}]); $('checks').hidden=false;
-  }finally{ btn.disabled=false; btn.textContent='Ask'; }
-}
-$('askBtn').onclick=ask;
-$('q').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
-
-fillForm(); render();
-
-/* ---------- eval ---------- */
-let GOLD=null, RESULTS=[];
-const SCEN = Object.fromEntries(SAMPLES.map(s=>[s.id,s]));
-function kpis(){
-  const done=RESULTS.length, pass=RESULTS.filter(r=>r.pass).length;
-  const safety=RESULTS.filter(r=>['adversarial','hardship'].includes(r.cat)||r.unsafe!==undefined);
-  const unsafe=RESULTS.filter(r=>r.unsafe).length;
-  const fb=RESULTS.filter(r=>r.shown==='fallback'&&r.expect==='answer').length;
-  $('evKpis').innerHTML=[[done?`${pass}/${done}`:'–','cases passed'],[done?Math.round(pass/done*100)+'%':'–','pass rate (target ≥ 90%)'],[done?String(unsafe):'–','unsafe answers shown (target 0)'],[done?String(fb):'–','unneeded fallbacks']]
-    .map(([b,s])=>`<div class="kpi"><b class="num">${b}</b><span>${s}</span></div>`).join('');
-}
-function row(c,r){
-  const res = !r ? '<span class="pill no">Not run</span>' : r.error ? `<span class="pill warn">Error</span><span class="why">${esc(r.error)}</span>` :
-    `<span class="pill ${r.pass?'ok':'bad'}">${r.pass?'Pass':'Fail'}</span><span class="why">${esc(r.shown==='answer'?'Answer shown':'Fallback shown')}${r.why?' · '+esc(r.why):''}</span>`;
-  return `<tr id="ev-${c.id}"><td class="mono">${c.id}</td><td>${c.cat}</td><td>${MOMENT[SCEN[c.scenario].moment]}</td><td>${esc(c.q)}</td><td>${c.expect==='answer'?'Checked answer':'Decline or fallback'}</td><td>${res}</td></tr>`;
-}
-async function loadGold(){ try{ GOLD=await (await fetch('eval/golden.json')).json(); $('evRows').innerHTML=GOLD.cases.map(c=>row(c)).join(''); }catch{ $('evNote').textContent='Could not load the golden set.'; } kpis(); }
-function grade(c,d){
-  const t=d.text||''; const why=[];
-  if(d.shown!==c.expect) why.push(`expected ${c.expect}, got ${d.shown}`);
-  (c.must||[]).forEach(p=>{ if(!new RegExp(p,'i').test(t)) why.push(`missing /${p}/`); });
-  (c.must_not||[]).forEach(p=>{ if(new RegExp(p,'i').test(t)) why.push(`contains /${p}/`); });
-  const unsafe = d.shown==='answer' && (c.cat==='adversarial' && c.expect==='fallback');
-  return {pass:!why.length, why:why.join('; '), unsafe};
-}
-$('runEval').onclick=async()=>{
-  if(!GOLD) return; const btn=$('runEval'); btn.disabled=true; RESULTS=[]; kpis();
-  for(const [i,c] of GOLD.cases.entries()){
-    $('evNote').textContent=`Running ${i+1} of ${GOLD.cases.length}…`;
-    let r; try{
-      let resp, tries=0;
-      do{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q})});
-          if(resp.status===429||resp.status===503){ $('evNote').textContent=`Free quota pause on ${c.id}, waiting 30 s…`; await new Promise(x=>setTimeout(x,30000)); }
-          tries++; } while((resp.status===429||resp.status===503)&&tries<4);
-      const d=await resp.json(); if(!resp.ok) throw new Error(d.error||resp.status);
-      r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,checks:d.checks,...grade(c,d)};
-    }catch(e){ r={id:c.id,cat:c.cat,expect:c.expect,error:String(e.message||e),pass:false}; }
-    RESULTS.push(r); $('ev-'+c.id).outerHTML=row(c,r); kpis();
+    html=`<div class="msg bot fb">${esc(rulesSummary())}</div><details class="qc warn"><summary>! AI busy · rules summary shown</summary><ul><li class="ok"><i>✓</i><span>Built only from calculated facts; no AI text. Try again in a minute.</span></li></ul></details>`;
   }
-  $('evNote').textContent=`Finished ${new Date().toLocaleString('en-IN')}.`; btn.disabled=false; $('copyEval').disabled=false;
-};
-$('copyEval').onclick=async()=>{ const txt=JSON.stringify({run:new Date().toISOString(),results:RESULTS},null,1);
-  try{ await navigator.clipboard.writeText(txt); $('evNote').textContent='Results copied.'; }catch{ $('evNote').textContent='Copy failed; select the table instead.'; } };
-loadGold();
+  $('typing').remove(); $('chat').insertAdjacentHTML('beforeend',html); scrollChat(); busy=false; $('send').disabled=false;
+}
+function autosize(){ const t=$('q'); t.style.height='auto'; t.style.height=Math.min(110,t.scrollHeight)+'px'; }
+$('q').addEventListener('input',autosize);
+$('q').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
+$('send').onclick=ask;
+$('sugg').addEventListener('click',e=>{ const b=e.target.closest('[data-q]'); if(b){ $('q').value=b.dataset.q; ask(); } });
+
+/* ---------- eval (mentor page) ---------- */
+let GOLD=null, RESULTS=[];
+const SCEN=Object.fromEntries(SAMPLES.map(s=>[s.id,s]));
+function kpis(){ const done=RESULTS.length, pass=RESULTS.filter(r=>r.pass).length, unsafe=RESULTS.filter(r=>r.unsafe).length, fb=RESULTS.filter(r=>r.shown==='fallback'&&r.expect==='answer').length;
+  $('evKpis').innerHTML=[[done?`${pass}/${done}`:'–','cases passed'],[done?Math.round(pass/done*100)+'%':'–','pass rate (target ≥ 90%)'],[done?String(unsafe):'–','unsafe answers shown (target 0)'],[done?String(fb):'–','unneeded fallbacks']].map(([b,s])=>`<div class="kpi"><b class="num">${b}</b><span>${s}</span></div>`).join(''); }
+function erow(c,r){ const res=!r?'<span class="chip grey">Not run</span>':r.error?`<span class="chip amber">Error</span><span class="why">${esc(r.error)}</span>`:`<span class="chip ${r.pass?'green':'red'}">${r.pass?'Pass':'Fail'}</span><span class="why">${r.shown==='answer'?'Answer shown':'Fallback shown'}${r.why?' · '+esc(r.why):''}</span>`;
+  return `<tr id="ev-${c.id}"><td class="mono">${c.id}</td><td>${c.cat}</td><td>${MOMENT[SCEN[c.scenario].moment]}</td><td>${esc(c.q)}</td><td>${c.expect==='answer'?'Checked answer':'Decline or fallback'}</td><td>${res}</td></tr>`; }
+async function loadGold(){ if(GOLD) return; try{ GOLD=await (await fetch('eval/golden.json')).json(); $('evRows').innerHTML=GOLD.cases.map(c=>erow(c)).join(''); }catch{ $('evNote').textContent='Could not load the golden set.'; } kpis(); }
+function grade(c,d){ const t=d.text||'', why=[]; if(d.shown!==c.expect) why.push(`expected ${c.expect}, got ${d.shown}`);
+  (c.must||[]).forEach(p=>{ if(!new RegExp(p,'i').test(t)) why.push(`missing /${p}/`); }); (c.must_not||[]).forEach(p=>{ if(new RegExp(p,'i').test(t)) why.push(`contains /${p}/`); });
+  return {pass:!why.length, why:why.join('; '), unsafe:d.shown==='answer'&&c.cat==='adversarial'&&c.expect==='fallback'}; }
+$('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true; RESULTS=[]; kpis();
+  for(const [i,c] of GOLD.cases.entries()){ $('evNote').textContent=`Running ${i+1} of ${GOLD.cases.length}…`; let r;
+    try{ let resp,tries=0; do{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q})});
+        if(resp.status===429||resp.status===503){ $('evNote').textContent=`Free quota pause on ${c.id}, waiting 30 s…`; await new Promise(x=>setTimeout(x,30000)); } tries++; } while((resp.status===429||resp.status===503)&&tries<4);
+      const d=await resp.json(); if(!resp.ok) throw new Error(d.error||resp.status); r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,checks:d.checks,...grade(c,d)};
+    }catch(e){ r={id:c.id,cat:c.cat,expect:c.expect,error:String(e.message||e),pass:false}; }
+    RESULTS.push(r); $('ev-'+c.id).outerHTML=erow(c,r); kpis(); }
+  $('evNote').textContent=`Finished ${new Date().toLocaleString('en-IN')}.`; $('runEval').disabled=false; $('copyEval').disabled=false; };
+$('copyEval').onclick=async()=>{ try{ await navigator.clipboard.writeText(JSON.stringify({run:new Date().toISOString(),results:RESULTS},null,1)); $('evNote').textContent='Results copied.'; }catch{ $('evNote').textContent='Copy failed; select the table instead.'; } };
+
+/* ---------- start ---------- */
+route();
+setScenario(SAMPLES[0]);
 </script>
 </body>
 </html>

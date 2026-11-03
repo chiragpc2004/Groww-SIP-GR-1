@@ -10,7 +10,7 @@ Helps a first-time SIP investor act on a failed or at-risk instalment: pay, skip
 | AI explainer | `api/answer.js` | Drafts an answer from the engine's facts only (Groq first if `GROQ_API_KEY` is set, then Gemini). |
 | Eval gate | `api/answer.js` | Declines fund-pick and prediction requests by code; then code checks (no fund names or advice, no predictions or urgency, only verified rules, dates and amounts must match) and an AI reviewer (facts, cancel described correctly, neutral). Any failure shows a safe fallback. |
 | Golden set | `eval/golden.json` | 24 cases: core, messy/Hinglish, adversarial, unverified-rule and hardship. Run from the **Quality report** tab. |
-| Page | `index.html` | Scenario picker, situation card, option cards, question box with visible checks, quality report. |
+| App | `index.html` | Native-style mobile app (phone frame on desktop, full screen on phones, installable): SIP list, SIP details with "missed X of 3", options sheet, cancel flow, assistant chat with visible checks. Quality report at `#quality`. |
 
 ## Deploy (Vercel)
 
