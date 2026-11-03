@@ -275,18 +275,18 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
   <aside class="guide" aria-label="Demo guide">
     <div class="kick">Groww case study · concept MVP</div>
     <h1>SIP Recovery Assistant</h1>
-    <p>A feature concept for the mutual-funds section of an investing app. It appears when a SIP instalment fails, a month gets tight, or someone taps Cancel, and explains what they can still do.</p>
+    <p>Many first-time investors lose their SIP without ever deciding to stop: a payment fails in a tight month, the alert doesn't say what to do next, and the SIP quietly lapses. This assistant steps in at those moments.</p>
     <div class="modes" role="group" aria-label="Compare"><button type="button" data-mode-btn="before" aria-pressed="false">Today</button><button type="button" data-mode-btn="after" aria-pressed="true">With the assistant</button></div>
-    <p class="mode-note" id="modeNote">The same moment with the Recovery Assistant. Numbered markers on the phone are explained below.</p>
+    <p class="mode-note" id="modeNote">Pick a moment below, then tap the notification on the phone. Switch to Today to compare.</p>
     <div class="gcard" id="gScen"></div>
     <ol class="callouts new-only" id="callouts">
-      <li><span class="cm">1</span><span><b>AI explains first.</b> Opens with a plain account of this SIP's situation, checked before it's shown.</span></li>
-      <li><span class="cm">2</span><span><b>Missed X of 3.</b> Failures count toward auto-cancel; 4 of 6 interviewees didn't know.</span></li>
-      <li><span class="cm">3</span><span><b>Options from Groww's rules.</b> Each deadline is calculated for this SIP and ranked by the reason picked.</span></li>
-      <li><span class="cm">4</span><span><b>Ask anything.</b> English or Hinglish. Fund picks and predictions are declined; every answer passes 7 checks.</span></li>
-      <li><span class="cm">5</span><span><b>Cancel, explained.</b> Two taps, never hidden, and it first says invested money stays invested.</span></li>
+      <li><span class="cm">1</span><span><b>A plain explanation first.</b> Written by AI for this SIP, and checked before it's shown.</span></li>
+      <li><span class="cm">2</span><span><b>Missed X of 3.</b> Failed payments count toward the rule that cancels a SIP after 3 misses in a row. Now it's visible before it's too late.</span></li>
+      <li><span class="cm">3</span><span><b>Options that fit the reason.</b> Pick what's going on; each option shows its deadline for this SIP.</span></li>
+      <li><span class="cm">4</span><span><b>Ask anything.</b> In English or Hinglish. It never recommends funds or predicts returns; every answer is checked first.</span></li>
+      <li><span class="cm">5</span><span><b>Cancel, explained.</b> Still two taps, never hidden, and it first says the money stays invested.</span></li>
     </ol>
-    <p class="fine">Tap the notification to start. Dummy data only; nothing changes a real SIP.</p>
+    <p class="fine">Sample data only; nothing here changes a real SIP.</p>
     <div class="glinks"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>
     <p class="fine">Independent student case study. Not affiliated with or endorsed by Groww. Not investment advice.</p>
   </aside>
@@ -486,12 +486,18 @@ function setScenario(s){
 }
 function setMode(m){
   MODE=m; $('phone').dataset.mode=m; document.querySelectorAll('[data-mode-btn]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.modeBtn===m));
-  $('modeNote').textContent = m==='after' ? 'The same moment with the Recovery Assistant. Numbered markers on the phone are explained below.' : "Today's experience: an SMS that says the payment failed, and a SIP page with no deadline, count or explanation.";
+  $('modeNote').textContent = m==='after' ? 'Pick a moment below, then tap the notification on the phone. Switch to Today to compare.' : "How these moments work today. Tap the message on the phone, then switch back to compare.";
   $('callouts').hidden = m!=='after';
+  $('gScen').innerHTML=scenButtons();
   setScenario(S);
 }
 document.addEventListener('click', e=>{ const b=e.target.closest('[data-mode-btn]'); if(b){ closeSheet(); setMode(b.dataset.modeBtn); } });
-function scenButtons(){ return SAMPLES.map(s=>`<button class="gopt" type="button" data-scen="${s.id}"><b>${MOMENT[s.moment]} · ${esc(s.label)}</b><span>${esc(s.who)}</span></button>`).join(''); }
+const STORY = {
+  failed:{t:'A SIP payment fails', today:'Today: a text says it failed. Nothing says the SIP is still active, or that 3 misses in a row cancel it.', now:'Now: what happened, the deadline to pay, and every option that still works.'},
+  tight:{t:'Money is short before the debit', today:'Today: at most a reminder to keep enough balance, with no sign of what you could still change.', now:'Now: a heads-up while skipping or lowering the amount still counts this month.'},
+  cancel:{t:'Thinking of cancelling', today:'Today: cancel in a tap, with no word on what happens to the money already invested.', now:'Now: see exactly what cancelling does, then cancel in two taps if you still want to.'},
+};
+function scenButtons(){ return SAMPLES.map(s=>{ const st=STORY[s.moment]; return `<button class="gopt" type="button" data-scen="${s.id}"><b>${esc(st.t)}</b><span>${esc(MODE==='before'?st.today:st.now)}</span></button>`; }).join(''); }
 $('gScen').innerHTML=scenButtons();
 document.addEventListener('click', e=>{ const b=e.target.closest('[data-scen]'); if(b){ setScenario(SAMPLES.find(s=>s.id===b.dataset.scen)); } });
 $('demoFab').onclick=()=>openSheet('Demo scenarios', `<div class="modes"><button type="button" data-mode-btn="before" aria-pressed="${MODE==='before'}">Today</button><button type="button" data-mode-btn="after" aria-pressed="${MODE==='after'}">With the assistant</button></div><p class="fine" style="color:var(--muted)">Pick a situation. Dummy data only.</p><div style="display:grid;gap:6px">${scenButtons()}</div><div class="glinks" style="padding-top:4px"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>`);
