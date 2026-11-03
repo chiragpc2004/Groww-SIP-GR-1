@@ -36,28 +36,42 @@ POST:
 }
 
 async function gemini(prompt, json) {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw Object.assign(new Error('GEMINI_API_KEY is not set'), { status: 500 });
-  const models = [process.env.GEMINI_MODEL || 'gemini-2.5-flash', 'gemini-flash-latest'];
-  let last;
+  const key = process.env.GEMINI_API_KEY || process.env.GEMINI_APP_KEY;   // accepts either spelling
+  if (!key) throw Object.assign(new Error('GEMINI_API_KEY is not set in Vercel'), { code: 'missing_key' });
+  const models = [process.env.GEMINI_MODEL || 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'];
+  let lastErr;
   for (const model of models) {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1200, ...(json ? { responseMimeType: 'application/json' } : {}) },
-      }),
-    });
-    if (r.status === 404) { last = 'model_not_found'; continue; }   // try the alias
-    if (r.status === 429) throw Object.assign(new Error('quota'), { status: 429 });
-    if (!r.ok) throw Object.assign(new Error(`upstream ${r.status}: ${(await r.text()).slice(0, 300)}`), { status: 502 });
-    const body = await r.json();
-    const text = (body.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
-    if (!text) throw Object.assign(new Error('empty'), { status: 502 });
-    return text;
+    let r;
+    try {
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          // High cap: 2.5 models spend part of the output budget on hidden "thinking".
+          generationConfig: { temperature: 0.2, maxOutputTokens: 8192, ...(json ? { responseMimeType: 'application/json' } : {}) },
+        }),
+      });
+    } catch (e) {
+      lastErr = Object.assign(new Error(`network: ${e.message}`), { code: 'network' }); continue;
+    }
+    const raw = await r.text();
+    if (!r.ok) {
+      console.error(`[${model}] HTTP ${r.status}: ${raw.slice(0, 400)}`);
+      if (r.status === 429) throw Object.assign(new Error('quota'), { code: 'quota' });
+      if (r.status === 400 && /API key/i.test(raw)) throw Object.assign(new Error('bad key'), { code: 'bad_key' });
+      if (r.status === 403) throw Object.assign(new Error('key not allowed'), { code: 'bad_key' });
+      lastErr = Object.assign(new Error(`HTTP ${r.status}`), { code: r.status === 404 ? 'model_not_found' : 'upstream_' + r.status });
+      continue;                                   // try the next model
+    }
+    const body = JSON.parse(raw);
+    const cand = body.candidates?.[0];
+    const text = (cand?.content?.parts || []).map(p => p.text || '').join('').trim();
+    if (text) return text;
+    console.error(`[${model}] empty reply, finishReason=${cand?.finishReason}, block=${body.promptFeedback?.blockReason}`);
+    lastErr = Object.assign(new Error('empty'), { code: 'empty_' + (cand?.finishReason || body.promptFeedback?.blockReason || 'unknown') });
   }
-  throw Object.assign(new Error(last || 'no model'), { status: 502 });
+  throw lastErr || Object.assign(new Error('no model'), { code: 'model_not_found' });
 }
 
 module.exports = async (req, res) => {
@@ -82,7 +96,8 @@ module.exports = async (req, res) => {
     }
     return res.status(400).json({ error: 'unknown_mode' });
   } catch (e) {
-    console.error(e.message);
-    return res.status(e.status === 429 ? 429 : 502).json({ error: e.status === 429 ? 'quota' : 'upstream_error' });
+    console.error('AI call failed:', e.code, e.message);
+    if (e.code === 'quota') return res.status(429).json({ error: 'quota' });
+    return res.status(502).json({ error: 'upstream_error', reason: e.code || 'unknown' });
   }
 };

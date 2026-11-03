@@ -389,7 +389,7 @@ async function callAI(payload){
   try { r = await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
   catch { throw {code:'upstream_error'}; }
   const body = await r.json().catch(()=>({}));
-  if(!r.ok) throw {code: body.error || 'upstream_error'};
+  if(!r.ok) throw {code: body.error || 'upstream_error', reason: body.reason};
   return body;
 }
 function restoreSavedAsk(){ $('askTag').className='tag saved'; $('askTag').textContent='Saved example'; $('askMeta').textContent='Answer to the first suggested question, generated on 3 Nov 2026'; renderAnswer(SAVED_ANSWER); }
@@ -400,7 +400,7 @@ $('askBtn').onclick = async () => {
   $('askTag').className='tag live'; $('askTag').textContent='Live'; $('askMeta').textContent='';
   $('askOut').className='out empty'; $('askOut').textContent='Reading 219 posts…'; $('askNote').textContent='';
   try{ const {text}=await callAI({mode:'ask',question:q}); renderAnswer(text); }
-  catch(e){ $('askNote').textContent=errText(e.code); restoreSavedAsk(); }
+  catch(e){ $('askNote').textContent=errText(e.code)+(e.reason?` (reason: ${e.reason})`:''); restoreSavedAsk(); }
   finally{ $('askBtn').disabled=false; }
 };
 
@@ -408,7 +408,7 @@ $('tagBtn').onclick = async () => {
   const t=$('newItem').value.trim(); if(t.length<15){ $('tagNote').textContent='Paste at least one sentence.'; return; }
   $('tagBtn').disabled=true; $('tagNote').textContent='Coding…'; $('tagGate').hidden=true;
   try{ const {result}=await callAI({mode:'code',post:t}); $('tagTag').className='tag live'; $('tagTag').textContent='Live'; renderTag(result); $('tagNote').textContent=''; }
-  catch(e){ $('tagNote').textContent=errText(e.code); }
+  catch(e){ $('tagNote').textContent=errText(e.code)+(e.reason?` (reason: ${e.reason})`:''); }
   finally{ $('tagBtn').disabled=false; }
 };
 </script></body></html>
