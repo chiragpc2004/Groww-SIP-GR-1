@@ -38,9 +38,9 @@ POST:
 async function gemini(prompt, json) {
   const key = process.env.GEMINI_API_KEY || process.env.GEMINI_APP_KEY;   // accepts either spelling
   if (!key) throw Object.assign(new Error('GEMINI_API_KEY is not set in Vercel'), { code: 'missing_key' });
-  const models = [process.env.GEMINI_MODEL || 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'];
+  const models = [process.env.GEMINI_MODEL || 'gemini-3.8-flash', 'gemini-flash-latest'];
   let lastErr;
-  for (const model of models) {
+  for (const model of models) for (let attempt = 0; attempt < 2; attempt++) {
     let r;
     try {
       r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
@@ -48,12 +48,12 @@ async function gemini(prompt, json) {
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          // High cap: 2.5 models spend part of the output budget on hidden "thinking".
+          // High cap: newer Flash models spend part of the output budget on hidden "thinking".
           generationConfig: { temperature: 0.2, maxOutputTokens: 8192, ...(json ? { responseMimeType: 'application/json' } : {}) },
         }),
       });
     } catch (e) {
-      lastErr = Object.assign(new Error(`network: ${e.message}`), { code: 'network' }); continue;
+      lastErr = Object.assign(new Error(`network: ${e.message}`), { code: 'network' }); break;
     }
     const raw = await r.text();
     if (!r.ok) {
@@ -61,8 +61,13 @@ async function gemini(prompt, json) {
       if (r.status === 429) throw Object.assign(new Error('quota'), { code: 'quota' });
       if (r.status === 400 && /API key/i.test(raw)) throw Object.assign(new Error('bad key'), { code: 'bad_key' });
       if (r.status === 403) throw Object.assign(new Error('key not allowed'), { code: 'bad_key' });
+      if (r.status === 503 || r.status === 500) {             // overloaded: wait, retry once, then next model
+        lastErr = Object.assign(new Error('busy'), { code: 'model_busy' });
+        if (attempt === 0) { await new Promise(t => setTimeout(t, 2000)); continue; }
+        break;
+      }
       lastErr = Object.assign(new Error(`HTTP ${r.status}`), { code: r.status === 404 ? 'model_not_found' : 'upstream_' + r.status });
-      continue;                                   // try the next model
+      break;                                      // try the next model
     }
     const body = JSON.parse(raw);
     const cand = body.candidates?.[0];
@@ -70,6 +75,7 @@ async function gemini(prompt, json) {
     if (text) return text;
     console.error(`[${model}] empty reply, finishReason=${cand?.finishReason}, block=${body.promptFeedback?.blockReason}`);
     lastErr = Object.assign(new Error('empty'), { code: 'empty_' + (cand?.finishReason || body.promptFeedback?.blockReason || 'unknown') });
+    break;
   }
   throw lastErr || Object.assign(new Error('no model'), { code: 'model_not_found' });
 }
