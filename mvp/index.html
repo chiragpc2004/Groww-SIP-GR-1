@@ -415,7 +415,12 @@ body{font-feature-settings:"cv11","ss01"}
 .site{background:color-mix(in srgb,var(--page) 82%,transparent);border-bottom-color:transparent;box-shadow:0 1px 0 var(--line)}
 .brand{font-family:var(--display);font-weight:700;font-size:15.5px;letter-spacing:-.01em}
 .badge{color:var(--muted);background:transparent;border:1px solid var(--line-2);font-weight:600;letter-spacing:0;font-size:11.5px;padding:2px 8px}
-.nav a{font-weight:500} .nav a[aria-current="page"]{background:var(--bg);box-shadow:0 0 0 1px var(--line)}
+.nav a{font-weight:500} .nav a[aria-current="page"]{background:var(--bg);color:var(--head);font-weight:600;box-shadow:inset 0 0 0 1px var(--line-2),0 1px 2px rgba(14,26,22,.06)}
+:root{--ring:#B4C2BA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ring:rgba(255,255,255,.2)}}
+:root[data-theme="dark"]{--ring:rgba(255,255,255,.2)}
+.nav a[aria-current="page"]{box-shadow:inset 0 0 0 1px var(--ring),0 1px 2px rgba(14,26,22,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nav a[aria-current="page"]{background:var(--surface)}}
 .nav a:hover{background:color-mix(in srgb,var(--bg) 60%,transparent)}
 /* ---------- demo: guide ---------- */
 .guide{gap:18px}
@@ -423,7 +428,7 @@ body{font-feature-settings:"cv11","ss01"}
 .guide .lede{font-size:15px;line-height:1.55;color:var(--ink);max-width:36ch}
 .modes{background:var(--surface);border:0;border-radius:14px;padding:4px}
 .modes button{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 6px;border-radius:10px;font-size:13px;white-space:nowrap}
-.modes button[aria-pressed="true"]{background:var(--bg);color:var(--head);box-shadow:0 1px 2px rgba(14,26,22,.08),0 0 0 1px var(--line)}
+.modes button[aria-pressed="true"]{background:var(--bg);color:var(--head);box-shadow:0 1px 2px rgba(14,26,22,.08),inset 0 0 0 1px var(--ring)}
 .swt{display:inline-block;width:8px;height:8px;border-radius:4px;flex:none} .swt.red{background:var(--red)} .swt.green{background:var(--green)}
 .mode-note{margin-top:-6px;font-size:12.5px}
 .gpick{display:grid;gap:8px}
