@@ -86,7 +86,7 @@ function draftPrompt(s, ev, question, hardship) {
   const opts = ev.options.map(o => `- ${o.id}: ${o.title}. ${o.available ? 'Available' : 'NOT available'}. ${o.when}. ${o.detail} [${o.rules.join(', ')}]`).join('\n');
   const rules = Object.entries(R.RULES).map(([k, v]) => `${k}: ${v}`).join('\n');
   const unv = Object.entries(R.UNVERIFIED).map(([k, v]) => `${k}: ${v}`).join('\n');
-  return `You are the SIP Recovery Assistant inside a mutual fund app. A first-time investor has a question about their SIP.
+  return `You are GR-1, the assistant inside a mutual fund app, opened from a card for one SIP that is at risk of becoming inactive. A first-time investor has a question about this SIP.
 Explain their situation and options in plain, warm, neutral language. You are NOT an adviser.
 
 STRICT RULES
@@ -95,6 +95,7 @@ STRICT RULES
 - Never predict returns, markets or recovery. No urgency, fear or loss framing.
 - Cancelling is a valid choice. Describe it accurately and neutrally; never argue against it.
 - ${hardship ? 'The user describes financial hardship. Acknowledge it briefly. Say clearly that stopping or skipping is a reasonable choice, and lay out the options without steering.' : 'Match the option to the reason they give, if they give one.'}
+- The 'pause' option is a PROPOSED feature in this concept, not in the app today. If you mention it, say it's proposed.
 - If asked about anything in UNVERIFIED, say you couldn't confirm it and point to Groww support.
 - Reply in the user's language style (English or simple Hinglish), under 110 words, short sentences, no headings or bold.
 - Use dates exactly as written in FACTS (e.g. "9 Nov") and amounts as written (e.g. "₹1,000").
@@ -151,7 +152,8 @@ function sanitizeScenario(x) {
     amount: n(x.amount, 100, 200000, 1000), sipDay: n(x.sipDay, 1, 31, 5), salaryDay: n(x.salaryDay, 1, 31, 1),
     monthsRunning: n(x.monthsRunning, 1, 120, 6), invested: n(x.invested, 0, 1e8, 6000), currentValue: n(x.currentValue, 0, 1e8, 5800),
     status: x.status === 'failed' ? 'failed' : 'upcoming', failureReason: x.failureReason === 'insufficient_balance' ? 'insufficient_balance' : (x.status === 'failed' ? 'payment_failed' : null),
-    missedInARow: n(x.missedInARow, 0, 2, 0), moment: ['failed', 'tight', 'cancel'].includes(x.moment) ? x.moment : 'tight',
+    missedInARow: n(x.missedInARow, 0, 2, 0), moment: ['failed', 'tight', 'blocked', 'cancel'].includes(x.moment) ? x.moment : 'tight',
+    skipAllowed: x.skipAllowed === false ? false : true,
   };
   s.lastFailure = s.status === 'failed' ? (Number.isFinite(Number(x.lastFailure)) ? Number(x.lastFailure) : R.istToday() - 864e5) : null;
   return s;

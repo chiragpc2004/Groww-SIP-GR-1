@@ -1,5 +1,5 @@
 /*
- * SIP Recovery Assistant: rules engine.
+ * GR-1 SIP card: rules engine.
  * Plain code, no AI. Computes every date, deadline and option from the
  * verified Groww rules (see groww_sip_rules.md). The AI may only explain
  * what this file returns. Runs in the browser and in Node.
@@ -18,6 +18,7 @@
     R7: 'Cancelling stops future instalments. Money already invested stays invested until you redeem it separately.',
     R8: 'You cannot cancel a SIP if the next instalment is due within 7 days.',
     R9: 'A cancellation cannot be undone; to invest again you start a new SIP.',
+    R17: 'Some fund houses do not allow skipping an instalment; the app says so when you try. Changing the amount or date still works.',
     R11: 'Groww charges nothing for a failed SIP. Your bank may charge a bounce fee; the amount varies by bank.',
     R12: 'You can pay a pending SIP from Dashboard, Pending SIP Payments, Pay.',
     R13: 'Paying after the date shown counts the instalment as failed; a one-time investment in the same fund is still possible in most funds.',
@@ -79,7 +80,14 @@
         lastFailure: null, missedInARow: 0,
       },
       {
-        id: 'cancel', label: 'Home expenses', moment: 'cancel',
+        id: 'blocked', label: 'Fund blocks skip', moment: 'blocked',
+        who: 'Salaried, ₹5,000 SIP, short this month, fund does not allow skipping (from user reports)',
+        amount: 5000, sipDay: new Date(add(today, 6)).getUTCDate(), salaryDay: 1, monthsRunning: 4,
+        invested: 20000, currentValue: 19600, status: 'upcoming', failureReason: null,
+        lastFailure: null, missedInARow: 0, skipAllowed: false,
+      },
+      {
+        id: 'cancel', label: 'Needs a break', moment: 'cancel',
         who: 'Salaried, ₹2,000 SIP, home expenses, thinking of stopping (like P2 and P6)',
         amount: 2000, sipDay: new Date(add(today, 12)).getUTCDate(), salaryDay: 3, monthsRunning: 11,
         invested: 22000, currentValue: 21300, status: 'upcoming', failureReason: null,
@@ -127,6 +135,11 @@
     const skipCountsNow = daysToNext > 2;
     const skipTarget = skipCountsNow ? next : nextDateForDay(add(next, 1), s.sipDay, false);
     const skipWouldCancel = s.missedInARow >= 2;
+    if (s.skipAllowed === false) {
+      options.push({ id: 'skip', title: 'Skip an instalment', available: false, blocked: true,
+        when: "This fund doesn't allow skipping", detail: 'The fund house has turned skipping off for this fund. Lowering the amount or moving the date still work.',
+        rules: ['R17'], help: HELP.skip });
+    } else
     options.push({ id: 'skip', title: `Skip the ${fmt(skipTarget)} instalment`, available: !skipWouldCancel, risk: skipWouldCancel,
       when: skipWouldCancel ? 'Possible, but this skip would cancel the SIP' : skipCountsNow ? `Request by ${fmt(add(next, -3))} to skip ${fmt(next)}` : `Too close to ${fmt(next)}; a skip now applies to ${fmt(skipTarget)}`,
       detail: skipWouldCancel ? `You already have ${s.missedInARow} missed in a row. A skip would be the 3rd and cancel the SIP.` : 'One instalment only. It counts toward the 3-in-a-row limit.',
@@ -147,6 +160,12 @@
       detail: salaryAfterDebit ? `Your pay usually lands on the ${s.salaryDay}${suffix(s.salaryDay)}, after the debit on the ${s.sipDay}${suffix(s.sipDay)}.` : 'Pick a date a couple of days after pay arrives.',
       rules: ['R5'], help: HELP.edit, suggested: salaryAfterDebit });
     if (salaryAfterDebit) facts.salary_vs_debit = `Pay lands on the ${s.salaryDay}${suffix(s.salaryDay)}, debit is on the ${s.sipDay}${suffix(s.sipDay)}`;
+
+    // Pause for 1-3 months: proposed feature, not in the app today (R4)
+    options.push({ id: 'pause', title: 'Pause for 1–3 months', available: true, proposed: true,
+      when: 'Proposed: not in the app today',
+      detail: "Instalments stop for the months you pick, then restart on their own. Paused months wouldn't count as missed.",
+      rules: ['R4'], help: HELP.skip });
 
     // Cancel (R7, R8, R9)
     const cancelOpen = daysToNext > 7;

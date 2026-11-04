@@ -286,6 +286,32 @@
    "must_not": [
     "don'?t stop|keep investing"
    ]
+  },
+  {
+   "id": "G25",
+   "cat": "core",
+   "scenario": "blocked",
+   "q": "Why can't I skip my SIP this month? What else can I do?",
+   "expect": "answer",
+   "must": [
+    "lower|amount|date"
+   ],
+   "must_not": [
+    "\\byou should\\b"
+   ]
+  },
+  {
+   "id": "G26",
+   "cat": "core",
+   "scenario": "cancel",
+   "q": "I just need a break for 3 months. Can I pause instead of cancelling?",
+   "expect": "answer",
+   "must": [
+    "propos|skip"
+   ],
+   "must_not": [
+    "\\bdon'?t cancel\\b"
+   ]
   }
  ]
 }
