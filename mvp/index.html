@@ -153,8 +153,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .g-amt{font-size:28px;color:var(--head);font-weight:600;letter-spacing:-.01em}
 .g-day{font-size:14px;color:var(--head);font-weight:500}
 .g-fname{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14.5px;margin-top:10px}
-.g-acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-.g-step,.g-out{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:9px;font-weight:600;font-size:14.5px}
+.g-acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.g-step,.g-out{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 11px;border-radius:9px;font-weight:600;font-size:13.5px;white-space:nowrap}
 .g-step{background:var(--green-soft);color:var(--green-ink)} .g-out{border:1px solid var(--line-2);color:var(--head)}
 .g-sec{padding:20px 16px 8px;border-bottom:1px solid var(--line)}
 .g-sec h3{margin:0 0 10px;font-size:19px;font-weight:600;color:var(--head)}
@@ -544,13 +544,7 @@ td{font-size:14px}
     <div class="modes" role="group" aria-label="Compare"><button type="button" data-mode-btn="before" aria-pressed="false"><i class="swt red"></i>Today's app</button><button type="button" data-mode-btn="after" aria-pressed="true"><i class="swt green"></i>With the assistant</button></div>
     <p class="mode-note" id="modeNote">Pick a moment below, then tap the notification on the phone. Switch to Today to compare.</p>
     <div class="gpick" id="gScen"></div>
-    <ol class="callouts new-only" id="callouts">
-      <li><span class="cm">1</span><span><b>A plain explanation first.</b> Written by AI for this SIP, and checked before it's shown.</span></li>
-      <li><span class="cm">2</span><span><b>Missed X of 3.</b> Failed payments count toward the rule that cancels a SIP after 3 misses in a row.</span></li>
-      <li><span class="cm">3</span><span><b>Options that fit the reason.</b> Pick what's going on; each option shows its deadline.</span></li>
-      <li><span class="cm">4</span><span><b>Ask anything.</b> In English or Hinglish. It never recommends funds or predicts returns.</span></li>
-      <li><span class="cm">5</span><span><b>Cancel, explained.</b> Still two taps, and it first says the money stays invested.</span></li>
-    </ol>
+    <ol class="callouts new-only" id="callouts"></ol>
     <p class="fine">Sample data only. Nothing here changes a real SIP.</p>
   </aside>
 
@@ -562,7 +556,7 @@ td{font-size:14px}
       <div class="app" id="app">
         <button class="notif" id="notif" type="button" aria-label="Notification: SIP instalment failed. Open">
           <span class="ic"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span style="flex:1;min-width:0"><b id="nTitle">SIP instalment failed</b><span id="nBody"></span></span><small>now</small>
+          <span class="cm abs" data-k="alert" style="left:-6px;top:-6px"></span><span style="flex:1;min-width:0"><b id="nTitle">SIP instalment failed</b><span id="nBody"></span></span><small>now</small>
         </button>
         <button class="sms" id="sms" type="button" aria-label="SMS: SIP payment failed"><span class="ic">✉</span><span style="flex:1;min-width:0"><b>Messages</b><span id="smsBody"></span></span><small>now</small></button>
         <button class="demo-fab" id="demoFab" type="button">Demo scenarios ▴</button>
@@ -586,7 +580,7 @@ td{font-size:14px}
             </div>
             <div class="g-sort"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 12h10M10 17h4" stroke-linecap="round"/></svg><span class="g-dotted">‹› Current (Invested)</span></div>
             <button class="g-fund" id="sipCard" type="button">
-              <div class="g-fund-l"><b>Example Equity Fund Direct Plan Growth</b><span>SIP</span><span id="cChip"></span></div>
+              <div class="g-fund-l"><b>Example Equity Fund Direct Plan Growth</b><span>SIP</span><span style="display:flex;align-items:center;gap:8px"><span id="cChip"></span><span class="cm" data-k="flag"></span></span></div>
               <div class="g-fund-r"><b class="num" id="cCur"></b><span class="num" id="cInv"></span></div>
             </button>
             <div style="display:grid;place-items:center;padding:22px 16px 6px"><span class="g-pill"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" stroke-linecap="round" stroke-linejoin="round"/></svg>Import external funds.</span></div>
@@ -602,7 +596,7 @@ td{font-size:14px}
 
         <!-- SIP details (both modes; new-only parts appear with the assistant) -->
         <section class="scr" id="s-sip" aria-label="SIP details">
-          <div class="g-top"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2><button class="g-dotted g-link" data-cancel type="button"><span class="cm" style="margin-right:6px">5</span>Cancel SIP</button></div>
+          <div class="g-top"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2><button class="g-dotted g-link" data-cancel type="button"><span class="cm" data-k="cancel" style="margin-right:6px"></span>Cancel SIP</button></div>
           <div class="body">
             <div class="g-sum">
               <b class="num g-amt" id="dAmt"></b>
@@ -615,12 +609,12 @@ td{font-size:14px}
             <div class="g-sec"><h3>Upcoming</h3>
               <div class="g-inst"><span class="g-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><rect x="12" y="13" width="4" height="4" rx=".5" fill="currentColor" stroke="none"/></svg></span>
                 <div class="g-inst-t"><b id="dUpN"></b><span id="dUpD"></span><em class="new-only" id="dUpWarn"></em></div>
-                <button class="g-dotted g-link" type="button" data-skip>Skip</button></div>
+                <span class="cm" data-k="skip" style="margin-right:8px"></span><button class="g-dotted g-link" type="button" data-skip>Skip</button></div>
             </div>
             <div class="g-sec"><h3>Previous instalments</h3><div id="dPrev"></div></div>
             <div class="g-sec g-det"><button class="g-det-h" type="button" id="detTog" aria-expanded="false"><h3>Details</h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <div class="g-det-b" id="detBody" hidden><div class="g-kv"><span>Invested</span><b class="num" id="dInv"></b></div><div class="g-kv"><span>Current value</span><b class="num" id="dCur"></b></div><div class="g-kv"><span>Instalments paid</span><b class="num" id="dPaid"></b></div><div class="g-kv"><span>Payment</span><b>Autopay · bank mandate</b></div></div></div>
-            <div style="padding:16px"><button class="g-help" type="button" data-help><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7M12 17h.01" stroke-linecap="round"/></svg>Need help</button></div>
+            <div style="padding:16px;display:flex;align-items:center;gap:10px"><button class="g-help" type="button" data-help><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7M12 17h.01" stroke-linecap="round"/></svg>Need help</button><span class="cm" data-k="help"></span></div>
           </div>
         </section>
 
@@ -629,16 +623,16 @@ td{font-size:14px}
           <div class="top"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>Example Equity Fund</h2></div>
           <div class="body">
             <div class="rhero"><div class="st" id="rIcon">!</div><h1 id="rTitle"></h1><p id="rSub"></p></div>
-            <div class="aicard"><span class="cm abs">1</span>
+            <div class="aicard"><span class="cm abs" data-k="ai"></span>
               <div class="aicard-h"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>What's happening <span id="rCheck" style="margin-left:auto"></span></div>
               <div class="txt" id="rAi"></div>
             </div>
-            <div style="padding:14px 16px 0;position:relative" id="rMissWrap"><span class="cm abs" style="left:8px;top:6px">2</span><div class="miss" id="rMiss"></div></div>
-            <div class="sec" style="display:flex;align-items:center;gap:8px">What's going on this month? <span class="cm">3</span></div>
+            <div style="padding:14px 16px 0;position:relative" id="rMissWrap"><span class="cm abs" data-k="miss" style="left:8px;top:6px"></span><div class="miss" id="rMiss"></div></div>
+            <div class="sec" style="display:flex;align-items:center;gap:8px">What's going on this month? <span class="cm" data-k="reasons"></span></div>
             <div class="reasons" id="rReasons"></div>
             <div class="sec">What you can do today</div>
             <div class="acts" id="rActs"></div>
-            <div class="sec" style="display:flex;align-items:center;gap:8px">Something else? <span class="cm">4</span></div>
+            <div class="sec" style="display:flex;align-items:center;gap:8px">Something else? <span class="cm" data-k="ask"></span></div>
             <div class="askline"><input id="rQ" placeholder="Ask in English or Hinglish" aria-label="Ask about this SIP"><button class="send" id="rSend" aria-label="Ask"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
             <div class="disc" style="padding-top:8px">Explains your SIP and the rules only. Not investment advice.</div>
             <button class="linkrow" data-open="sip" type="button">View SIP details</button>
@@ -652,9 +646,9 @@ td{font-size:14px}
             <div class="ctx"><span>About</span><b id="ctxTxt"></b></div>
             <div class="chat" id="chat"></div>
           </div>
-          <div class="disc">Explains your SIP and the rules only. Not investment advice.</div>
+          <div class="disc"><span class="cm" data-k="checks" style="vertical-align:-5px;margin-right:6px"></span>Explains your SIP and the rules only. Not investment advice.</div>
           <div class="sugg" id="sugg"></div>
-          <div class="inbar"><textarea id="q" rows="1" placeholder="Ask in English or Hinglish" aria-label="Your question"></textarea><button class="send" id="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="inbar" style="position:relative"><span class="cm abs" data-k="ask" style="left:4px;top:-8px"></span><textarea id="q" rows="1" placeholder="Ask in English or Hinglish" aria-label="Your question"></textarea><button class="send" id="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
         </section>
 
         <!-- sheets -->
@@ -837,8 +831,8 @@ function renderAll(){
     <div class="g-inst-t"><b>${ord(x.no)} instalment ${x.bad?'<span class="g-tag">Failed</span>':''}<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></b><span>${gDate(x.ts)}${x.bad?' · insufficient balance':''}</span></div>
     ${x.bad&&i===0&&pay&&pay.available?`<button class="g-pay new-only" type="button" data-act="pay">Pay now</button>`:''}</div>`).join('') + (h.length>3?`<div class="fine" style="padding:4px 0 8px 40px">+ ${h.length-3} earlier</div>`:'');
   $('dAlert').innerHTML = failed
-    ? `<div class="g-alert"><span class="cm abs">2</span><h4>${f.amount} didn't go through · your SIP is still active</h4><p>${pay&&pay.available?`You can pay until ${f.pay_now_deadline}. `:''}Groww doesn't charge for a failed SIP; your bank may.</p><div class="miss">${missHTML()}</div><button class="btn primary" data-open-recover>See your options</button></div>`
-    : S.moment==='tight' ? `<div class="g-alert amber"><span class="cm abs">2</span><h4>${f.amount} goes out on ${f.next_debit}</h4><p>Short this month? ${esc(sk.when)}. Lowering the amount also counts if you do it now.</p><button class="btn primary" data-open-recover>See options for this month</button></div>` : '';
+    ? `<div class="g-alert"><span class="cm abs" data-k="miss"></span><h4>${f.amount} didn't go through · your SIP is still active</h4><p>${pay&&pay.available?`You can pay until ${f.pay_now_deadline}. `:''}Groww doesn't charge for a failed SIP; your bank may.</p><div class="miss">${missHTML()}</div><button class="btn primary" data-open-recover>See your options</button></div>`
+    : S.moment==='tight' ? `<div class="g-alert amber"><span class="cm abs" data-k="miss"></span><h4>${f.amount} goes out on ${f.next_debit}</h4><p>Short this month? ${esc(sk.when)}. Lowering the amount also counts if you do it now.</p><button class="btn primary" data-open-recover>See options for this month</button></div>` : '';
   $('ctxTxt').textContent=`Example Equity Fund · ${f.amount}/month · ${failed?'last instalment failed':'next on '+f.next_debit}`;
   $('sugg').innerHTML=(QUESTIONS[S.moment]||[]).map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
   renderInsight();
@@ -1015,12 +1009,12 @@ $('detTog').onclick=()=>{ const o=$('detTog').getAttribute('aria-expanded')==='t
 
 /* ---------- right panel ---------- */
 const NOTES={
-  home:{after:[[0,'Status on the dashboard','The fund row shows the failed instalment and the pay-by date, not just the SMS.'],[0,'An alert that says what next','"Still active" and the deadline, instead of only "failed".']],
-        before:[[0,'Nothing on the dashboard','The fund row looks normal. The failure only shows up in an SMS.'],[0,'An alert with no next step','It says the payment failed, but not that the SIP is still active or what to do.']]},
-  sip:{after:[[2,'Missed X of 3','Failed payments count toward the rule that cancels a SIP after 3 in a row. Now it\'s visible before it\'s too late.'],[0,'Skip warns first','If skipping would be the 3rd in a row, it says so under Skip.'],[5,'Cancel, explained','Still two taps, never hidden. It first says the money stays invested.'],[4,'Need help opens the assistant','Plain answers about this SIP, checked before they\'re shown.']],
+  home:{after:[['alert','An alert that says what next','"Still active" and the pay-by date, instead of only "failed".'],['flag','Status on the dashboard','The fund row shows the failed instalment and its deadline, not just the SMS.']],
+        before:[[0,'An alert with no next step','It says the payment failed, but not that the SIP is still active or what to do.'],[0,'Nothing on the dashboard','The fund row looks normal. The failure only shows up in an SMS.']]},
+  sip:{after:[['miss','Missed X of 3','Failed payments count toward the rule that cancels a SIP after 3 in a row. Now it\'s visible before it\'s too late.'],['skip','Skip warns first','If skipping would be the 3rd in a row, it says so here.'],['help','Need help opens the assistant','Plain answers about this SIP, checked before they\'re shown.'],['cancel','Cancel, explained','Still two taps, never hidden. It first says the money stays invested.']],
        before:[[0,'No pay-by date','Nothing says the instalment can still be paid, or until when.'],[0,'No missed count','The rule that 3 in a row cancels the SIP isn\'t shown anywhere.'],[0,'Skip and cancel with no warning','Skipping a 3rd time or cancelling gives no explanation of what happens.']]},
-  recover:{after:[[1,'A plain explanation first','Written by AI for this SIP, and checked before it\'s shown.'],[2,'Missed X of 3','How close the SIP is to being cancelled automatically.'],[3,'Options that fit the reason','Pick what\'s going on; the options re-order and each shows its deadline.'],[4,'Ask anything','English or Hinglish. It never recommends funds or predicts returns.']]},
-  assistant:{after:[[4,'Ask anything','Answers use only the rules engine\'s facts for this SIP.'],[0,'Checked before it\'s shown','Code checks and an AI reviewer run on every answer. A failed check shows a safe fallback.'],[0,'It declines advice','Fund picks and return predictions are declined by code, before any AI call.']]},
+  recover:{after:[['ai','A plain explanation first','Written by AI for this SIP, and checked before it\'s shown.'],['miss','Missed X of 3','How close the SIP is to being cancelled automatically.'],['reasons','Options that fit the reason','Pick what\'s going on; the options re-order and each shows its deadline.'],['ask','Ask anything','English or Hinglish. It never recommends funds or predicts returns.']]},
+  assistant:{after:[['ask','Ask anything','Answers use only the rules engine\'s facts for this SIP.'],['checks','Checked before it\'s shown','Code checks and an AI reviewer run on every answer. Fund picks and predictions are declined.']]},
 };
 let LAST=null;
 function renderInsight(){
@@ -1028,7 +1022,13 @@ function renderInsight(){
   
   $('inTitle').textContent = MODE==='after'?'What\'s new on this screen':'What\'s missing on this screen';
   const ul=$('inNotes'); ul.className='inotes '+MODE;
-  ul.innerHTML=list.map(([n,t,d])=>`<li>${n?`<span class="cm">${n}</span>`:'<span class="dot"></span>'}<span><b>${esc(t)}</b>${esc(d)}</span></li>`).join('');
+  const numbered = MODE==='after';
+  const html=list.map(([k,t,d],i)=>`<li>${numbered?`<span class="cm">${i+1}</span>`:'<span class="dot"></span>'}<span><b>${esc(t)}</b>${esc(d)}</span></li>`).join('');
+  ul.innerHTML=html; $('callouts').innerHTML=html;
+  // phone markers: number only the ones this screen's notes point to
+  const scope=[$('s-'+scr), ...(scr==='home'?[$('notif')]:[])];
+  document.querySelectorAll('#device .cm[data-k]').forEach(m=>{ m.hidden=true; });
+  if(numbered) list.forEach(([k],i)=>scope.forEach(el=>el.querySelectorAll(`.cm[data-k="${k}"]`).forEach(m=>{ m.textContent=i+1; m.hidden=false; })));
   const f=EV.facts, sk=O('skip'), pay=O('pay');
   const rows=[['Today',f.today],['Last instalment',S.status==='failed'?'Failed '+R.fmt(S.lastFailure):'Paid'],...(f.pay_now_deadline?[['Can still pay until',f.pay_now_deadline]]:[]),['Next instalment',`${f.amount} on ${f.next_debit}`],['Missed in a row',f.missed_in_a_row],['Skip',sk.risk?'Would cancel the SIP':sk.when],['Cancel',f.cancel.replace(' (next instalment within 7 days)','')]];
   $('inFacts').innerHTML=rows.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('');
