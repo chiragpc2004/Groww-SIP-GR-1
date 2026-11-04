@@ -598,6 +598,19 @@ td{font-size:14px}
   body.app-on{--container:min(1600px,calc(100vw - 2*var(--gutter) - 96px))}
   body.app-on .stage{grid-template-columns:minmax(0,1fr) var(--pw,390px) minmax(0,1fr);gap:clamp(64px,5.5vw,140px)}
 }
+
+/* pipeline: all steps equal; fills in order once, when it scrolls into view */
+.pipe::before{display:none}
+.pipe li::after{content:"";position:absolute;left:34px;right:0;top:16px;height:2px;background:linear-gradient(var(--green),var(--green)) 0 0/0% 100% no-repeat,var(--line-2);transition:background-size .35s ease calc(var(--i)*.35s + .2s)}
+.pipe li:last-child::after{display:none}
+.pipe li::before{transition:background-color .25s ease calc(var(--i)*.35s),border-color .25s ease calc(var(--i)*.35s),color .25s ease calc(var(--i)*.35s)}
+.pipe li.gate::before{background:var(--page);border-color:var(--line-2);color:var(--head);box-shadow:none}
+.pipe.run li::before,.pipe.done li::before{background:var(--green);border-color:var(--green);color:#fff}
+.pipe.run li::after,.pipe.done li::after{background-size:100% 100%,auto}
+.gtag{font-style:normal;font-family:var(--f);font-size:11.5px;font-weight:600;color:var(--green-ink);background:var(--green-soft);padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:2px;white-space:nowrap}
+@media (max-width:960px){.pipe li::after{left:16px;right:auto;top:34px;bottom:-18px;width:2px;height:auto;background:linear-gradient(var(--green),var(--green)) 0 0/100% 0% no-repeat,var(--line-2)}
+  .pipe.run li::after,.pipe.done li::after{background-size:100% 100%,auto}}
+@media (prefers-reduced-motion:reduce){.pipe li::before,.pipe li::after{transition:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -779,12 +792,12 @@ td{font-size:14px}
   <div class="cmp" role="table"><div class="cmp-h" role="row"><span role="columnheader">Moment</span><span role="columnheader"><i class="swt red"></i>Today's app</span><span role="columnheader"><i class="swt green"></i>With the assistant</span></div><div id="aboutMoments"></div></div></section>
 
   <section class="asec"><h2 class="h2">How an answer is made</h2><p class="sub">Every question takes the same five steps. Nothing reaches the user without passing the last one.</p>
-  <ol class="pipe">
-    <li><b>The question</b><span>In the user's own words, English or Hinglish.</span></li>
-    <li><b>Policy check</b><span>Fund picks and predictions are declined by code, before any AI call.</span></li>
-    <li><b>Rules engine</b><span>Code calculates every date, deadline and option. The AI can't change them.</span></li>
-    <li><b>AI explains</b><span>Drafts an answer using only the engine's facts, citing the rules it used.</span></li>
-    <li class="gate"><b>7 checks</b><span>Code checks and an AI reviewer. Pass: the answer is shown. Fail: a safe fallback.</span></li>
+  <ol class="pipe" id="pipe">
+    <li style="--i:0"><b>The question</b><span>In the user's own words, English or Hinglish.</span></li>
+    <li style="--i:1"><b>Policy check</b><span>Fund picks and predictions are declined by code, before any AI call.</span></li>
+    <li style="--i:2"><b>Rules engine</b><span>Code calculates every date, deadline and option. The AI can't change them.</span></li>
+    <li style="--i:3"><b>AI explains</b><span>Drafts an answer using only the engine's facts, citing the rules it used.</span></li>
+    <li style="--i:4" class="gate"><b>7 checks <em class="gtag">Decides what's shown</em></b><span>Code checks and an AI reviewer. Pass: the answer is shown. Fail: a safe fallback.</span></li>
   </ol></section>
 
   <section class="asec two"><div><h2 class="h2">What it will never do</h2>
@@ -1125,6 +1138,12 @@ function fitDemo(){
   if(zs>1.01) cols.forEach(c=>c.style.zoom=zs);
 }
 addEventListener('resize',()=>{ clearTimeout(fitDemo.t); fitDemo.t=setTimeout(fitDemo,80); });
+
+
+/* ---------- pipeline: light up once when seen ---------- */
+(function(){ const el=$('pipe'); if(!el) return;
+  if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches){ el.classList.add('done'); return; }
+  const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ el.classList.add('run'); io.disconnect(); } }); },{threshold:.45}); io.observe(el); })();
 
 /* ---------- start ---------- */
 route();
