@@ -611,6 +611,13 @@ td{font-size:14px}
 @media (max-width:960px){.pipe li::after{left:16px;right:auto;top:34px;bottom:-18px;width:2px;height:auto;background:linear-gradient(var(--green),var(--green)) 0 0/100% 0% no-repeat,var(--line-2)}
   .pipe.run li::after,.pipe.done li::after{background-size:100% 100%,auto}}
 @media (prefers-reduced-motion:reduce){.pipe li::before,.pipe li::after{transition:none}}
+
+/* the two column headings carry the page */
+.guide h1,.inote-wrap h3{font-family:var(--display);font-weight:800;font-size:clamp(30px,2.7vw,42px);line-height:1.02;letter-spacing:-.045em;color:var(--head);text-wrap:balance;margin:0}
+.guide h1::before,.inote-wrap h3::before{content:"";display:block;width:40px;height:5px;border-radius:3px;background:var(--green);margin-bottom:16px;transition:background-color .2s}
+body.mode-before .guide h1::before,body.mode-before .inote-wrap h3::before{background:var(--red)}
+.inote-wrap{gap:18px}
+body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -862,7 +869,7 @@ function setScenario(s){
   else setTimeout(()=>$(MODE==='after'?'notif':'sms').classList.add('on'),500);
 }
 function setMode(m){
-  MODE=m; $('phone').dataset.mode=m; document.querySelectorAll('[data-mode-btn]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.modeBtn===m));
+  MODE=m; $('phone').dataset.mode=m; document.body.classList.toggle('mode-before',m==='before'); document.querySelectorAll('[data-mode-btn]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.modeBtn===m));
   $('modeNote').textContent = m==='after' ? 'Pick a moment below, then tap the notification on the phone. Switch to Today to compare.' : "How these moments work today. Tap the message on the phone, then switch back to compare.";
   $('callouts').hidden = m!=='after';
   $('gScen').innerHTML=scenButtons();
