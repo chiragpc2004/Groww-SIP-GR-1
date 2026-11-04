@@ -161,7 +161,7 @@
     if (facts.pay_now_deadline) allowedDates.add(facts.pay_now_deadline);
     if (s.lastFailure) allowedDates.add(fmt(s.lastFailure));
     const allowedAmounts = new Set([s.amount, s.invested, s.currentValue].map(Number));
-    return { facts, options, warnings, allowedDates: [...allowedDates], allowedAmounts: [...allowedAmounts] };
+    return { facts, options, warnings, nextTs: next, allowedDates: [...allowedDates], allowedAmounts: [...allowedAmounts] };
   }
   function suffix(n) { return (n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th'); }
 

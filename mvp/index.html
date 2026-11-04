@@ -109,6 +109,69 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .tabbar span{display:grid;justify-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted)}
 .tabbar span.on{color:var(--head)} .tabbar svg{width:22px;height:22px}
 
+/* ---------- in-app skin: matches the Groww app (dark) ---------- */
+#device{--bg:#0A0B0D;--surface:#16181B;--card:#121417;--line:#24272B;--line-2:#3A3D42;--head:#F4F5F6;--ink:#D3D5D9;--muted:#8E9197;
+  --green:#00B386;--green-ink:#2BD3A5;--green-soft:#0F2A22;--red:#F0614A;--red-soft:#33181A;--amber:#F2B451;--amber-soft:#30250F;--scrim:rgba(0,0,0,.6);--sheet-shadow:0 -8px 32px rgba(0,0,0,.5);color-scheme:dark;color:var(--ink)}
+.g-head{display:flex;align-items:center;gap:14px;padding:10px 16px 6px;min-height:56px}
+.g-logo{width:34px;height:34px;border-radius:17px;background:linear-gradient(135deg,#00B386,#2E7DF6);display:grid;place-items:center;flex:none}
+.g-head b{flex:1;font-size:20px;font-weight:600;color:var(--head);letter-spacing:-.01em}
+.g-av{width:34px;height:34px;border-radius:17px;background:#2A2D33;color:var(--head);display:grid;place-items:center;font-size:12.5px;font-weight:700}
+.g-tabs{display:flex;justify-content:space-between;padding:4px 16px 0;border-bottom:1px solid var(--line);font-size:16px;font-weight:500}
+.g-tabs span{padding:10px 2px 12px;color:var(--muted)} .g-tabs span.on{color:var(--head);font-weight:600;box-shadow:inset 0 -3px 0 var(--head);border-radius:0}
+.g-hold{margin:16px;padding:18px 16px 6px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.g-hold-top{display:flex;align-items:flex-end;gap:10px}
+.g-hold-top>div{flex:1;display:grid;gap:6px}
+.g-cap{font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.g-hold-top b{font-size:22px;color:var(--head);font-weight:600}
+.g-circ{width:36px;height:36px;border-radius:18px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--head);flex:none}
+.g-dash{border-top:1.5px dashed var(--line-2);margin:16px 0 4px}
+.g-kv{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;font-size:15px}
+.g-kv span{color:var(--muted)} .g-kv b{color:var(--head);font-weight:500}
+.g-sort{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px;color:var(--head);font-size:14px;font-weight:500}
+.g-dotted{text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:5px;text-decoration-thickness:1px}
+.g-fund{display:flex;justify-content:space-between;gap:14px;width:100%;text-align:left;padding:14px 16px 16px;border-bottom:1px solid var(--line);position:relative}
+.g-fund:active{background:var(--surface)}
+.g-fund-l{display:grid;gap:6px;min-width:0} .g-fund-l b{font-size:15px;font-weight:500;color:var(--head)} .g-fund-l>span{font-size:13px;color:var(--muted)}
+.g-fund-r{display:grid;gap:6px;justify-items:end;flex:none} .g-fund-r b{font-size:15px;font-weight:500;color:var(--head)} .g-fund-r span{font-size:13px;color:var(--muted)}
+.g-flag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--red)!important}
+.g-flag.amber{color:var(--amber)!important} .g-flag i{width:6px;height:6px;border-radius:3px;background:currentColor}
+.g-pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line-2);border-radius:10px;padding:10px 18px;color:var(--head);font-weight:500;font-size:14.5px}
+.g-promo{margin:16px;padding:18px 16px;border:1px solid var(--line);border-radius:18px;background:var(--card);display:flex;align-items:center;gap:8px}
+.g-promo>div{flex:1;display:grid;gap:14px;justify-items:start} .g-promo b{color:var(--head);font-size:16px;font-weight:600;line-height:1.35}
+.g-btn{background:var(--green);color:#fff;font-weight:600;font-size:15px;padding:10px 18px;border-radius:8px}
+#device .tabbar{grid-template-columns:repeat(3,1fr);background:#111315;border-top:0;padding-top:10px}
+#device .tabbar span{font-size:11.5px;gap:5px} #device .tabbar svg{width:26px;height:26px}
+#device .tabbar span.on{color:#7B8CFF}
+.g-top{flex:none;display:flex;align-items:center;gap:10px;min-height:56px;padding:0 16px 0 8px}
+.g-top h2{margin:0;flex:1;font-size:19px;font-weight:600;color:var(--head)}
+.g-link{color:var(--head);font-weight:500;font-size:15px;display:inline-flex;align-items:center}
+.g-sum{padding:14px 16px 22px;display:grid;gap:6px;justify-items:start;border-bottom:1px solid var(--line)}
+.g-amt{font-size:28px;color:var(--head);font-weight:600;letter-spacing:-.01em}
+.g-day{font-size:14px;color:var(--head);font-weight:500}
+.g-fname{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14.5px;margin-top:10px}
+.g-acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.g-step,.g-out{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:9px;font-weight:600;font-size:14.5px}
+.g-step{background:var(--green-soft);color:var(--green-ink)} .g-out{border:1px solid var(--line-2);color:var(--head)}
+.g-sec{padding:20px 16px 8px;border-bottom:1px solid var(--line)}
+.g-sec h3{margin:0 0 10px;font-size:19px;font-weight:600;color:var(--head)}
+.g-inst{display:flex;align-items:center;gap:16px;padding:10px 0;width:100%;text-align:left}
+.g-ic{width:24px;display:grid;place-items:center;color:var(--head);flex:none}
+.g-inst-t{flex:1;display:grid;gap:3px;min-width:0} .g-inst-t b{font-size:15.5px;font-weight:500;color:var(--head);display:inline-flex;align-items:center;gap:6px} .g-inst-t span{font-size:13.5px;color:var(--muted)}
+.g-inst-t em{font-style:normal;font-size:12.5px;color:var(--amber)}
+.g-st{width:24px;height:24px;border-radius:12px;display:grid;place-items:center;flex:none}
+.g-st.ok{background:var(--green)} .g-st.bad{background:var(--red)}
+.g-tag{font-size:12px;font-weight:600;color:var(--red);background:var(--red-soft);padding:2px 8px;border-radius:6px}
+.g-pay{color:var(--green-ink);font-weight:600;font-size:14.5px}
+.g-det{padding-bottom:16px} .g-det-h{display:flex;justify-content:space-between;align-items:center;width:100%;color:var(--head)} .g-det-h h3{margin:0}
+.g-det-h[aria-expanded="true"] svg{transform:rotate(180deg)} .g-det-b{padding-top:8px}
+.g-help{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line-2);border-radius:10px;padding:10px 16px;color:var(--head);font-weight:500;font-size:14.5px}
+/* assistant alert inside SIP details (new) */
+.g-alert{margin:16px 16px 4px;border:1px solid #4A2620;background:linear-gradient(180deg,#2A1517,#1A1214);border-radius:16px;padding:14px;display:grid;gap:12px;position:relative}
+.g-alert.amber{border-color:#4A3A16;background:linear-gradient(180deg,#2A2212,#17140E)}
+.g-alert h4{margin:0;font-size:15.5px;color:var(--head);font-weight:600} .g-alert p{margin:0;font-size:13.5px;color:var(--ink)}
+.g-alert .miss{border-color:rgba(255,255,255,.08);background:rgba(0,0,0,.2)}
+.g-alert .btn{height:44px;font-size:15px}
+
 /* notification */
 .notif{position:absolute;left:10px;right:10px;top:8px;z-index:40;visibility:hidden;background:rgba(250,250,251,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,.18);transform:translateY(calc(-100% - 90px));transition:transform .45s cubic-bezier(.2,.9,.2,1),visibility 0s .45s;text-align:left;width:calc(100% - 20px);color:#121417}
 .notif.on{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.2,1)}
@@ -347,57 +410,66 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
         <button class="sms" id="sms" type="button" aria-label="SMS: SIP payment failed"><span class="ic">✉</span><span style="flex:1;min-width:0"><b>Messages</b><span id="smsBody"></span></span><small>now</small></button>
         <button class="demo-fab" id="demoFab" type="button">Demo scenarios ▴</button>
 
-        <!-- Home -->
-        <section class="scr root on" id="s-home" aria-label="Mutual funds">
-          <div class="hello"><div class="av">AK</div><b>Mutual Funds</b><button class="ib" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg></button></div>
-          <div class="seg"><span>Explore</span><span class="on">Dashboard</span><span>SIPs</span><span>Watchlist</span></div>
+        <!-- Home: Mutual funds dashboard -->
+        <section class="scr root on" id="s-home" aria-label="Mutual funds dashboard">
+          <div class="g-head"><span class="g-logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Mutual Funds</b>
+            <button class="ib" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg></button>
+            <span class="g-av" aria-hidden="true">AK</span></div>
+          <div class="g-tabs"><span>Explore</span><span class="on">Dashboard</span><span>SIPs</span><span>Watchlist</span></div>
           <div class="body">
-            <div class="hold">
-              <div class="hold-row"><div><span>Current value</span><b class="num" id="hCur"></b></div><div style="text-align:right"><span>Total returns</span><b class="num" id="hRet"></b></div></div>
-              <div class="hold-row"><div><span>Invested</span><b class="num" style="font-size:15px" id="hInv"></b></div><div style="text-align:right"><span>Active SIPs</span><b class="num" style="font-size:15px">1</b></div></div>
+            <div class="g-hold">
+              <div class="g-hold-top"><div><div class="g-cap">Holdings (1)</div><b class="num" id="hCur"></b></div>
+                <span class="g-circ" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+                <span class="g-circ" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V14M9 20v-8M14 20v-5M19 20V9M4 9l5-4 5 4 6-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+              <div class="g-dash"></div>
+              <div class="g-kv"><span>1D returns</span><b class="num pos" id="h1d"></b></div>
+              <div class="g-kv"><span>Total returns</span><b class="num" id="hRet"></b></div>
+              <div class="g-kv"><span>Invested</span><b class="num" id="hInv"></b></div>
+              <div class="g-kv"><span>XIRR (Active) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px"><path d="M6 9l6 6 6-6" stroke-linecap="round"/></svg></span><b>--</b></div>
             </div>
-            <div class="sec">Your SIPs</div>
-            <button class="sipcard" id="sipCard" type="button">
-              <div class="fund"><div class="flogo">EQ</div><div style="flex:1;min-width:0"><b>Example Equity Fund</b><span>Direct · Growth · Monthly SIP</span></div><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="num" style="color:var(--head);font-weight:600" id="cAmt"></span><span id="cChip"></span></div>
+            <div class="g-sort"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 12h10M10 17h4" stroke-linecap="round"/></svg><span class="g-dotted">‹› Current (Invested)</span></div>
+            <button class="g-fund" id="sipCard" type="button">
+              <div class="g-fund-l"><b>Example Equity Fund Direct Plan Growth</b><span>SIP</span><span id="cChip"></span></div>
+              <div class="g-fund-r"><b class="num" id="cCur"></b><span class="num" id="cInv"></span></div>
             </button>
-            <div class="sec">Explore</div>
-            <div class="pad fine" style="color:var(--muted);font-size:13px">Fund discovery and other sections are out of scope for this demo.</div>
+            <div style="display:grid;place-items:center;padding:22px 16px 6px"><span class="g-pill"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" stroke-linecap="round" stroke-linejoin="round"/></svg>Import external funds.</span></div>
+            <div class="g-promo"><div><b>Invest every month and grow your wealth with SIP</b><span class="g-btn">Start a SIP</span></div>
+              <svg width="92" height="84" viewBox="0 0 92 84" aria-hidden="true"><path d="M14 74L34 16l50 12-14 52z" fill="#9FD9C9"/><path d="M30 70L46 22l38 6-12 48z" fill="#D7EEE7"/><g fill="#5FB8A0"><rect x="50" y="34" width="8" height="7" rx="1.5" transform="rotate(10 54 37)"/><rect x="62" y="36" width="8" height="7" rx="1.5" transform="rotate(10 66 39)"/><rect x="48" y="45" width="8" height="7" rx="1.5" transform="rotate(10 52 48)"/><rect x="60" y="47" width="8" height="7" rx="1.5" transform="rotate(10 64 50)" fill="#1F5E52"/><rect x="72" y="49" width="8" height="7" rx="1.5" transform="rotate(10 76 52)"/></g><path d="M10 14l1.6 4 4 1.6-4 1.6L10 25l-1.6-3.8L4.4 19.6l4-1.6z" fill="#B9C8FF"/></svg></div>
           </div>
           <nav class="tabbar" aria-hidden="true">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Stocks</span>
-            <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Mutual Funds</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>Pay</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-5 8-5s6.5 1 8 5"/></svg>Profile</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7 14l3-3 3 2 4-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Stocks</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M4 17l5-6 4 4 3-4 4 5" stroke-linejoin="round"/></svg>F&amp;O</span>
+            <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5V12l6 6" stroke-linejoin="round"/></svg>Mutual Funds</span>
           </nav>
         </section>
 
-        <!-- SIP detail -->
+        <!-- SIP details (both modes; new-only parts appear with the assistant) -->
         <section class="scr" id="s-sip" aria-label="SIP details">
-          <div class="top"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2><button class="ib" aria-label="More"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></div>
+          <div class="g-top"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2><button class="g-dotted g-link" data-cancel type="button"><span class="cm" style="margin-right:6px">5</span>Cancel SIP</button></div>
           <div class="body">
-            <div class="hero">
-              <div class="fund"><div class="flogo">EQ</div><div><b>Example Equity Fund</b><span>Direct · Growth</span></div></div>
-              <div class="amt"><b class="num" id="dAmt"></b><span>monthly</span></div>
-              <div id="dBanner"></div>
-              <div style="position:relative"><span class="cm abs">2</span><div class="miss" id="dMiss"></div></div>
-              <div id="dCta" style="display:grid;gap:10px"></div>
+            <div class="g-sum">
+              <b class="num g-amt" id="dAmt"></b>
+              <span class="g-day" id="dDay"></span>
+              <span class="g-fname">Example Equity Fund Direct Plan Growth <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <div class="g-acts"><button class="g-step" type="button" data-demo="Add step-up"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>Add step-up</button>
+                <button class="g-out" type="button" data-edit><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" stroke-linejoin="round"/></svg>Change amount/date</button></div>
             </div>
-            <div class="kv"><div><span>Next instalment</span><b class="num" id="dNext"></b></div><div><span>Instalments paid</span><b class="num" id="dPaid"></b></div><div><span>Invested</span><b class="num" id="dInv"></b></div><div><span>Current value</span><b class="num" id="dCur"></b></div></div>
-            <div class="sec">Manage SIP</div>
-            <div class="list">
-              <button class="row ai" data-open="assistant" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9z"/></svg></span><span class="rt"><b>Ask about this SIP</b><span>Plain answers, checked against the rules</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row" data-sheet="options" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></span><span class="rt"><b>All options this month</b><span id="rOptSub">Pay, skip, lower, move date</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row" data-detail="skip" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5l9 7-9 7V5zM19 5v14" stroke-linejoin="round"/></svg></span><span class="rt"><b>Skip instalment</b><span id="rSkipSub"></span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row" data-detail="reduce" type="button"><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4l10-10-4-4L4 16v4z" stroke-linejoin="round"/></svg></span><span class="rt"><b>Edit SIP</b><span>Change amount or date</span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row danger" data-cancel type="button"><span class="cm" style="margin-right:-6px">5</span><span class="ri"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6" stroke-linecap="round"/></svg></span><span class="rt"><b>Cancel SIP</b><span id="rCancelSub"></span></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
+            <div class="new-only" id="dAlert"></div>
+            <div class="g-sec"><h3>Upcoming</h3>
+              <div class="g-inst"><span class="g-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><rect x="12" y="13" width="4" height="4" rx=".5" fill="currentColor" stroke="none"/></svg></span>
+                <div class="g-inst-t"><b id="dUpN"></b><span id="dUpD"></span><em class="new-only" id="dUpWarn"></em></div>
+                <button class="g-dotted g-link" type="button" data-skip>Skip</button></div>
             </div>
+            <div class="g-sec"><h3>Previous instalments</h3><div id="dPrev"></div></div>
+            <div class="g-sec g-det"><button class="g-det-h" type="button" id="detTog" aria-expanded="false"><h3>Details</h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div class="g-det-b" id="detBody" hidden><div class="g-kv"><span>Invested</span><b class="num" id="dInv"></b></div><div class="g-kv"><span>Current value</span><b class="num" id="dCur"></b></div><div class="g-kv"><span>Instalments paid</span><b class="num" id="dPaid"></b></div><div class="g-kv"><span>Payment</span><b>Autopay · bank mandate</b></div></div></div>
+            <div style="padding:16px"><button class="g-help" type="button" data-help><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7M12 17h.01" stroke-linecap="round"/></svg>Need help</button></div>
           </div>
         </section>
 
         <!-- Recovery (new) -->
         <section class="scr" id="s-recover" aria-label="SIP needs attention">
-          <div class="top"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>Example Equity Fund</h2></div>
+          <div class="top"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>Example Equity Fund</h2></div>
           <div class="body">
             <div class="rhero"><div class="st" id="rIcon">!</div><h1 id="rTitle"></h1><p id="rSub"></p></div>
             <div class="aicard"><span class="cm abs">1</span>
@@ -416,29 +488,9 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
           </div>
         </section>
 
-        <!-- SIP detail as it is today (before) -->
-        <section class="scr" id="s-oldsip" aria-label="SIP details today">
-          <div class="top"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP details</h2></div>
-          <div class="body">
-            <div class="hero">
-              <div class="fund"><div class="flogo">EQ</div><div><b>Example Equity Fund</b><span>Direct · Growth</span></div></div>
-              <div class="amt"><b class="num" id="oAmt"></b><span>monthly</span></div>
-              <div id="oStatus"></div>
-            </div>
-            <div class="kv"><div><span>Next instalment</span><b class="num" id="oNext"></b></div><div><span>Current value</span><b class="num" id="oCur"></b></div></div>
-            <div class="sec">Manage SIP</div>
-            <div class="list">
-              <button class="row" type="button" data-old="skip"><span class="rt"><b>Skip instalment</b></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row" type="button" data-old="edit"><span class="rt"><b>Edit SIP</b></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-              <button class="row danger" type="button" data-old="cancel"><span class="rt"><b>Cancel SIP</b></span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></button>
-            </div>
-            <p class="fine pad" style="color:var(--muted);padding-top:14px">This is a simplified version of the current experience: a failure status with no deadline, no missed-instalment count and no explanation of what cancelling does.</p>
-          </div>
-        </section>
-
         <!-- Assistant -->
         <section class="scr" id="s-assistant" aria-label="SIP assistant">
-          <div class="top lined"><button class="ib" data-back aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP assistant <span class="chip grey" style="vertical-align:2px;margin-left:4px">Beta</span></h2><button class="ib" data-sheet="options" aria-label="Your options"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></button></div>
+          <div class="top lined"><button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>SIP assistant <span class="chip grey" style="vertical-align:2px;margin-left:4px">Beta</span></h2><button class="ib" data-sheet="options" aria-label="Your options"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></button></div>
           <div class="body" id="chatBody">
             <div class="ctx"><span>About</span><b id="ctxTxt"></b></div>
             <div class="chat" id="chat"></div>
@@ -541,8 +593,9 @@ addEventListener('hashchange', route);
 
 /* ---------- screen stack ---------- */
 const stack=['home'];
-function push(id){ const cur=$('s-'+stack.at(-1)); cur.classList.add('under'); const nx=$('s-'+id); nx.classList.add('on'); stack.push(id); if(id==='assistant') setTimeout(()=>$('q').focus({preventScroll:true}),350); }
-function pop(){ if(stack.length<2) return; const cur=$('s-'+stack.pop()); cur.classList.remove('on'); $('s-'+stack.at(-1)).classList.remove('under'); }
+function syncFab(){ $('demoFab').hidden = stack.length>1; }
+function push(id){ const cur=$('s-'+stack.at(-1)); cur.classList.add('under'); const nx=$('s-'+id); nx.classList.add('on'); stack.push(id); syncFab(); if(id==='assistant') setTimeout(()=>$('q').focus({preventScroll:true}),350); }
+function pop(){ if(stack.length<2) return; const cur=$('s-'+stack.pop()); cur.classList.remove('on'); $('s-'+stack.at(-1)).classList.remove('under'); syncFab(); }
 function resetStack(){ while(stack.length>1) pop(); }
 document.addEventListener('click', e=>{ if(e.target.closest('[data-back]')) pop(); });
 
@@ -557,7 +610,7 @@ function setScenario(s){
   S={...s}; EV=R.evaluate(S,today); FIT=null; closeSheet(); resetStack(); renderAll(); resetChat();
   document.querySelectorAll('[data-scen]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.scen===S.id));
   $('notif').classList.remove('on'); $('sms').classList.remove('on'); REASON=null;
-  if(S.moment==='cancel') setTimeout(()=>{ push(MODE==='after'?'sip':'oldsip'); },400);
+  if(S.moment==='cancel') setTimeout(()=>{ push('sip'); },400);
   else setTimeout(()=>$(MODE==='after'?'notif':'sms').classList.add('on'),500);
 }
 function setMode(m){
@@ -580,34 +633,43 @@ $('demoFab').onclick=()=>openSheet('Demo scenarios', `<div class="modes"><button
 
 /* ---------- render ---------- */
 const O = id => EV.options.find(o=>o.id===id);
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const gDate=t=>{ const d=new Date(t); return `${String(d.getUTCDate()).padStart(2,'0')} ${MON[d.getUTCMonth()]} '${String(d.getUTCFullYear()).slice(2)}`; };
+const ord=n=>n+(['th','st','nd','rd'][(n%100>10&&n%100<14)?0:n%10]||'th');
+const monthBack=(t,k)=>{ const d=new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth()-k, d.getUTCDate()); };
+function missHTML(){ const m=S.missedInARow;
+  return `<div class="miss-h"><span>Missed in a row</span><span class="num">${m} of 3</span></div><div class="bars">${[0,1,2].map(i=>`<i class="${i<m?'on':''}"></i>`).join('')}</div><p>${m>=2?'One more missed, failed or skipped instalment cancels this SIP automatically.':m===1?'3 in a row cancel the SIP automatically. A successful payment resets this.':'3 missed, failed or skipped in a row cancel the SIP automatically.'}</p>`; }
+function history(){ // most recent first
+  const failed=S.status==='failed', n=S.monthsRunning||1, out=[];
+  const last = failed ? S.lastFailure : monthBack(EV.nextTs,1);
+  for(let k=0;k<n;k++){ const bad = failed && k<S.missedInARow; out.push({no:n-k, ts:monthBack(last,k), bad}); }
+  return out; }
 function renderAll(){
-  const f=EV.facts, diff=S.currentValue-S.invested, pct=S.invested?diff/S.invested*100:0;
+  const f=EV.facts, diff=S.currentValue-S.invested, pct=S.invested?diff/S.invested*100:0, failed=S.status==='failed';
   $('hCur').textContent=f.current_value; $('hInv').textContent=f.invested_so_far;
-  $('hRet').textContent=`${diff<0?'-':'+'}${R.inr(Math.abs(diff))} (${pct.toFixed(1)}%)`; $('hRet').className='num '+(diff<0?'neg':'pos');
-  $('cAmt').textContent=`${f.amount} · next on ${f.next_debit}`;
-  $('cChip').innerHTML = S.status==='failed' ? `<span class="chip red">${MODE==='after'?'Instalment failed · act by '+(f.pay_now_deadline||f.next_debit):'Failed'}</span>` : (S.moment==='tight' ? `<span class="chip amber">Debit in ${f.days_to_next_debit} days</span>` : '<span class="chip green">Active</span>');
-  $('nTitle').textContent = S.status==='failed' ? 'SIP instalment failed · still active' : `SIP of ${f.amount} due on ${f.next_debit}`;
-  $('nBody').textContent = S.status==='failed' ? `Your ${f.amount} SIP couldn't be debited. You can still pay until ${f.pay_now_deadline||f.next_debit}. Tap to see your options.` : `It goes out in ${f.days_to_next_debit} days. Short this month? You still have time to skip or lower it.`;
-  $('smsBody').textContent = S.status==='failed' ? `Your SIP instalment of Rs.${S.amount} has failed due to insufficient funds.` : `Your SIP of Rs.${S.amount} is due on ${f.next_debit}. Please maintain sufficient balance.`;
-  $('oAmt').textContent=f.amount; $('oNext').textContent=f.next_debit; $('oCur').textContent=f.current_value;
-  $('oStatus').innerHTML = S.status==='failed' ? '<span class="chip red">Last instalment: Failed</span>' : '<span class="chip green">Active</span>';
-  $('dAmt').textContent=f.amount; $('dNext').textContent=f.next_debit; $('dPaid').textContent=String(Math.max(0,(S.monthsRunning||1)-S.missedInARow));
+  const d1=Math.round(S.currentValue*0.0138);
+  $('h1d').textContent=`+${R.inr(d1)} (1.38%)`;
+  $('hRet').textContent=`${diff<0?'-':'+'}${R.inr(Math.abs(diff))} (${Math.abs(pct).toFixed(2)}%)`; $('hRet').className='num '+(diff<0?'neg':'pos');
+  $('cCur').textContent=f.current_value; $('cInv').textContent=`(${f.invested_so_far})`;
+  $('cChip').innerHTML = MODE!=='after' ? '' : failed ? `<span class="g-flag"><i></i>Instalment failed · pay by ${f.pay_now_deadline||f.next_debit}</span>` : (S.moment==='tight' ? `<span class="g-flag amber"><i></i>${f.amount} goes out in ${f.days_to_next_debit} days</span>` : '');
+  $('nTitle').textContent = failed ? 'SIP instalment failed · still active' : `SIP of ${f.amount} due on ${f.next_debit}`;
+  $('nBody').textContent = failed ? `Your ${f.amount} SIP couldn't be debited. You can still pay until ${f.pay_now_deadline||f.next_debit}. Tap to see your options.` : `It goes out in ${f.days_to_next_debit} days. Short this month? You still have time to skip or lower it.`;
+  $('smsBody').textContent = failed ? `Your SIP instalment of Rs.${S.amount} has failed due to insufficient funds.` : `Your SIP of Rs.${S.amount} is due on ${f.next_debit}. Please maintain sufficient balance.`;
+  // SIP details
+  $('dAmt').textContent=f.amount; $('dDay').textContent=`${ord(S.sipDay)} of every month`;
   $('dInv').textContent=f.invested_so_far; $('dCur').textContent=f.current_value; $('dCur').className='num '+(diff<0?'neg':'pos');
-  const pay=O('pay');
-  $('dBanner').innerHTML = S.status==='failed'
-    ? `<div class="banner red"><span class="bi">!</span><div><b>Instalment of ${f.amount} failed on ${R.fmt(S.lastFailure)}</b>Insufficient balance. Your SIP is still active.${pay&&pay.available?` You can pay until ${f.pay_now_deadline}.`:''}</div></div>`
-    : S.moment==='tight' ? `<div class="banner amber"><span class="bi">i</span><div><b>${f.amount} will be debited on ${f.next_debit}</b>Short this month? Skipping or lowering the amount still counts for this instalment if you do it now.</div></div>` : '';
-  const m=S.missedInARow;
-  $('dMiss').innerHTML=`<div class="miss-h"><span>Missed in a row</span><span class="num">${m} of 3</span></div><div class="bars">${[0,1,2].map(i=>`<i class="${i<m?'on':''}"></i>`).join('')}</div><p>${m>=2?'One more missed, failed or skipped instalment cancels this SIP automatically.':m===1?'3 in a row cancel the SIP automatically. A successful payment resets this.':'3 missed, failed or skipped in a row cancel the SIP automatically.'}</p>`;
-  $('dMiss').hidden = m===0 && S.moment!=='failed';
-  $('dCta').innerHTML = S.status==='failed'
-    ? `${pay&&pay.available?`<button class="btn primary" data-act="pay">Pay ${f.amount} now</button>`:''}<button class="btn outline" data-sheet="options">See all options</button>`
-    : S.moment==='tight' ? `<button class="btn primary" data-sheet="options">See options for this month</button>` : '';
-  const sk=O('skip'), ca=O('cancel');
-  $('rSkipSub').textContent = sk.risk ? 'Would cancel this SIP' : sk.when;
-  $('rCancelSub').textContent = ca.available ? 'Future instalments stop; money stays invested' : ca.when;
-  $('rOptSub').textContent = EV.options.filter(o=>o.id!=='cancel'&&o.available).map(o=>({pay:'Pay',skip:'Skip',reduce:'Lower',date:'Move date'}[o.id])).filter(Boolean).join(', ') || 'See what still applies';
-  $('ctxTxt').textContent=`Example Equity Fund · ${f.amount}/month · ${S.status==='failed'?'last instalment failed':'next on '+f.next_debit}`;
+  const h=history(); $('dPaid').textContent=String(h.filter(x=>!x.bad).length);
+  $('dUpN').textContent=`${ord(h.length+1)} instalment`; $('dUpD').textContent=gDate(EV.nextTs);
+  const sk=O('skip'), pay=O('pay');
+  $('dUpWarn').textContent = sk.risk ? 'Skipping this would be the 3rd in a row and cancel the SIP' : (S.moment==='tight' ? sk.when : '');
+  const shown=h.slice(0,3);
+  $('dPrev').innerHTML = shown.map((x,i)=>`<div class="g-inst"><span class="g-st ${x.bad?'bad':'ok'}">${x.bad?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</span>
+    <div class="g-inst-t"><b>${ord(x.no)} instalment ${x.bad?'<span class="g-tag">Failed</span>':''}<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></b><span>${gDate(x.ts)}${x.bad?' · insufficient balance':''}</span></div>
+    ${x.bad&&i===0&&pay&&pay.available?`<button class="g-pay new-only" type="button" data-act="pay">Pay now</button>`:''}</div>`).join('') + (h.length>3?`<div class="fine" style="padding:4px 0 8px 40px">+ ${h.length-3} earlier</div>`:'');
+  $('dAlert').innerHTML = failed
+    ? `<div class="g-alert"><span class="cm abs">2</span><h4>${f.amount} didn't go through · your SIP is still active</h4><p>${pay&&pay.available?`You can pay until ${f.pay_now_deadline}. `:''}Groww doesn't charge for a failed SIP; your bank may.</p><div class="miss">${missHTML()}</div><button class="btn primary" data-open-recover>See your options</button></div>`
+    : S.moment==='tight' ? `<div class="g-alert amber"><span class="cm abs">2</span><h4>${f.amount} goes out on ${f.next_debit}</h4><p>Short this month? ${esc(sk.when)}. Lowering the amount also counts if you do it now.</p><button class="btn primary" data-open-recover>See options for this month</button></div>` : '';
+  $('ctxTxt').textContent=`Example Equity Fund · ${f.amount}/month · ${failed?'last instalment failed':'next on '+f.next_debit}`;
   $('sugg').innerHTML=(QUESTIONS[S.moment]||[]).map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
 }
 
@@ -630,7 +692,7 @@ document.addEventListener('click', e=>{
   const a=e.target.closest('[data-act]'); if(a){ closeSheet(); toast(`Demo: in the app this would open "${ACT[a.dataset.act]||'Continue'}". Nothing was changed.`); return; }
   const op=e.target.closest('[data-open]'); if(op){ push(op.dataset.open); return; }
   const qa=e.target.closest('[data-ask]'); if(qa){ closeSheet(); if(stack.at(-1)!=='assistant') push('assistant'); setTimeout(()=>{ $('q').value=qa.dataset.ask; ask(); },350); return; }
-  const cn=e.target.closest('[data-cancel]'); if(cn){ startCancel(); return; }
+  const cn=e.target.closest('[data-cancel]'); if(cn){ MODE==='after'?startCancel():oldCancel(); return; }
 });
 
 /* ---------- cancel flow (two taps to confirm, never hidden) ---------- */
@@ -657,11 +719,9 @@ function startCancel(){
 
 /* ---------- notification ---------- */
 $('notif').onclick=()=>{ $('notif').classList.remove('on'); resetStack(); push('recover'); renderRecover(); };
-$('sms').onclick=()=>{ $('sms').classList.remove('on'); resetStack(); push('oldsip'); };
+$('sms').onclick=()=>{ $('sms').classList.remove('on'); resetStack(); push('sip'); };
 $('sipCard').onclick=()=>{ $('notif').classList.remove('on'); $('sms').classList.remove('on');
-  if(MODE==='before') return push('oldsip');
-  if(S.moment==='cancel') return push('sip');
-  push('recover'); renderRecover(); };
+  push('sip'); };
 
 /* ---------- assistant ---------- */
 function scrollChat(){ const b=$('chatBody'); b.scrollTop=b.scrollHeight; }
@@ -734,7 +794,7 @@ function renderRecover(){
   $('rTitle').textContent = failed ? 'Your SIP is still active' : `${f.amount} goes out on ${f.next_debit}`;
   $('rSub').textContent = failed ? `${f.amount} didn't go through on ${R.fmt(S.lastFailure)} · insufficient balance` : `In ${f.days_to_next_debit} days. If this month is tight, you still have time to change it.`;
   const m=S.missedInARow;
-  $('rMiss').innerHTML=$('dMiss').innerHTML; $('rMissWrap').hidden = m===0;
+  $('rMiss').innerHTML=missHTML(); $('rMissWrap').hidden = m===0;
   $('rReasons').innerHTML = REASONS_R.map(([k,l])=>`<button type="button" data-reason-r="${k}" aria-pressed="${REASON===k}">${l}</button>`).join('');
   renderActs(); loadAiSummary(); document.querySelector('#s-recover .body').scrollTop=0;
 }
@@ -767,13 +827,19 @@ async function loadAiSummary(){
 function askFromRecover(){ const q=$('rQ').value.trim(); if(q.length<3) return; $('rQ').value=''; push('assistant'); setTimeout(()=>{ $('q').value=q; ask(); },350); }
 $('rSend').onclick=askFromRecover; $('rQ').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); askFromRecover(); } });
 
-/* ---------- today's experience (before) ---------- */
-document.addEventListener('click', e=>{ const b=e.target.closest('[data-old]'); if(!b) return; const k=b.dataset.old;
-  if(k==='cancel'){ openSheet('Cancel SIP', `<p>Why do you want to cancel?</p><div style="display:grid;gap:8px">${REASONS.map((r,i)=>`<button class="choice" role="radio" aria-checked="false" data-oldr="${i}"><i></i>${esc(r)}</button>`).join('')}</div><button class="btn danger" id="oldConfirm" disabled>Cancel SIP</button>`);
-    document.querySelectorAll('[data-oldr]').forEach(x=>x.onclick=()=>{ document.querySelectorAll('[data-oldr]').forEach(y=>y.setAttribute('aria-checked','false')); x.setAttribute('aria-checked','true'); $('oldConfirm').disabled=false; });
-    $('oldConfirm').onclick=()=>{ closeSheet(); toast('Demo: SIP cancelled. Nothing explained what happens to the money already invested.'); }; return; }
-  if(k==='skip'){ openSheet('Skip instalment', `<p>Skip your next instalment?</p><button class="btn primary" id="oldSkip">Skip</button>`); $('oldSkip').onclick=()=>{ closeSheet(); toast(S.missedInARow>=2?'Demo: skipped. Nothing warned that this was the 3rd in a row, which cancels the SIP.':'Demo: skipped.'); }; return; }
-  toast('Demo: edit screen.'); });
+/* ---------- SIP details controls: Today = current app, With the assistant = new ---------- */
+function oldCancel(){ openSheet('Cancel SIP', `<p>Why do you want to cancel?</p><div style="display:grid;gap:8px">${REASONS.map((r,i)=>`<button class="choice" role="radio" aria-checked="false" data-oldr="${i}"><i></i>${esc(r)}</button>`).join('')}</div><button class="btn danger" id="oldConfirm" disabled>Cancel SIP</button>`);
+  document.querySelectorAll('[data-oldr]').forEach(x=>x.onclick=()=>{ document.querySelectorAll('[data-oldr]').forEach(y=>y.setAttribute('aria-checked','false')); x.setAttribute('aria-checked','true'); $('oldConfirm').disabled=false; });
+  $('oldConfirm').onclick=()=>{ closeSheet(); toast('Demo: SIP cancelled. Nothing explained what happens to the money already invested.'); }; }
+function oldSkip(){ openSheet('Skip instalment', `<p>Skip your ${$('dUpN').textContent} on ${$('dUpD').textContent}?</p><button class="btn primary" id="oldSkip">Skip</button>`); $('oldSkip').onclick=()=>{ closeSheet(); toast(S.missedInARow>=2?'Demo: skipped. Nothing warned that this was the 3rd in a row, which cancels the SIP.':'Demo: skipped.'); }; }
+document.addEventListener('click', e=>{
+  if(e.target.closest('[data-skip]')) return MODE==='after' ? showDetail('skip') : oldSkip();
+  if(e.target.closest('[data-edit]')) return MODE==='after' ? openSheet('Change amount or date', `<div>${['reduce','date'].map(id=>optionRow(O(id))).join('')}</div>`) : toast('Demo: edit screen.');
+  if(e.target.closest('[data-help]')) return MODE==='after' ? push('assistant') : toast('Demo: opens the help centre and FAQs.');
+  if(e.target.closest('[data-open-recover]')){ push('recover'); renderRecover(); return; }
+  const dm=e.target.closest('[data-demo]'); if(dm) return toast(`Demo: "${dm.dataset.demo}" is out of scope.`);
+}, true);
+$('detTog').onclick=()=>{ const o=$('detTog').getAttribute('aria-expanded')==='true'; $('detTog').setAttribute('aria-expanded',String(!o)); $('detBody').hidden=o; };
 
 /* ---------- start ---------- */
 route();
