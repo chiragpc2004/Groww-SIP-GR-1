@@ -570,6 +570,28 @@ td{font-size:14px}
 .runacts{display:flex;gap:10px;flex:none}
 .evnote{margin-top:10px!important}
 .foot .sw{max-width:calc(var(--container) + 2*var(--gutter))}
+
+/* ================= live demo: one composition ================= */
+@media (min-width:861px){
+  .phone::before{display:none}
+  #appView{background:radial-gradient(38% 60% at 50% 52%,color-mix(in srgb,var(--green) 9%,transparent),transparent 72%)}
+  .phone{box-shadow:0 40px 70px -28px rgba(14,26,22,.45),0 0 0 1px rgba(14,26,22,.08),inset 0 0 0 2px #2A2C30}
+  body.app-on .guide,body.app-on .insight{justify-content:center;justify-content:safe center;gap:18px}
+}
+@media (min-width:861px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .phone{box-shadow:0 40px 70px -28px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.1),inset 0 0 0 2px #2A2C30}}
+@media (min-width:1200px){.stage{gap:72px}}
+@media (min-width:861px) and (max-width:1199px){.stage{gap:72px;padding-right:var(--gutter)!important}}
+/* right column mirrors the left: heading, list, then cards */
+.inote-wrap{display:grid;gap:16px;padding:0;border:0}
+.inote-wrap h3{font-family:var(--display);font-size:clamp(22px,1.8vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.guide .mode-note{margin-top:-4px}
+
+/* balance: same heading scale both sides; selected scenario as a quiet card */
+.guide h1,.inote-wrap h3{font-size:clamp(24px,2vw,30px);line-height:1.08;letter-spacing:-.03em}
+.gopt[aria-pressed="true"]{background:var(--bg);border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
+.gopt[aria-pressed="true"] b{color:var(--head)} .gopt[aria-pressed="true"] .gt>span{color:var(--muted)}
+.gopt[aria-pressed="true"] .gg.failed{background:var(--red-soft);color:var(--red)} .gopt[aria-pressed="true"] .gg.tight{background:var(--amber-soft);color:var(--amber)} .gopt[aria-pressed="true"] .gg.cancel{background:var(--surface);color:var(--ink)}
+.gopt:not([aria-pressed="true"]){background:transparent}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -707,7 +729,7 @@ td{font-size:14px}
     </div>
   </div>
   <aside class="insight" aria-label="Behind this screen">
-     <section class="icard inote-wrap"><h3 id="inTitle">What's new on this screen</h3><span id="inKick" hidden></span><ol class="inotes" id="inNotes"></ol></section>
+    <section class="inote-wrap"><h3 id="inTitle">What's new here</h3><span id="inKick" hidden></span><ol class="inotes" id="inNotes"></ol></section>
     <section class="icard"><div class="ih"><h3>Calculated for this SIP</h3><p>Worked out in code from Groww's published rules. The AI explains these facts but can't change them.</p></div><dl class="ifacts" id="inFacts"></dl></section>
     <section class="icard" id="inChecksCard" hidden><div class="ih"><h3 id="inChecksT">Last AI answer</h3><p>Every answer passes these checks before it's shown.</p></div><ul class="ichecks" id="inChecks"></ul></section>
   </aside>
@@ -1064,7 +1086,7 @@ let LAST=null;
 function renderInsight(){
   if(!EV) return; const scr=stack.at(-1); const set=NOTES[scr]||NOTES.home; const list=(MODE==='after'?set.after:set.before)||set.after;
   
-  $('inTitle').textContent = MODE==='after'?'What\'s new on this screen':'What\'s missing on this screen';
+  $('inTitle').textContent = MODE==='after'?'What\'s new here':'What\'s missing here';
   const ul=$('inNotes'); ul.className='inotes '+MODE;
   const numbered = MODE==='after';
   const html=list.map(([k,t,d],i)=>`<li>${numbered?`<span class="cm">${i+1}</span>`:'<span class="dot"></span>'}<span><b>${esc(t)}</b>${esc(d)}</span></li>`).join('');
