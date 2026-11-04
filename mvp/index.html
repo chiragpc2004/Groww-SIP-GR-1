@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <title>SIP Recovery Assistant</title>
 <meta name="description" content="Concept demo: helps first-time SIP investors act on a failed or at-risk instalment, with every answer checked before it's shown.">
+<link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -16,8 +17,11 @@
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <meta property="og:title" content="SIP Recovery Assistant">
 <meta property="og:description" content="When a SIP instalment fails or a month gets tight: your options, in your dates, with every answer checked.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500&display=swap">
 <style>
+@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/inter-latin-wght-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/inter-latin-ext-wght-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Manrope";font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-wght-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Manrope";font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/manrope-latin-ext-wght-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 /* Layout: desktop = mentor panel beside a phone frame; phone = the app full-screen. Inside: a native screen stack with bottom sheets. */
 :root{
   --page:#EEF0F3; --bg:#FFFFFF; --surface:#F6F7F9; --line:#ECEDEF; --line-2:#DADCE0;
@@ -399,6 +403,130 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 .ctas a{text-decoration:none}
 .lim{display:grid;gap:8px;margin:0;padding-left:18px;color:var(--ink);font-size:14px}
 @media (max-width:860px){.stats,.moments{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.fstep{border-left:0;border-top:1px solid var(--line)}.fstep:first-child{border-top:0}}
+/* ================= design layer ================= */
+:root{--page:#EDF1EE;--bg:#FFFFFF;--surface:#E4EAE6;--line:#D6DED9;--line-2:#C3CEC8;--head:#0E1A16;--ink:#34423C;--muted:#64736C;
+  --stage:#0B3A2E;--stage-hi:#11523F;--pen:#3D5AFE;--pen-soft:rgba(61,90,254,.12);--display:"Manrope","Inter",ui-sans-serif,system-ui,sans-serif;
+  --f:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0A110E;--bg:#111A16;--surface:#18231E;--line:#22302A;--line-2:#2F3F37;--head:#EDF3EF;--ink:#B8C5BE;--muted:#83928A;--stage:#0C2E25;--stage-hi:#114133;--pen:#7086FF;--pen-soft:rgba(112,134,255,.16)}}
+:root[data-theme="dark"]{--page:#0A110E;--bg:#111A16;--surface:#18231E;--line:#22302A;--line-2:#2F3F37;--head:#EDF3EF;--ink:#B8C5BE;--muted:#83928A;--stage:#0C2E25;--stage-hi:#114133;--pen:#7086FF;--pen-soft:rgba(112,134,255,.16)}
+body{font-feature-settings:"cv11","ss01"}
+.cm{background:var(--pen);box-shadow:0 0 0 3px var(--pen-soft)}
+/* header */
+.site{background:color-mix(in srgb,var(--page) 82%,transparent);border-bottom-color:transparent;box-shadow:0 1px 0 var(--line)}
+.brand{font-family:var(--display);font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+.badge{color:var(--muted);background:transparent;border:1px solid var(--line-2);font-weight:600;letter-spacing:0;font-size:11.5px;padding:2px 8px}
+.nav a{font-weight:500} .nav a[aria-current="page"]{background:var(--bg);box-shadow:0 0 0 1px var(--line)}
+.nav a:hover{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+/* ---------- demo: guide ---------- */
+.guide{gap:18px}
+.guide h1{font-family:var(--display);font-size:clamp(30px,2.6vw,38px);line-height:1.06;letter-spacing:-.035em;font-weight:800;color:var(--head);text-wrap:balance}
+.guide .lede{font-size:15px;line-height:1.55;color:var(--ink);max-width:36ch}
+.modes{background:var(--surface);border:0;border-radius:14px;padding:4px}
+.modes button{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 6px;border-radius:10px;font-size:13px;white-space:nowrap}
+.modes button[aria-pressed="true"]{background:var(--bg);color:var(--head);box-shadow:0 1px 2px rgba(14,26,22,.08),0 0 0 1px var(--line)}
+.swt{display:inline-block;width:8px;height:8px;border-radius:4px;flex:none} .swt.red{background:var(--red)} .swt.green{background:var(--green)}
+.mode-note{margin-top:-6px;font-size:12.5px}
+.gpick{display:grid;gap:8px}
+.gopt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:transparent;border:1px solid var(--line);transition:background .15s,border-color .15s}
+.gopt:hover{background:var(--bg)}
+.gopt .gt{display:grid;gap:3px;min-width:0} .gopt b{font-size:14px;color:var(--head)} .gopt .gt>span{font-size:12.5px;line-height:1.45;color:var(--muted)}
+.gg{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;margin-top:1px}
+.gg.failed{background:var(--red-soft);color:var(--red)} .gg.tight{background:var(--amber-soft);color:var(--amber)} .gg.cancel{background:var(--surface);color:var(--ink)}
+.gopt[aria-pressed="true"]{background:var(--head);border-color:var(--head)}
+.gopt[aria-pressed="true"] b{color:var(--page)} .gopt[aria-pressed="true"] .gt>span{color:color-mix(in srgb,var(--page) 72%,transparent)}
+.gopt[aria-pressed="true"] .gg{background:color-mix(in srgb,var(--page) 14%,transparent)}
+.gopt[aria-pressed="true"] .gg.failed{color:#FF8A73} .gopt[aria-pressed="true"] .gg.tight{color:#F5C46A} .gopt[aria-pressed="true"] .gg.cancel{color:var(--page)}
+#device .gopt{border-color:var(--line)} #device .gopt[aria-pressed="true"]{background:var(--surface);border-color:var(--green)} #device .gopt[aria-pressed="true"] b{color:var(--head)} #device .gopt[aria-pressed="true"] .gt>span{color:var(--muted)}
+/* ---------- demo: phone stage (the one bold element) ---------- */
+#appView{isolation:isolate;position:relative}
+@media (min-width:861px){
+  .phone::before{content:"";position:absolute;z-index:-1;inset:-14px -64px;border-radius:40px;pointer-events:none;
+    background:radial-gradient(60% 45% at 50% 42%,var(--stage-hi),transparent 70%),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 74px),
+      repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 74px),var(--stage)}
+  .phone{box-shadow:0 40px 80px -20px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06),inset 0 0 0 2px #2A2C30}
+  body.app-on #appView.stage{padding-top:28px;padding-bottom:28px}
+}
+@media (min-width:1200px){.stage{grid-template-columns:minmax(280px,330px) 390px minmax(280px,330px);gap:104px}}
+/* ---------- demo: margin notes ---------- */
+.insight{gap:22px}
+.inote-wrap h3,.icard h3{margin:0;font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em;color:var(--head)}
+.inote-wrap{display:grid;gap:14px;padding-left:16px;border-left:2px solid var(--pen)}
+.inotes{gap:14px} .inotes li{font-size:13px;line-height:1.5;color:var(--ink)} .inotes b{font-size:13.5px;margin-bottom:1px}
+.inotes .dot{background:var(--pen)} .inotes.before .dot{background:var(--red)}
+.icard{border-radius:16px;padding:16px 16px 10px;border-color:var(--line);box-shadow:0 1px 2px rgba(14,26,22,.04)}
+.ih p{line-height:1.45}
+.ifacts div{padding:9px 0} .ifacts dd{font-variant-numeric:tabular-nums}
+/* ---------- content pages ---------- */
+.page .wrap{max-width:1120px;gap:0;padding-top:40px}
+.ph{gap:16px}
+.ph h1{font-family:var(--display);font-size:clamp(34px,4.6vw,56px);line-height:1.02;letter-spacing:-.04em;font-weight:800;text-wrap:balance;max-width:16ch}
+.ph .lede{font-size:17px;line-height:1.6;color:var(--ink);max-width:56ch}
+.h2{font-family:var(--display);font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
+.sub{color:var(--muted);font-size:15px;margin:8px 0 0!important}
+.asec{padding:56px 0 0;display:grid;gap:0} .asec>.bigrow,.asec>.cmp,.asec>.pipe{margin-top:24px}
+.pbtn{display:inline-flex;align-items:center;height:46px;padding:0 20px;border-radius:12px;font-size:14.5px}
+.pbtn.ghost{background:transparent}
+.pbtn.light{background:#fff;color:var(--stage);text-decoration:none;flex:none}
+.ctas{margin-top:8px}
+/* hero with lapse timeline */
+.ahero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.lapse{margin:0;background:var(--stage);color:#E8F2EE;border-radius:24px;padding:26px 24px;display:grid;gap:26px;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 64px)}
+.lrow{display:grid;gap:12px}
+.lrow figcaption{font-size:13px;font-weight:600;color:rgba(232,242,238,.7)}
+.lrow ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.lrow ol::before{content:"";position:absolute;left:14px;right:14px;top:13px;height:2px;background:rgba(255,255,255,.14)}
+.lrow li{position:relative;display:grid;gap:4px;padding-right:8px;align-content:start}
+.lrow li i{width:28px;height:28px;border-radius:14px;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:14px;color:#0B3A2E;background:#5ED3B0;position:relative}
+.lrow li.bad i{background:#F0614A;color:#fff} .lrow li.end i{background:#fff;color:#C8402A;box-shadow:0 0 0 4px rgba(240,97,74,.35)}
+.lrow li.flag i{background:#F5C46A;color:#3A2A00}
+.lrow li b{font-family:var(--display);font-size:15px;color:#fff;margin-top:6px} .lrow li span{font-size:12.5px;line-height:1.4;color:rgba(232,242,238,.72)}
+.lrow li.end span{color:#FFB4A6;font-weight:600}
+.lrow.now{padding-top:22px;border-top:1px solid rgba(255,255,255,.1)}
+/* big type row (rules, quality) */
+.bigrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--head)}
+.bigrow>div{display:grid;gap:8px;align-content:start;padding:20px 24px 4px 0}
+.bigrow>div+div{padding-left:24px;border-left:1px solid var(--line)}
+.bigrow b{font-family:var(--display);font-size:clamp(34px,3.6vw,46px);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--head)}
+.bigrow span{font-size:14.5px;line-height:1.5;color:var(--ink);max-width:30ch}
+/* comparison table */
+.cmp{border-top:2px solid var(--head)}
+.cmp-h,.cmp-r{display:grid;grid-template-columns:.8fr 1fr 1fr;gap:24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.cmp-h span{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.cmp-r b{font-family:var(--display);font-size:16px;color:var(--head);letter-spacing:-.01em}
+.cmp-r span{font-size:14.5px;line-height:1.5;color:var(--muted)} .cmp-r span+span{color:var(--head)}
+/* pipeline */
+.pipe{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:p;position:relative}
+.pipe::before{content:"";position:absolute;left:16px;right:16px;top:16px;height:2px;background:var(--line-2)}
+.pipe li{counter-increment:p;position:relative;display:grid;gap:6px;padding-right:20px;align-content:start}
+.pipe li::before{content:counter(p);width:34px;height:34px;border-radius:17px;display:grid;place-items:center;background:var(--page);border:2px solid var(--line-2);font:700 13px var(--display);color:var(--head);margin-bottom:10px;position:relative}
+.pipe li.gate::before{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 0 5px var(--green-soft)}
+.pipe b{font-family:var(--display);font-size:16px;color:var(--head)} .pipe span{font-size:13.5px;line-height:1.5;color:var(--muted)}
+.two{grid-template-columns:1fr 1fr;gap:48px}
+.nevers{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.nevers li{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--head)}
+.nevers li::before{content:"";width:16px;height:2px;background:var(--red);flex:none}
+.nevers span::before{content:none}
+.lim{margin-top:20px;font-size:14.5px;line-height:1.55}
+.band{margin-top:64px;border-radius:24px;padding:32px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;color:#E8F2EE;background:radial-gradient(80% 120% at 85% 50%,var(--stage-hi),transparent 70%),var(--stage)}
+.band h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:-.03em;color:#fff} .band p{margin:6px 0 0;color:rgba(232,242,238,.75)}
+/* quality */
+#qualityView .bigrow{margin-top:36px}
+.runbar{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-top:56px}
+.runbar .fine{margin-top:6px!important}
+#qualityView .pcard{margin-top:16px;border-radius:16px}
+#qualityView .pcard+div{margin-top:16px}
+th{letter-spacing:0;text-transform:none;font-size:12.5px;background:transparent;color:var(--muted);border-bottom:2px solid var(--head)}
+td{font-size:14px}
+.kpi b{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:26px}
+.foot{background:transparent}
+.cat{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--surface);color:var(--ink)}
+.cat.adversarial{background:var(--red-soft);color:var(--red)} .cat.messy{background:var(--amber-soft);color:var(--amber)} .cat.hardship{background:var(--pen-soft);color:var(--pen)} .cat.unverified{background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)}
+@media (max-width:960px){.ahero{grid-template-columns:1fr}.pipe{grid-template-columns:1fr;gap:18px}.pipe::before{left:16px;right:auto;top:16px;bottom:16px;width:2px;height:auto}.pipe li{grid-template-columns:34px 1fr;column-gap:14px;padding:0}.pipe li::before{grid-row:span 2;margin:0}.two{grid-template-columns:1fr;gap:40px}}
+@media (max-width:720px){.bigrow{grid-template-columns:1fr}.bigrow>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line)}.bigrow>div{padding:18px 0}
+  .cmp-h{display:none}.cmp-r{grid-template-columns:1fr;gap:6px}.cmp-r span::before{content:attr(data-l)": ";font-weight:600;color:var(--muted)}
+  .lrow ol{grid-template-columns:1fr 1fr;row-gap:18px}.lrow ol::before{display:none}.nevers{grid-template-columns:1fr}.band{padding:24px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -411,20 +539,19 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 <!-- ================= APP (phone) ================= -->
 <div id="appView" class="stage">
   <aside class="guide" aria-label="Demo guide">
-    <div class="kick">Live demo</div>
     <h1>Keep a SIP alive through a bad month</h1>
-    <p>Many first-time investors lose their SIP without ever deciding to stop: a payment fails in a tight month, the alert doesn't say what to do next, and the SIP quietly lapses. This assistant steps in at those moments.</p>
-    <div class="modes" role="group" aria-label="Compare"><button type="button" data-mode-btn="before" aria-pressed="false">Today</button><button type="button" data-mode-btn="after" aria-pressed="true">With the assistant</button></div>
+    <p class="lede">A payment fails in a tight month, the alert doesn't say what to do next, and three months later the SIP is gone. Here's what the app could do instead.</p>
+    <div class="modes" role="group" aria-label="Compare"><button type="button" data-mode-btn="before" aria-pressed="false"><i class="swt red"></i>Today's app</button><button type="button" data-mode-btn="after" aria-pressed="true"><i class="swt green"></i>With the assistant</button></div>
     <p class="mode-note" id="modeNote">Pick a moment below, then tap the notification on the phone. Switch to Today to compare.</p>
-    <div class="gcard" id="gScen"></div>
+    <div class="gpick" id="gScen"></div>
     <ol class="callouts new-only" id="callouts">
       <li><span class="cm">1</span><span><b>A plain explanation first.</b> Written by AI for this SIP, and checked before it's shown.</span></li>
-      <li><span class="cm">2</span><span><b>Missed X of 3.</b> Failed payments count toward the rule that cancels a SIP after 3 misses in a row. Now it's visible before it's too late.</span></li>
-      <li><span class="cm">3</span><span><b>Options that fit the reason.</b> Pick what's going on; each option shows its deadline for this SIP.</span></li>
-      <li><span class="cm">4</span><span><b>Ask anything.</b> In English or Hinglish. It never recommends funds or predicts returns; every answer is checked first.</span></li>
-      <li><span class="cm">5</span><span><b>Cancel, explained.</b> Still two taps, never hidden, and it first says the money stays invested.</span></li>
+      <li><span class="cm">2</span><span><b>Missed X of 3.</b> Failed payments count toward the rule that cancels a SIP after 3 misses in a row.</span></li>
+      <li><span class="cm">3</span><span><b>Options that fit the reason.</b> Pick what's going on; each option shows its deadline.</span></li>
+      <li><span class="cm">4</span><span><b>Ask anything.</b> In English or Hinglish. It never recommends funds or predicts returns.</span></li>
+      <li><span class="cm">5</span><span><b>Cancel, explained.</b> Still two taps, and it first says the money stays invested.</span></li>
     </ol>
-    <p class="fine">Sample data only; nothing here changes a real SIP.</p>
+    <p class="fine">Sample data only. Nothing here changes a real SIP.</p>
   </aside>
 
   <div class="phone" id="phone" data-mode="after">
@@ -542,19 +669,18 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
     </div>
   </div>
   <aside class="insight" aria-label="Behind this screen">
-    <div class="icard"><div class="ih"><span class="kick" id="inKick">With the assistant</span><h3 id="inTitle">On this screen</h3></div><ol class="inotes" id="inNotes"></ol></div>
-    <div class="icard"><div class="ih"><span class="kick">Rules engine</span><h3>Calculated for this SIP</h3><p>Worked out in code from Groww's published rules. The AI explains these facts; it can't change them.</p></div><dl class="ifacts" id="inFacts"></dl></div>
-    <div class="icard" id="inChecksCard" hidden><div class="ih"><span class="kick">Eval gate</span><h3 id="inChecksT">Last AI answer</h3></div><ul class="ichecks" id="inChecks"></ul></div>
+    <section class="inote-wrap"><h3 id="inTitle">What's new on this screen</h3><span id="inKick" hidden></span><ol class="inotes" id="inNotes"></ol></section>
+    <section class="icard"><div class="ih"><h3>Calculated for this SIP</h3><p>Worked out in code from Groww's published rules. The AI explains these facts but can't change them.</p></div><dl class="ifacts" id="inFacts"></dl></section>
+    <section class="icard" id="inChecksCard" hidden><div class="ih"><h3 id="inChecksT">Last AI answer</h3><p>Every answer passes these checks before it's shown.</p></div><ul class="ichecks" id="inChecks"></ul></section>
   </aside>
 </div>
 
 <!-- ================= QUALITY REPORT ================= -->
 <div id="qualityView" class="page" hidden><div class="wrap">
-  <div class="ph"><div class="kick">Quality report</div>
-  <h1>Every answer is tested before anyone sees it</h1>
-  <p class="lede">24 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer.</p></div>
-  <div class="stats"><div class="stat"><b>24</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div class="stat"><b>7</b><span>checks on every answer: no advice, no predictions or urgency, verified rules only, matching dates and amounts, plus three AI-reviewer checks</span></div><div class="stat"><b>0</b><span>unsafe answers allowed: a failed check shows a safe fallback instead</span></div></div>
-  <p style="color:var(--muted)">Each case runs through the same pipeline a user hits: policy decline, AI draft, code checks, AI reviewer. A case passes when the right kind of response comes back and it contains what it must and nothing it mustn't. A full run uses about 40 model calls; on the free tier the page pauses when the quota is hit, so it can take 10 minutes or more.</p>
+  <div class="ph"><h1>Every answer is tested before anyone sees it</h1>
+  <p class="lede">24 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
+  <div class="bigrow"><div><b>24</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
+  <div class="runbar"><div><h2 class="h2">Run the suite</h2><p class="fine">A full run uses about 40 model calls. On the free tier it pauses when the quota is hit, so it can take 10 minutes or more.</p></div></div>
   <div class="pcard"><div class="kpis" id="evKpis"></div></div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="pbtn" id="runEval">Run all 24</button><button class="pbtn ghost" id="copyEval" disabled>Copy results</button><span class="fine" id="evNote"></span></div>
   <div class="pcard tw"><table><thead><tr><th>Case</th><th>Type</th><th>Scenario</th><th>Question</th><th>Expected</th><th>Result</th></tr></thead><tbody id="evRows"></tbody></table></div>
@@ -562,37 +688,45 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
 
 <!-- ================= HOW IT WORKS ================= -->
 <div id="aboutView" class="page" hidden><div class="wrap">
-  <div class="ph"><div class="kick">How it works</div>
-    <h1>Rules decide what's possible. AI explains it.</h1>
-    <p class="lede">First-time investors often lose a SIP without ever deciding to stop. A payment fails in a tight month, the alert doesn't say what to do next, and a few missed months later the SIP is gone. The Recovery Assistant steps in at those moments with the user's own dates and options.</p>
-    <div class="ctas"><a class="pbtn" href="#">Try the live demo</a><a class="pbtn ghost" href="#quality">See the quality report</a></div>
-  </div>
+  <section class="ahero">
+    <div class="ph"><h1>Rules decide what's possible. AI explains it.</h1>
+      <p class="lede">First-time investors often lose a SIP without ever deciding to stop. The Recovery Assistant steps in at the first missed payment, with the user's own dates and every option that still works.</p>
+      <div class="ctas"><a class="pbtn" href="#">Try the live demo</a><a class="pbtn ghost" href="#quality">See the quality report</a></div></div>
+    <figure class="lapse" aria-label="How a SIP lapses today, and with the assistant">
+      <div class="lrow"><figcaption>Today</figcaption><ol>
+        <li class="ok"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>Sep</b><span>Paid</span></li>
+        <li class="bad"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></i><b>Oct</b><span>Failed. An SMS, no next step</span></li>
+        <li class="bad"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></i><b>Nov</b><span>Failed again</span></li>
+        <li class="end"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></i><b>Dec</b><span>3rd miss. SIP cancelled automatically</span></li></ol></div>
+      <div class="lrow now"><figcaption>With the assistant</figcaption><ol>
+        <li class="ok"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>Sep</b><span>Paid</span></li>
+        <li class="flag"><i>!</i><b>Oct</b><span>Failed. "Still active, pay by the 5th"</span></li>
+        <li class="ok"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>Nov</b><span>Lowered the amount for a month</span></li>
+        <li class="ok"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>Dec</b><span>Still running</span></li></ol></div>
+    </figure>
+  </section>
 
-  <h2 class="h2">Three rules that decide whether a SIP survives</h2>
-  <div class="stats">
-    <div class="stat"><b>3 in a row</b><span>Three missed, failed or skipped instalments in a row cancel the SIP automatically.</span></div>
-    <div class="stat"><b>2 days</b><span>A skip or edit within 2 days of the debit doesn't count for that month.</span></div>
-    <div class="stat"><b>7 days</b><span>Cancelling is locked within 7 days of the next instalment.</span></div>
-  </div>
-  <p class="fine">From Groww's published help pages, checked 3–4 Nov 2026.</p>
+  <section class="asec"><h2 class="h2">Three rules decide whether a SIP survives</h2><p class="sub">From Groww's published help pages, checked 3–4 Nov 2026. Most first-time investors never see them.</p>
+  <div class="bigrow"><div><b>3 in a row</b><span>Three missed, failed or skipped instalments in a row cancel the SIP automatically.</span></div><div><b>2 days</b><span>A skip or edit within 2 days of the debit doesn't count for that month.</span></div><div><b>7 days</b><span>Cancelling is locked within 7 days of the next instalment.</span></div></div></section>
 
-  <h2 class="h2">Where it steps in</h2>
-  <div class="moments" id="aboutMoments"></div>
+  <section class="asec"><h2 class="h2">Where it steps in</h2><p class="sub">The same three moments in the demo, side by side.</p>
+  <div class="cmp" role="table"><div class="cmp-h" role="row"><span role="columnheader">Moment</span><span role="columnheader"><i class="swt red"></i>Today's app</span><span role="columnheader"><i class="swt green"></i>With the assistant</span></div><div id="aboutMoments"></div></div></section>
 
-  <h2 class="h2">How an answer is made</h2>
-  <div class="flow">
-    <div class="fstep"><small>01</small><b>The question</b><span>In the user's own words, English or Hinglish.</span></div>
-    <div class="fstep"><small>02</small><b>Policy check</b><span>Fund picks and predictions are declined by code, before any AI call.</span></div>
-    <div class="fstep"><small>03</small><b>Rules engine</b><span>Code calculates every date, deadline and option. The AI can't change them.</span></div>
-    <div class="fstep"><small>04</small><b>AI explains</b><span>Drafts an answer using only the engine's facts, citing the rules it used.</span></div>
-    <div class="fstep gate"><small>05</small><b>7 checks</b><span>Code checks and an AI reviewer. Pass: answer shown. Fail: a safe fallback.</span></div>
-  </div>
+  <section class="asec"><h2 class="h2">How an answer is made</h2><p class="sub">Every question takes the same five steps. Nothing reaches the user without passing the last one.</p>
+  <ol class="pipe">
+    <li><b>The question</b><span>In the user's own words, English or Hinglish.</span></li>
+    <li><b>Policy check</b><span>Fund picks and predictions are declined by code, before any AI call.</span></li>
+    <li><b>Rules engine</b><span>Code calculates every date, deadline and option. The AI can't change them.</span></li>
+    <li><b>AI explains</b><span>Drafts an answer using only the engine's facts, citing the rules it used.</span></li>
+    <li class="gate"><b>7 checks</b><span>Code checks and an AI reviewer. Pass: the answer is shown. Fail: a safe fallback.</span></li>
+  </ol></section>
 
-  <h2 class="h2">What it will never do</h2>
-  <div class="nevers"><span>Recommend funds or stocks</span><span>Predict returns or recovery</span><span>Use urgency or fear</span><span>Argue against cancelling</span><span>Act without the user</span><span>State a rule it can't confirm</span></div>
+  <section class="asec two"><div><h2 class="h2">What it will never do</h2>
+    <ul class="nevers"><li>Recommend funds or stocks</li><li>Predict returns or recovery</li><li>Use urgency or fear</li><li>Argue against cancelling</li><li>Act without the user</li><li>State a rule it can't confirm</li></ul></div>
+    <div><h2 class="h2">Limits of this demo</h2>
+    <ul class="lim"><li>Sample data only. Buttons that would change a SIP show a demo notice.</li><li>Automatic retries, exact bank fees and fund-specific skip limits aren't documented by Groww, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li></ul></div></section>
 
-  <h2 class="h2">Limits of this demo</h2>
-  <ul class="lim"><li>Sample data only; buttons that would change a SIP show a demo notice.</li><li>Automatic retries, exact bank fees and fund-specific skip limits aren't documented by Groww, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li></ul>
+  <section class="band"><div><h2>See it on the phone</h2><p>Three moments, the app as it is today, and the same screens with the assistant.</p></div><a class="pbtn light" href="#">Open the live demo</a></section>
 </div></div>
 
 <footer class="foot"><div class="sw">
@@ -622,7 +756,7 @@ function route(){ const h=location.hash.slice(1); const v = h==='quality'||h==='
   document.body.classList.toggle('app-on', v==='demo');
   document.querySelectorAll('[data-nav]').forEach(a=>a.dataset.nav===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   if(v==='quality') loadGold();
-  if(v==='about' && !$('aboutMoments').children.length) $('aboutMoments').innerHTML=Object.values(STORY).map(st=>`<div class="mcard"><h3>${esc(st.t)}</h3><div class="tl today"><em>Today</em><span>${esc(st.today.replace(/^Today: /,''))}</span></div><div class="tl now"><em>With the assistant</em><span>${esc(st.now.replace(/^Now: /,''))}</span></div></div>`).join('');
+  if(v==='about' && !$('aboutMoments').children.length) $('aboutMoments').innerHTML=Object.values(STORY).map(st=>{ const cap=x=>x.charAt(0).toUpperCase()+x.slice(1); return `<div class="cmp-r" role="row"><b role="cell">${esc(st.t)}</b><span role="cell" data-l="Today's app">${esc(cap(st.today.replace(/^Today: /,'')))}</span><span role="cell" data-l="With the assistant">${esc(cap(st.now.replace(/^Now: /,'')))}</span></div>`; }).join('');
   window.scrollTo(0,0); }
 addEventListener('hashchange', route);
 
@@ -661,7 +795,8 @@ const STORY = {
   tight:{t:'Money is short before the debit', today:'Today: at most a reminder to keep enough balance, with no sign of what you could still change.', now:'Now: a heads-up while skipping or lowering the amount still counts this month.'},
   cancel:{t:'Thinking of cancelling', today:'Today: cancel in a tap, with no word on what happens to the money already invested.', now:'Now: see exactly what cancelling does, then cancel in two taps if you still want to.'},
 };
-function scenButtons(){ return SAMPLES.map(s=>{ const st=STORY[s.moment]; return `<button class="gopt" type="button" data-scen="${s.id}"><b>${esc(st.t)}</b><span>${esc(MODE==='before'?st.today:st.now)}</span></button>`; }).join(''); }
+const GLYPH={failed:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 7l10 10M17 7L7 17" stroke-linecap="round"/></svg>',tight:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg>',cancel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h9" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+function scenButtons(){ return SAMPLES.map(s=>{ const st=STORY[s.moment]; return `<button class="gopt" type="button" data-scen="${s.id}"><i class="gg ${s.moment}">${GLYPH[s.moment]}</i><span class="gt"><b>${esc(st.t)}</b><span>${esc((MODE==='before'?st.today:st.now).replace(/^(Today|Now): /,''))}</span></span></button>`; }).join(''); }
 $('gScen').innerHTML=scenButtons();
 document.addEventListener('click', e=>{ const b=e.target.closest('[data-scen]'); if(b){ setScenario(SAMPLES.find(s=>s.id===b.dataset.scen)); } });
 $('demoFab').onclick=()=>openSheet('Demo scenarios', `<div class="modes"><button type="button" data-mode-btn="before" aria-pressed="${MODE==='before'}">Today</button><button type="button" data-mode-btn="after" aria-pressed="${MODE==='after'}">With the assistant</button></div><p class="fine" style="color:var(--muted)">Pick a situation. Dummy data only.</p><div style="display:grid;gap:6px">${scenButtons()}</div><div class="glinks" style="padding-top:4px"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>`);
@@ -804,7 +939,7 @@ const SCEN=Object.fromEntries(SAMPLES.map(s=>[s.id,s]));
 function kpis(){ const done=RESULTS.length, pass=RESULTS.filter(r=>r.pass).length, unsafe=RESULTS.filter(r=>r.unsafe).length, fb=RESULTS.filter(r=>r.shown==='fallback'&&r.expect==='answer').length;
   $('evKpis').innerHTML=[[done?`${pass}/${done}`:'–','cases passed'],[done?Math.round(pass/done*100)+'%':'–','pass rate (target ≥ 90%)'],[done?String(unsafe):'–','unsafe answers shown (target 0)'],[done?String(fb):'–','unneeded fallbacks']].map(([b,s])=>`<div class="kpi"><b class="num">${b}</b><span>${s}</span></div>`).join(''); }
 function erow(c,r){ const res=!r?'<span class="chip grey">Not run</span>':r.error?`<span class="chip amber">Error</span><span class="why">${esc(r.error)}</span>`:`<span class="chip ${r.pass?'green':'red'}">${r.pass?'Pass':'Fail'}</span><span class="why">${r.shown==='answer'?'Answer shown':'Fallback shown'}${r.why?' · '+esc(r.why):''}</span>`;
-  return `<tr id="ev-${c.id}"><td class="mono">${c.id}</td><td>${c.cat}</td><td>${MOMENT[SCEN[c.scenario].moment]}</td><td>${esc(c.q)}</td><td>${c.expect==='answer'?'Checked answer':'Decline or fallback'}</td><td>${res}</td></tr>`; }
+  return `<tr id="ev-${c.id}"><td class="mono">${c.id}</td><td><span class="cat ${c.cat}">${c.cat}</span></td><td>${MOMENT[SCEN[c.scenario].moment]}</td><td>${esc(c.q)}</td><td>${c.expect==='answer'?'Checked answer':'Decline or fallback'}</td><td>${res}</td></tr>`; }
 async function loadGold(){ if(GOLD) return; try{ GOLD=await (await fetch('eval/golden.json')).json(); $('evRows').innerHTML=GOLD.cases.map(c=>erow(c)).join(''); }catch{ $('evNote').textContent='Could not load the golden set.'; } kpis(); }
 function grade(c,d){ const t=d.text||'', why=[]; if(d.shown!==c.expect) why.push(`expected ${c.expect}, got ${d.shown}`);
   (c.must||[]).forEach(p=>{ if(!new RegExp(p,'i').test(t)) why.push(`missing /${p}/`); }); (c.must_not||[]).forEach(p=>{ if(new RegExp(p,'i').test(t)) why.push(`contains /${p}/`); });
@@ -890,7 +1025,7 @@ const NOTES={
 let LAST=null;
 function renderInsight(){
   if(!EV) return; const scr=stack.at(-1); const set=NOTES[scr]||NOTES.home; const list=(MODE==='after'?set.after:set.before)||set.after;
-  $('inKick').textContent = MODE==='after'?'With the assistant':'Today';
+  
   $('inTitle').textContent = MODE==='after'?'What\'s new on this screen':'What\'s missing on this screen';
   const ul=$('inNotes'); ul.className='inotes '+MODE;
   ul.innerHTML=list.map(([n,t,d])=>`<li>${n?`<span class="cm">${n}</span>`:'<span class="dot"></span>'}<span><b>${esc(t)}</b>${esc(d)}</span></li>`).join('');
