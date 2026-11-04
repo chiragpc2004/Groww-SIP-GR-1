@@ -532,13 +532,52 @@ td{font-size:14px}
 @media (max-width:720px){.bigrow{grid-template-columns:1fr}.bigrow>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line)}.bigrow>div{padding:18px 0}
   .cmp-h{display:none}.cmp-r{grid-template-columns:1fr;gap:6px}.cmp-r span::before{content:attr(data-l)": ";font-weight:600;color:var(--muted)}
   .lrow ol{grid-template-columns:1fr 1fr;row-gap:18px}.lrow ol::before{display:none}.nevers{grid-template-columns:1fr}.band{padding:24px}}
+
+/* ================= structure: one container, symmetric demo ================= */
+:root{--container:1200px;--gutter:24px;--r-card:16px}
+.sw,.page .wrap{max-width:calc(var(--container) + 2*var(--gutter));padding-left:var(--gutter);padding-right:var(--gutter)}
+.xlink{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;white-space:nowrap;justify-self:end}
+.xlink:hover{color:var(--head)}
+@media (min-width:761px){.site .sw{display:grid;grid-template-columns:1fr auto 1fr;gap:24px}.site .nav{flex:none;justify-self:center}}
+@media (max-width:760px){.xlink{margin-left:auto}}
+/* demo */
+@media (min-width:1200px){
+  .stage{grid-template-columns:minmax(0,1fr) 390px minmax(0,1fr);gap:96px;max-width:calc(var(--container) + 2*var(--gutter));padding-left:var(--gutter)!important;padding-right:var(--gutter)!important}
+}
+@media (min-width:861px){
+  body.app-on #appView.stage{padding-top:24px;padding-bottom:24px}
+  body.app-on .phone{height:calc(100% - 32px);margin:16px 0}
+  .phone::before{inset:-16px -64px}
+  body.app-on .guide{display:flex;flex-direction:column;gap:16px;height:100%;padding-top:0}
+}
+@media (min-width:1200px){
+  body.app-on .insight{display:flex;flex-direction:column;gap:16px;height:100%;padding-top:0}
+}
+.guide h1{font-size:clamp(28px,2.3vw,34px)}
+.gopt{border-radius:var(--r-card)}
+.icard{border-radius:var(--r-card);padding:16px}
+.inote-wrap{padding-left:16px;border-left:1px solid var(--line)}
+.inote-wrap h3{font-size:16px}
+.insight .icard{flex:none}
+@media (min-width:861px) and (max-width:1199px){
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:104px;justify-content:stretch;padding-left:var(--gutter)!important;padding-right:calc(var(--gutter) + 64px)!important}
+  .guide{width:auto}
+}
+/* content pages */
+@media (min-width:961px){.ahero{grid-template-columns:1fr 1fr}}
+.page .wrap>*,.ahero>*{min-width:0}
+.runbar{align-items:flex-end}
+.runacts{display:flex;gap:10px;flex:none}
+.evnote{margin-top:10px!important}
+.foot .sw{max-width:calc(var(--container) + 2*var(--gutter))}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <header class="site"><div class="sw">
   <a class="brand" href="#"><span class="mk"><svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>SIP Recovery Assistant <span class="badge">Concept</span></a>
-  <nav class="nav" aria-label="Main"><a href="#" data-nav="demo">Live demo</a><a href="#about" data-nav="about">How it works</a><a href="#quality" data-nav="quality">Quality report</a><a class="ext" href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a></nav>
+  <nav class="nav" aria-label="Main"><a href="#" data-nav="demo">Live demo</a><a href="#about" data-nav="about">How it works</a><a href="#quality" data-nav="quality">Quality report</a></nav>
+  <a class="xlink" href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a>
 </div></header>
 
 <!-- ================= APP (phone) ================= -->
@@ -668,7 +707,7 @@ td{font-size:14px}
     </div>
   </div>
   <aside class="insight" aria-label="Behind this screen">
-    <section class="inote-wrap"><h3 id="inTitle">What's new on this screen</h3><span id="inKick" hidden></span><ol class="inotes" id="inNotes"></ol></section>
+     <section class="icard inote-wrap"><h3 id="inTitle">What's new on this screen</h3><span id="inKick" hidden></span><ol class="inotes" id="inNotes"></ol></section>
     <section class="icard"><div class="ih"><h3>Calculated for this SIP</h3><p>Worked out in code from Groww's published rules. The AI explains these facts but can't change them.</p></div><dl class="ifacts" id="inFacts"></dl></section>
     <section class="icard" id="inChecksCard" hidden><div class="ih"><h3 id="inChecksT">Last AI answer</h3><p>Every answer passes these checks before it's shown.</p></div><ul class="ichecks" id="inChecks"></ul></section>
   </aside>
@@ -679,9 +718,9 @@ td{font-size:14px}
   <div class="ph"><h1>Every answer is tested before anyone sees it</h1>
   <p class="lede">24 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
   <div class="bigrow"><div><b>24</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
-  <div class="runbar"><div><h2 class="h2">Run the suite</h2><p class="fine">A full run uses about 40 model calls. On the free tier it pauses when the quota is hit, so it can take 10 minutes or more.</p></div></div>
+  <div class="runbar"><div><h2 class="h2">Run the suite</h2><p class="fine">A full run uses about 40 model calls. On the free tier it pauses when the quota is hit, so it can take 10 minutes or more.</p></div><div class="runacts"><button class="pbtn ghost" id="copyEval" disabled>Copy results</button><button class="pbtn" id="runEval">Run all 24</button></div></div>
   <div class="pcard"><div class="kpis" id="evKpis"></div></div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="pbtn" id="runEval">Run all 24</button><button class="pbtn ghost" id="copyEval" disabled>Copy results</button><span class="fine" id="evNote"></span></div>
+  <p class="fine evnote" id="evNote"></p>
   <div class="pcard tw"><table><thead><tr><th>Case</th><th>Type</th><th>Scenario</th><th>Question</th><th>Expected</th><th>Result</th></tr></thead><tbody id="evRows"></tbody></table></div>
 </div></div>
 
