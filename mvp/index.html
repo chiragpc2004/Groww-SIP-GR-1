@@ -172,6 +172,27 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .g-alert .miss{border-color:rgba(255,255,255,.08);background:rgba(0,0,0,.2)}
 .g-alert .btn{height:44px;font-size:15px}
 
+/* ---------- right panel (large screens) ---------- */
+.insight{display:none}
+@media (min-width:1200px){
+  .stage{display:grid;grid-template-columns:minmax(280px,340px) 390px minmax(280px,340px);gap:48px;justify-content:center;align-items:start;max-width:1240px;margin:0 auto}
+  .guide{width:auto} .guide .callouts{display:none}
+  .insight{display:grid;gap:14px;align-content:start;position:sticky;top:84px;padding-top:12px;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin}
+}
+.icard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.ih{display:grid;gap:4px} .ih h3{margin:0;font-size:15px;color:var(--head)} .ih p{margin:0;font-size:12.5px;color:var(--muted)}
+.inotes{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.inotes li{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:13px;color:var(--ink);animation:inFade .35s ease both}
+.inotes li .cm{display:inline-grid} .inotes b{display:block;color:var(--head);font-size:13.5px}
+.inotes .dot{width:8px;height:8px;border-radius:4px;background:var(--green);margin:6px 6px 0}
+.inotes.before .dot{background:var(--red)}
+.ifacts{margin:0;display:grid;gap:0}
+.ifacts div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.ifacts div:first-child{border-top:0} .ifacts dt{color:var(--muted)} .ifacts dd{margin:0;color:var(--head);font-weight:600;text-align:right}
+.ichecks{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:12.5px}
+.ichecks li{display:flex;gap:8px} .ichecks i{font-style:normal;font-weight:700;width:14px;flex:none} .ichecks .ok i{color:var(--green-ink)} .ichecks .bad i{color:var(--red)} .ichecks .warn i{color:var(--amber)}
+@keyframes inFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
 /* notification */
 .notif{position:absolute;left:10px;right:10px;top:8px;z-index:40;visibility:hidden;background:rgba(250,250,251,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,.18);transform:translateY(calc(-100% - 90px));transition:transform .45s cubic-bezier(.2,.9,.2,1),visibility 0s .45s;text-align:left;width:calc(100% - 20px);color:#121417}
 .notif.on{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.2,1)}
@@ -511,6 +532,11 @@ td{color:var(--head)} td.mono{font-family:var(--mono);font-size:12px;color:var(-
       </div>
     </div>
   </div>
+  <aside class="insight" aria-label="Behind this screen">
+    <div class="icard"><div class="ih"><span class="kick" id="inKick">With the assistant</span><h3 id="inTitle">On this screen</h3></div><ol class="inotes" id="inNotes"></ol></div>
+    <div class="icard"><div class="ih"><span class="kick">Rules engine</span><h3>Calculated for this SIP</h3><p>Worked out in code from Groww's published rules. The AI explains these facts; it can't change them.</p></div><dl class="ifacts" id="inFacts"></dl></div>
+    <div class="icard" id="inChecksCard" hidden><div class="ih"><span class="kick">Eval gate</span><h3 id="inChecksT">Last AI answer</h3></div><ul class="ichecks" id="inChecks"></ul></div>
+  </aside>
 </div>
 
 <!-- ================= QUALITY REPORT ================= -->
@@ -593,7 +619,7 @@ addEventListener('hashchange', route);
 
 /* ---------- screen stack ---------- */
 const stack=['home'];
-function syncFab(){ $('demoFab').hidden = stack.length>1; }
+function syncFab(){ $('demoFab').hidden = stack.length>1; setTimeout(renderInsight,0); }
 function push(id){ const cur=$('s-'+stack.at(-1)); cur.classList.add('under'); const nx=$('s-'+id); nx.classList.add('on'); stack.push(id); syncFab(); if(id==='assistant') setTimeout(()=>$('q').focus({preventScroll:true}),350); }
 function pop(){ if(stack.length<2) return; const cur=$('s-'+stack.pop()); cur.classList.remove('on'); $('s-'+stack.at(-1)).classList.remove('under'); syncFab(); }
 function resetStack(){ while(stack.length>1) pop(); }
@@ -607,7 +633,7 @@ let tT; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add(
 
 /* ---------- scenario ---------- */
 function setScenario(s){
-  S={...s}; EV=R.evaluate(S,today); FIT=null; closeSheet(); resetStack(); renderAll(); resetChat();
+  S={...s}; EV=R.evaluate(S,today); LAST=null; FIT=null; closeSheet(); resetStack(); renderAll(); resetChat();
   document.querySelectorAll('[data-scen]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.scen===S.id));
   $('notif').classList.remove('on'); $('sms').classList.remove('on'); REASON=null;
   if(S.moment==='cancel') setTimeout(()=>{ push('sip'); },400);
@@ -671,6 +697,7 @@ function renderAll(){
     : S.moment==='tight' ? `<div class="g-alert amber"><span class="cm abs">2</span><h4>${f.amount} goes out on ${f.next_debit}</h4><p>Short this month? ${esc(sk.when)}. Lowering the amount also counts if you do it now.</p><button class="btn primary" data-open-recover>See options for this month</button></div>` : '';
   $('ctxTxt').textContent=`Example Equity Fund · ${f.amount}/month · ${failed?'last instalment failed':'next on '+f.next_debit}`;
   $('sugg').innerHTML=(QUESTIONS[S.moment]||[]).map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+  renderInsight();
 }
 
 /* ---------- option sheets ---------- */
@@ -749,7 +776,7 @@ async function ask(){
     const r=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:S,question:q})});
     const d=await r.json().catch(()=>({})); if(!r.ok) throw {code:d.error||'busy'};
     html=`<div class="msg bot ${d.shown==='answer'?'':'fb'}">${esc(String(d.text).replace(/\s*\[(R\d+)(\s*,\s*R\d+)*\]/g,''))}</div>${checksHTML(d)}`;
-    FIT = d.shown==='answer' && d.option && d.option!=='none' ? d.option : null;
+    LAST=d; renderInsight(); FIT = d.shown==='answer' && d.option && d.option!=='none' ? d.option : null;
     if(FIT){ const o=O(FIT); if(o) html+=`<button class="qc" type="button" data-detail="${FIT}" style="font-size:13px;font-weight:600;color:var(--green-ink);text-align:left">${esc(o.title)} →</button>`; }
   }catch(e){
     html=`<div class="msg bot fb">${esc(rulesSummary())}</div><details class="qc warn"><summary>! AI busy · rules summary shown</summary><ul><li class="ok"><i>✓</i><span>Built only from calculated facts; no AI text. Try again in a minute.</span></li></ul></details>`;
@@ -821,7 +848,7 @@ async function loadAiSummary(){
   try{
     const r=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:S,question:q})});
     const d=await r.json().catch(()=>({})); if(!r.ok||d.shown!=='answer') throw 0;
-    AI_CACHE[key]=d; show(d);
+    AI_CACHE[key]=d; show(d); LAST=d; renderInsight();
   }catch{ show({text:rulesSummary(), shown:'fallback', checks:[{label:'AI busy: built only from calculated facts', ok:true, warn:true}]}); }
 }
 function askFromRecover(){ const q=$('rQ').value.trim(); if(q.length<3) return; $('rQ').value=''; push('assistant'); setTimeout(()=>{ $('q').value=q; ask(); },350); }
@@ -840,6 +867,32 @@ document.addEventListener('click', e=>{
   const dm=e.target.closest('[data-demo]'); if(dm) return toast(`Demo: "${dm.dataset.demo}" is out of scope.`);
 }, true);
 $('detTog').onclick=()=>{ const o=$('detTog').getAttribute('aria-expanded')==='true'; $('detTog').setAttribute('aria-expanded',String(!o)); $('detBody').hidden=o; };
+
+
+/* ---------- right panel ---------- */
+const NOTES={
+  home:{after:[[0,'Status on the dashboard','The fund row shows the failed instalment and the pay-by date, not just the SMS.'],[0,'An alert that says what next','"Still active" and the deadline, instead of only "failed".']],
+        before:[[0,'Nothing on the dashboard','The fund row looks normal. The failure only shows up in an SMS.'],[0,'An alert with no next step','It says the payment failed, but not that the SIP is still active or what to do.']]},
+  sip:{after:[[2,'Missed X of 3','Failed payments count toward the rule that cancels a SIP after 3 in a row. Now it\'s visible before it\'s too late.'],[0,'Skip warns first','If skipping would be the 3rd in a row, it says so under Skip.'],[5,'Cancel, explained','Still two taps, never hidden. It first says the money stays invested.'],[4,'Need help opens the assistant','Plain answers about this SIP, checked before they\'re shown.']],
+       before:[[0,'No pay-by date','Nothing says the instalment can still be paid, or until when.'],[0,'No missed count','The rule that 3 in a row cancels the SIP isn\'t shown anywhere.'],[0,'Skip and cancel with no warning','Skipping a 3rd time or cancelling gives no explanation of what happens.']]},
+  recover:{after:[[1,'A plain explanation first','Written by AI for this SIP, and checked before it\'s shown.'],[2,'Missed X of 3','How close the SIP is to being cancelled automatically.'],[3,'Options that fit the reason','Pick what\'s going on; the options re-order and each shows its deadline.'],[4,'Ask anything','English or Hinglish. It never recommends funds or predicts returns.']]},
+  assistant:{after:[[4,'Ask anything','Answers use only the rules engine\'s facts for this SIP.'],[0,'Checked before it\'s shown','Code checks and an AI reviewer run on every answer. A failed check shows a safe fallback.'],[0,'It declines advice','Fund picks and return predictions are declined by code, before any AI call.']]},
+};
+let LAST=null;
+function renderInsight(){
+  if(!EV) return; const scr=stack.at(-1); const set=NOTES[scr]||NOTES.home; const list=(MODE==='after'?set.after:set.before)||set.after;
+  $('inKick').textContent = MODE==='after'?'With the assistant':'Today';
+  $('inTitle').textContent = MODE==='after'?'What\'s new on this screen':'What\'s missing on this screen';
+  const ul=$('inNotes'); ul.className='inotes '+MODE;
+  ul.innerHTML=list.map(([n,t,d])=>`<li>${n?`<span class="cm">${n}</span>`:'<span class="dot"></span>'}<span><b>${esc(t)}</b>${esc(d)}</span></li>`).join('');
+  const f=EV.facts, sk=O('skip'), pay=O('pay');
+  const rows=[['Today',f.today],['Last instalment',S.status==='failed'?'Failed '+R.fmt(S.lastFailure):'Paid'],...(f.pay_now_deadline?[['Can still pay until',f.pay_now_deadline]]:[]),['Next instalment',`${f.amount} on ${f.next_debit}`],['Missed in a row',f.missed_in_a_row],['Skip',sk.risk?'Would cancel the SIP':sk.when],['Cancel',f.cancel.replace(' (next instalment within 7 days)','')]];
+  $('inFacts').innerHTML=rows.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('');
+  const c=$('inChecksCard'); c.hidden=!LAST||MODE!=='after';
+  if(LAST){ const ch=LAST.checks||[], p=ch.filter(x=>x.ok).length;
+    $('inChecksT').textContent = LAST.by==='policy'?'Last question: declined by policy':LAST.shown==='answer'?`Last AI answer: ${p} of ${ch.length} checks passed`:'Last AI answer: safe fallback shown';
+    $('inChecks').innerHTML=ch.map(x=>`<li class="${!x.ok?'bad':x.warn?'warn':'ok'}"><i>${!x.ok?'✕':x.warn?'!':'✓'}</i><span>${esc(x.label)}</span></li>`).join(''); }
+}
 
 /* ---------- start ---------- */
 route();
