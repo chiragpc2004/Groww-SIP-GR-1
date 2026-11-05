@@ -117,17 +117,19 @@ QUESTION: """${question}"""
 Reply with only JSON: {"answer": string, "rules_cited": ["R3", ...], "best_fit_option": one of ${JSON.stringify(ev.options.map(o => o.id).concat('none'))}}`;
 }
 function judgePrompt(ev, question, answer, hardship) {
-  return `You are a strict reviewer for a mutual fund app's assistant. Check the ANSWER against the FACTS and OPTIONS only.
+  return `You are a strict reviewer for a mutual fund app's assistant. Check the ANSWER against the FACTS, OPTIONS and VERIFIED RULES only. A statement that matches a verified rule is correct, not invented.
 
 FACTS
 ${Object.entries(ev.facts).map(([k, v]) => `${k}: ${v}`).join('\n')}
 OPTIONS
 ${ev.options.map(o => `- ${o.title}: ${o.available ? 'available' : 'not available'}; ${o.when}; ${o.detail}`).join('\n')}
+VERIFIED RULES (Groww's published rules; true for every user)
+${Object.entries(R.RULES).map(([k, v]) => `${k}: ${v}`).join('\n')}
 QUESTION: """${question}"""
 ANSWER: """${answer}"""
 
 Judge:
-1. facts_correct: every statement about dates, availability, deadlines, the 3-in-a-row rule and charges matches FACTS/OPTIONS (no contradictions, nothing invented).
+1. facts_correct: every statement about dates, availability, deadlines, the 3-in-a-row rule and charges matches FACTS, OPTIONS or VERIFIED RULES (no contradictions, nothing invented).
 2. cancel_correct: if cancelling is mentioned, it says future instalments stop AND existing money stays invested (until redeemed). If cancelling is not mentioned, true.
 3. neutral: no pressure to continue investing, no discouraging cancellation, no fear or urgency${hardship ? ', and it treats stopping as a reasonable choice given the hardship' : ''}.
 4. answers_question: it actually addresses the question.
