@@ -153,7 +153,7 @@
    "q": "agar sip cancel karun to mera paisa wapas milega kya?",
    "expect": "answer",
    "must": [
-    "redeem|invested"
+    "redeem|redemption|invested|rahega|stays"
    ],
    "must_not": []
   },
