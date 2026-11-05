@@ -681,6 +681,11 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 .g1-ai-h details summary{font-size:12px}
 .g1-ai-h details ul{position:absolute;right:0;top:calc(100% + 6px);width:min(260px,100%);z-index:6;margin:0;background:#202328;border-color:#33373D;box-shadow:0 10px 30px rgba(0,0,0,.45);font-weight:400;color:var(--ink)}
 .g1-ai-h details li span{color:var(--ink)}
+
+.g1-ai-h.rules{color:var(--muted)} .g1-tag{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);border:1px solid #33373D;border-radius:999px;padding:2px 8px}
+.g1-tell{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:12px 14px;border-radius:14px;border:1px dashed #3A4A44;background:rgba(0,179,134,.06);color:var(--green-ink);position:relative}
+.g1-tell svg{flex:none;margin-top:2px} .g1-tell>span{display:grid;gap:2px} .g1-tell b{font-size:14.5px;color:var(--head)} .g1-tell>span>span{font-size:12.5px;color:var(--muted)}
+.g1-moved{justify-self:start;font-size:12px;color:var(--muted);margin-top:-4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -788,7 +793,7 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
             <div class="g1-sugg" id="sugg"></div>
             <div class="chat" id="chat"></div>
           </div>
-          <div class="g1-in"><span class="cm abs" data-k="ask" style="left:-6px;top:-8px"></span><textarea id="q" rows="1" placeholder="Ask GR-1: about your investments" aria-label="Ask GR-1"></textarea><button class="send" id="send" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" stroke-linejoin="round"/></svg></button></div>
+          <div class="g1-in"><span class="cm abs" data-k="tell" style="left:-6px;top:-8px"></span><textarea id="q" rows="1" placeholder="Ask GR-1: about your investments" aria-label="Ask GR-1"></textarea><button class="send" id="send" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" stroke-linejoin="round"/></svg></button></div>
         </section>
 
         <!-- sheets -->
@@ -1056,7 +1061,7 @@ async function ask(){
     const d=await r.json().catch(()=>({})); if(!r.ok) throw {code:d.error||'busy'};
     html=`<div class="msg bot ${d.shown==='answer'?'':'fb'}">${esc(String(d.text).replace(/\s*\[(R\d+)(\s*,\s*R\d+)*\]/g,''))}</div>${checksHTML(d)}`;
     LAST=d; renderInsight(); FIT = d.shown==='answer' && d.option && d.option!=='none' ? d.option : null;
-    if(FIT){ const o=O(FIT); if(o&&o.available&&!o.risk) html+=`<button class="qc" type="button" data-g1act="${FIT}" style="font-size:13px;font-weight:600;color:var(--green-ink);text-align:left">${esc(BTN[FIT]?BTN[FIT](o):o.title)}</button>`; }
+    if(FIT){ const o=O(FIT); if(o&&o.available&&!o.risk){ html+=`<button class="qc" type="button" data-g1act="${FIT}" style="font-size:13px;font-weight:600;color:var(--green-ink);text-align:left">${esc(BTN[FIT]?BTN[FIT](o):o.title)}</button><div class="g1-moved">Moved to the top of the card: ${esc(o.title)}</div>`; if($('rActs')) renderActs(); } }
   }catch(e){
     html=`<div class="msg bot fb">${esc(rulesSummary())}</div><details class="qc warn"><summary>! AI busy · rules summary shown</summary><ul><li class="ok"><i>✓</i><span>Built only from calculated facts; no AI text. Try again in a minute.</span></li></ul></details>`;
   }
@@ -1067,7 +1072,8 @@ $('q').addEventListener('input',autosize);
 $('q').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ask(); } });
 $('send').onclick=ask;
 $('sugg').addEventListener('click',e=>{ const b=e.target.closest('[data-q]'); if(b){ $('q').value=b.dataset.q; ask(); } });
-$('g1Close').onclick=()=>closeGR1(); $('g1scrim').onclick=()=>closeGR1();
+$('g1Close').onclick=()=>closeGR1();
+document.addEventListener('click',e=>{ if(e.target.closest('[data-tell]')){ $('q').focus(); $('q').placeholder="e.g. salary is late this month and I have an EMI"; } }); $('g1scrim').onclick=()=>closeGR1();
 
 /* ---------- eval (mentor page) ---------- */
 let GOLD=null, RESULTS=[];
@@ -1104,34 +1110,44 @@ function openGR1(trigger){
   G1=trigger; closeSheet(); $('notif').classList.remove('on'); $('sms').classList.remove('on');
   const v=variant(trigger);
   $('g1Chip').textContent = v==='cancel' ? 'Before you cancel' : v ? 'SIP at risk · Example Equity Fund' : (MODE==='after'&&trigger!=='icon') ? 'Example Equity Fund' : 'Mutual funds dashboard';
-  $('q').placeholder = MODE==='after' ? 'Ask GR-1 about this SIP' : 'Ask GR-1: about your investments';
+  $('q').placeholder = MODE==='after' ? "Tell GR-1 what's going on, or ask" : 'Ask GR-1: about your investments';
   const qs = v ? QUESTIONS[v] : (MODE==='after'&&trigger!=='icon') ? QUESTIONS.sip : GR1_GENERIC;
   $('sugg').innerHTML = qs.map(q=>`<button class="g1-s" type="button" data-q="${esc(q)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>${esc(q)}</button>`).join('');
   $('g1Card').innerHTML = v ? cardHTML(v) : '';
-  if(v){ renderActs(v); loadAiSummary(v); }
+  if(v){ renderActs(v); }
   $('g1Body').scrollTop=0; $('gr1').classList.add('on'); $('g1scrim').classList.add('on'); syncFab();
 }
 function closeGR1(quiet){ $('gr1').classList.remove('on'); $('g1scrim').classList.remove('on'); if(!quiet) syncFab(); }
+function whatHappens(v){
+  const f=EV.facts, sk=O('skip'), rd=O('reduce'), pay=O('pay');
+  if(v==='failed') return `${pay&&pay.available?`Pay with Pay Now by ${f.pay_now_deadline} and this instalment counts. After that, paying late or through a one-time investment leaves it counted as failed.`:'Pay Now has closed, so this instalment stays counted as failed.'} Groww doesn't charge for a failed SIP; your bank may.`;
+  if(v==='tight') return `${f.amount} goes out on ${f.next_debit}. If this month is tight, you can skip it (${sk.when.charAt(0).toLowerCase()+sk.when.slice(1)}) or lower the amount (${rd.when.charAt(0).toLowerCase()+rd.when.slice(1)}). ${f.cancel}.`;
+  if(v==='blocked') return `This fund doesn't allow skipping, so ${f.amount} goes out on ${f.next_debit} unless you change it. You can lower the amount (${rd.when.charAt(0).toLowerCase()+rd.when.slice(1)}) or move the date. ${f.cancel}.`;
+  return `Cancelling stops future ${f.amount} instalments. Your ${f.current_value} stays invested until you redeem it separately, and a cancel can't be undone. If you just need a break, you can skip the next instalment instead (${sk.when.charAt(0).toLowerCase()+sk.when.slice(1)}); two skips in a row are safe.`;
+}
 function cardHTML(v){
   const f=EV.facts, failed=S.status==='failed';
-  const [title,sub,tone]={ failed:['Your SIP is still active',`${f.amount} didn't go through on ${R.fmt(S.lastFailure)} · insufficient balance`,'red'],
-    tight:[`${f.amount} goes out on ${f.next_debit}`,`In ${f.days_to_next_debit} days. If this month is tight, you can still change it.`,'amber'],
-    blocked:['Skipping is off for this fund',`${f.amount} goes out on ${f.next_debit}. Lowering the amount or moving the date still work.`,'amber'],
-    cancel:['Before you cancel',`Future ${f.amount} instalments stop. Your ${f.current_value} stays invested until you redeem it. It can't be undone.`,''] }[v];
+  const [title,sub,tone]={ failed:['Your SIP is still active',`${f.amount} · failed ${R.fmt(S.lastFailure)} · insufficient balance`,'red'],
+    tight:[`${f.amount} goes out on ${f.next_debit}`,`${f.amount} a month · debit in ${f.days_to_next_debit} days`,'amber'],
+    blocked:['Skipping is off for this fund',`${f.amount} a month · debit on ${f.next_debit}`,'amber'],
+    cancel:['Before you cancel',`${f.amount} a month · ${f.current_value} invested · next debit ${f.next_debit}`,''] }[v];
   return `<div class="g1-card"><div class="g1-st ${tone}"><i></i><b>${esc(title)}</b></div><p class="g1-sub">${esc(sub)}</p>
-    <div class="g1-ai"><span class="cm abs" data-k="ai"></span><div class="g1-ai-h"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>GR-1 explains<span id="rCheck"></span></div><div class="txt" id="rAi"></div></div>
+    <div class="g1-ai"><span class="cm abs" data-k="ai"></span><div class="g1-ai-h rules">What's happening<span class="g1-tag">From Groww's rules</span></div><div class="txt">${esc(whatHappens(v))}</div></div>
     ${failed||S.missedInARow>0?`<div class="miss"><span class="cm abs" data-k="miss"></span>${missHTML()}</div>`:''}
     ${v==='cancel'?`<div class="g1-q">Why are you stopping? <span class="cm" data-k="reasons"></span></div><div class="reasons">${REASONS_C.map(([k,l])=>`<button type="button" data-reason-r="${k}" aria-pressed="${REASON===k}">${l}</button>`).join('')}</div>`:''}
-    <div class="g1-q">What you can do <span class="cm" data-k="acts"></span></div><div class="acts" id="rActs"></div></div>`;
+    <div class="g1-q">What you can do <span class="cm" data-k="acts"></span></div><div class="acts" id="rActs"></div>
+    <button class="g1-tell" type="button" data-tell><span class="cm abs" data-k="tell"></span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span><b>Tell GR-1 what's going on</b><span>In your own words. GR-1 answers and moves the action that fits to the top.</span></span></button></div>`;
 }
 function renderActs(v){
   v=v||variant(G1); if(!v) return;
-  const opts=(REASON&&v==='cancel'?RANK_R[REASON]:RANK_M[v]).map(O).filter(Boolean);
-  const best=opts.find(o=>o.available&&!o.risk&&(o.id!=='cancel'||REASON==='switch'));
+  let opts=(REASON&&v==='cancel'?RANK_R[REASON]:RANK_M[v]).map(O).filter(Boolean);
+  const fit=FIT&&opts.find(o=>o.id===FIT&&o.available&&!o.risk);
+  if(fit) opts=[fit,...opts.filter(o=>o!==fit)];
+  const best=fit||opts.find(o=>o.available&&!o.risk&&(o.id!=='cancel'||REASON==='switch'));
   $('rActs').innerHTML=opts.map(o=>{ const isBest=o===best;
     const chip=o.risk?['amber','Would cancel SIP']:o.blocked?['grey','Not for this fund']:o.available?['green','Available']:['grey','Not now'];
     const can=o.available&&!o.risk;
-    return `<div class="act ${can?'':'off'} ${isBest?'best':''}">${isBest?`<span class="bestlbl">${REASON&&v==='cancel'?'Fits what you picked':'Fits this moment'}</span>`:''}
+    return `<div class="act ${can?'':'off'} ${isBest?'best':''}">${isBest?`<span class="bestlbl">${fit?'Fits what you told GR-1':REASON&&v==='cancel'?'Fits what you picked':'Fits this moment'}</span>`:''}
       <div class="act-h"><b>${esc(o.title)}</b><span class="chip ${chip[0]}">${chip[1]}</span></div>
       <span class="w">${esc(o.when)}</span><span class="d">${esc(o.detail)}</span>
       ${can?`<button class="btn ${isBest?'primary':o.id==='cancel'?'danger outline':'outline'}" data-g1act="${o.id}">${esc(BTN[o.id](o))}</button>`:''}</div>`; }).join('');
@@ -1177,7 +1193,7 @@ const NOTES={
         before:[[0,'An alert with no next step','The SMS says it failed, not that the SIP is still active or what to do.'],[0,'Nothing on the dashboard','The fund row looks normal.'],[0,'GR-1 is one generic entry point','It suggests portfolio questions and doesn\'t know this SIP is at risk.']]},
   sip:{after:[['banner','GR-1 on SIP details','A banner opens the same card from here.'],['skip','Skip opens the same card','A blocked skip, or a 3rd miss in a row, shows before you commit.'],['help','Need help opens GR-1 for this SIP','No need to explain the situation first.'],['cancel','Cancel opens the same card','What cancelling does and the other options. Cancel is still two taps.']],
        before:[[0,'No pay-by date','Nothing says the instalment can still be paid, or until when.'],[0,'No missed count','The rule that 3 in a row cancels the SIP isn\'t shown anywhere.'],[0,'Skip and cancel with no warning','A blocked skip just fails, and Cancel doesn\'t say what happens to the money.']]},
-  gr1:{after:[['ctx','Already knows this SIP','Every way in opens this one card with the SIP loaded.'],['ai','A checked explanation first','Written by GR-1 for this SIP. It passes 7 checks before it\'s shown.'],['miss','Missed X of 3','How close the SIP is to cancelling on its own.'],['reasons','Why are you stopping?','The actions re-order for the reason picked.'],['acts','One list of actions, ranked for the moment','Pay, skip, lower, change date and cancel. Only what works right now is active.'],['ask','Ask GR-1 about this SIP','English or Hinglish. It never recommends funds or predicts returns.']],
+  gr1:{after:[['ctx','Already knows this SIP','Every way in opens this one card with the SIP loaded.'],['ai','What\'s happening, from the rules','Instant and always correct: the deadline, the risk and what each option does, worked out in code.'],['miss','Missed X of 3','How close the SIP is to cancelling on its own.'],['reasons','Why are you stopping?','The actions re-order for the reason picked.'],['acts','One list of actions, ranked for the moment','Pay, skip, lower, change date and cancel. Only what works right now is active.'],['tell','Tell GR-1 what\'s going on','In your own words, English or Hinglish. GR-1 answers, passes 7 checks, and moves the action that fits to the top.']],
        before:[[0,'Generic prompts','GR-1 suggests portfolio questions. It doesn\'t know this SIP failed or is at risk.'],[0,'The user explains everything','They have to describe the problem before getting any help.'],[0,'Answers, no actions','Pay, Skip or Edit are still somewhere else in the app.']]},
 };
 let LAST=null;
