@@ -526,6 +526,7 @@ th{letter-spacing:0;text-transform:none;font-size:12.5px;background:transparent;
 td{font-size:14px}
 .kpi b{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:26px}
 .foot{background:transparent}
+.inl{color:var(--green-ink);font-weight:600;text-decoration:none}
 .cat{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--surface);color:var(--ink)}
 .cat.adversarial{background:var(--red-soft);color:var(--red)} .cat.messy{background:var(--amber-soft);color:var(--amber)} .cat.hardship{background:var(--pen-soft);color:var(--pen)} .cat.unverified{background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)}
 @media (max-width:960px){.ahero{grid-template-columns:1fr}.pipe{grid-template-columns:1fr;gap:18px}.pipe::before{left:16px;right:auto;top:16px;bottom:16px;width:2px;height:auto}.pipe li{grid-template-columns:34px 1fr;column-gap:14px;padding:0}.pipe li::before{grid-row:span 2;margin:0}.two{grid-template-columns:1fr;gap:40px}}
@@ -539,7 +540,7 @@ td{font-size:14px}
 .xlink{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;white-space:nowrap;justify-self:end}
 .xlink:hover{color:var(--head)}
 @media (min-width:761px){.site .sw{display:grid;grid-template-columns:1fr auto 1fr;gap:24px}.site .nav{flex:none;justify-self:center}}
-@media (max-width:760px){.xlink{margin-left:auto}}
+@media (max-width:760px){.xlink{display:none}}
 /* demo */
 @media (min-width:1200px){
   .stage{grid-template-columns:minmax(0,1fr) 390px minmax(0,1fr);gap:96px;max-width:calc(var(--container) + 2*var(--gutter));padding-left:var(--gutter)!important;padding-right:var(--gutter)!important}
@@ -663,7 +664,7 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 <body>
 <header class="site"><div class="sw">
   <a class="brand" href="#"><span class="mk"><svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Keep SIP Active <span class="badge">GR-1 concept</span></a>
-  <nav class="nav" aria-label="Main"><a href="#" data-nav="demo">Live demo</a><a href="#about" data-nav="about">How it works</a><a href="#quality" data-nav="quality">Quality report</a></nav>
+  <nav class="nav" aria-label="Main"><a href="#" data-nav="home">Home</a><a href="#demo" data-nav="demo">Live demo</a><a href="#about" data-nav="about">How it works</a><a href="#quality" data-nav="quality">Quality report</a></nav>
   <a class="xlink" href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a>
 </div></header>
 
@@ -797,11 +798,12 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 </div></div>
 
 <!-- ================= HOW IT WORKS ================= -->
-<div id="aboutView" class="page" hidden><div class="wrap">
+<!-- ================= HOME ================= -->
+<div id="homeView" class="page" hidden><div class="wrap">
   <section class="ahero">
-    <div class="ph"><h1>Rules decide what's possible. AI explains it.</h1>
-      <p class="lede">First-time investors often lose a SIP without ever deciding to stop. GR-1, Groww's AI, already sits in the app behind one icon. This concept brings it to the moment a SIP is at risk, as one card with that SIP's dates and every action that still works.</p>
-      <div class="ctas"><a class="pbtn" href="#">Try the live demo</a><a class="pbtn ghost" href="#quality">See the quality report</a></div></div>
+    <div class="ph"><h1>Most first SIPs don't end by choice</h1>
+      <p class="lede">A payment fails, money runs short, the fund won't allow a skip, or the investor just needs a break, and Cancel looks like the only way out. Groww already has an AI, GR-1, behind one icon. This concept brings it to that moment: one card, with that SIP's dates and every action that still works.</p>
+      <div class="ctas"><a class="pbtn" href="#demo">Try the live demo</a><a class="pbtn ghost" href="#about">See how it works</a></div></div>
     <figure class="lapse" aria-label="How a SIP lapses today, and with the assistant">
       <div class="lrow"><figcaption>Today</figcaption><ol>
         <li class="ok"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b>Sep</b><span>Paid</span></li>
@@ -816,11 +818,24 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
     </figure>
   </section>
 
-  <section class="asec"><h2 class="h2">Three rules decide whether a SIP survives</h2><p class="sub">From Groww's published help pages, checked 3–4 Nov 2026. Most first-time investors never see them.</p>
-  <div class="bigrow"><div><b>3 in a row</b><span>Three missed, failed or skipped instalments in a row cancel the SIP automatically.</span></div><div><b>2 days</b><span>A skip or edit within 2 days of the debit doesn't count for that month.</span></div><div><b>7 days</b><span>Cancelling is locked within 7 days of the next instalment.</span></div></div></section>
+  <section class="asec"><h2 class="h2">Why SIPs go inactive</h2><p class="sub">From 7,600 public posts and 6 interviews. <a class="inl" href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Explore the evidence ↗</a></p>
+  <div class="bigrow"><div><b>9 to 1</b><span>People who stop outright, for every one who skips, pauses or lowers the amount instead.</span></div><div><b>40%</b><span>Of stop moments happen at four moments a product change can fix.</span></div><div><b>1 icon</b><span>Where GR-1 lives today. It opens with generic prompts and doesn't know a SIP is at risk.</span></div></div></section>
 
   <section class="asec"><h2 class="h2">Four ways in, one card</h2><p class="sub">Every moment opens the same GR-1 card. Only the action it leads with changes.</p>
   <div class="cmp" role="table"><div class="cmp-h" role="row"><span role="columnheader">Moment</span><span role="columnheader"><i class="swt red"></i>Today's app</span><span role="columnheader"><i class="swt green"></i>With GR-1 in the moment</span></div><div id="aboutMoments"></div></div></section>
+
+  <section class="band"><div><h2>See it on the phone</h2><p>Four moments, the app as it is today, and the same moments with GR-1.</p></div><a class="pbtn light" href="#demo">Open the live demo</a></section>
+</div></div>
+
+<div id="aboutView" class="page" hidden><div class="wrap">
+  <section class="ph">
+    <h1>Rules decide what's possible. GR-1 explains it.</h1>
+    <p class="lede">Behind the one card: the Groww rules that decide whether a SIP survives, the five steps every answer takes, and what GR-1 will never do.</p>
+    <div class="ctas"><a class="pbtn" href="#demo">Try the live demo</a><a class="pbtn ghost" href="#quality">See the quality report</a></div>
+  </section>
+
+  <section class="asec"><h2 class="h2">Three rules decide whether a SIP survives</h2><p class="sub">From Groww's published help pages, checked 3–4 Nov 2026. Most first-time investors never see them.</p>
+  <div class="bigrow"><div><b>3 in a row</b><span>Three missed, failed or skipped instalments in a row cancel the SIP automatically.</span></div><div><b>2 days</b><span>A skip or edit within 2 days of the debit doesn't count for that month.</span></div><div><b>7 days</b><span>Cancelling is locked within 7 days of the next instalment.</span></div></div></section>
 
   <section class="asec"><h2 class="h2">How an answer is made</h2><p class="sub">Every question takes the same five steps. Nothing reaches the user without passing the last one.</p>
   <ol class="pipe" id="pipe">
@@ -836,12 +851,12 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
     <div><h2 class="h2">Limits of this demo</h2>
     <ul class="lim"><li>Sample data only. Buttons that would change a SIP show a demo notice.</li><li>Automatic retries, exact bank fees and fund-specific skip limits aren't documented by Groww, so the assistant says it can't confirm them.</li><li>Working days skip weekends but not bank holidays.</li></ul></div></section>
 
-  <section class="band"><div><h2>See it on the phone</h2><p>Four moments, the app as it is today, and the same moments with GR-1.</p></div><a class="pbtn light" href="#">Open the live demo</a></section>
+  <section class="band"><div><h2>See it on the phone</h2><p>Four moments, the app as it is today, and the same moments with GR-1.</p></div><a class="pbtn light" href="#demo">Open the live demo</a></section>
 </div></div>
 
 <footer class="foot"><div class="sw">
   <span>Independent student case study for a product fellowship. Not affiliated with or endorsed by Groww. Sample data only. Not investment advice.</span>
-  <span class="fl"><a href="#">Live demo</a><a href="#about">How it works</a><a href="#quality">Quality report</a><a href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a></span>
+  <span class="fl"><a href="#">Home</a><a href="#demo">Live demo</a><a href="#about">How it works</a><a href="#quality">Quality report</a><a href="https://nextleap-groww-sip-discovery-engine.vercel.app" target="_blank" rel="noopener">Research engine ↗</a></span>
 </div></footer>
 
 <script src="rules.js"></script>
@@ -864,12 +879,12 @@ let S, EV, FIT = null, MODE = 'after', REASON = null;
 const AI_CACHE = {};
 
 /* ---------- views (app vs mentor pages) ---------- */
-function route(){ const h=location.hash.slice(1); const v = h==='quality'||h==='about' ? h : 'demo';
-  $('appView').hidden = v!=='demo'; $('qualityView').hidden=v!=='quality'; $('aboutView').hidden=v!=='about';
+function route(){ const h=location.hash.slice(1); const v = ['quality','about','demo'].includes(h) ? h : 'home';
+  $('appView').hidden = v!=='demo'; $('qualityView').hidden=v!=='quality'; $('aboutView').hidden=v!=='about'; $('homeView').hidden=v!=='home';
   document.body.classList.toggle('app-on', v==='demo');
   document.querySelectorAll('[data-nav]').forEach(a=>a.dataset.nav===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   if(v==='quality') loadGold();
-  if(v==='about' && !$('aboutMoments').children.length) $('aboutMoments').innerHTML=Object.values(STORY).map(st=>{ const cap=x=>x.charAt(0).toUpperCase()+x.slice(1); return `<div class="cmp-r" role="row"><b role="cell">${esc(st.t)}</b><span role="cell" data-l="Today's app">${esc(cap(st.today.replace(/^Today: /,'')))}</span><span role="cell" data-l="With GR-1">${esc(cap(st.now.replace(/^Now: /,'')))}</span></div>`; }).join('');
+  if(v==='home' && !$('aboutMoments').children.length) $('aboutMoments').innerHTML=Object.values(STORY).map(st=>{ const cap=x=>x.charAt(0).toUpperCase()+x.slice(1); return `<div class="cmp-r" role="row"><b role="cell">${esc(st.t)}</b><span role="cell" data-l="Today's app">${esc(cap(st.today.replace(/^Today: /,'')))}</span><span role="cell" data-l="With GR-1">${esc(cap(st.now.replace(/^Now: /,'')))}</span></div>`; }).join('');
   window.scrollTo(0,0); setTimeout(()=>window.fitDemo&&fitDemo(),0); }
 addEventListener('hashchange', route);
 
@@ -913,7 +928,7 @@ const GLYPH={failed:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"
 function scenButtons(){ return SAMPLES.map(s=>{ const st=STORY[s.moment]; return `<button class="gopt" type="button" data-scen="${s.id}"><i class="gg ${s.moment}">${GLYPH[s.moment]}</i><span class="gt"><b>${esc(st.t)}</b><span>${esc(MODE==='before'?st.today:st.now)}</span></span></button>`; }).join(''); }
 $('gScen').innerHTML=scenButtons();
 document.addEventListener('click', e=>{ const b=e.target.closest('[data-scen]'); if(b){ setScenario(SAMPLES.find(s=>s.id===b.dataset.scen)); } });
-$('demoFab').onclick=()=>openSheet('Demo moments', `<div class="modes"><button type="button" data-mode-btn="before" aria-pressed="${MODE==='before'}">Today's app</button><button type="button" data-mode-btn="after" aria-pressed="${MODE==='after'}">With GR-1</button></div><p class="fine" style="color:var(--muted)">Each moment opens the same GR-1 card. Sample data only.</p><div style="display:grid;gap:6px">${scenButtons()}</div><div class="glinks" style="padding-top:4px"><a href="#quality">Quality report →</a><a href="#about">How it works →</a></div>`);
+$('demoFab').onclick=()=>openSheet('Demo moments', `<div class="modes"><button type="button" data-mode-btn="before" aria-pressed="${MODE==='before'}">Today's app</button><button type="button" data-mode-btn="after" aria-pressed="${MODE==='after'}">With GR-1</button></div><p class="fine" style="color:var(--muted)">Each moment opens the same GR-1 card. Sample data only.</p><div style="display:grid;gap:6px">${scenButtons()}</div><div class="glinks" style="padding-top:4px"><a href="#">Home →</a><a href="#about">How it works →</a></div>`);
 
 /* ---------- render ---------- */
 const O = id => EV.options.find(o=>o.id===id);
