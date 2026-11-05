@@ -123,11 +123,11 @@
         facts.pay_now_deadline = fmt(deadline);
         options.push({ id: 'pay', title: 'Pay the failed instalment', available: open,
           when: open ? `Pay Now is open until ${fmt(deadline)}` : `Pay Now closed on ${fmt(deadline)}; a one-time investment is still possible`,
-          detail: open ? `Paying ${inr(s.amount)} now counts this month and ends the run of missed instalments.` : 'The instalment stays counted as missed.',
+          detail: open ? `Pay ${inr(s.amount)} with Pay Now by ${fmt(deadline)} and this instalment counts as paid. Paying after that, or through a one-time investment, leaves it counted as failed.` : 'The instalment stays counted as failed. A one-time investment still invests the money, but it does not change that.',
           rules: open ? ['R16', 'R12'] : ['R13'], help: HELP.pay });
       } else {
         options.push({ id: 'pay', title: 'Pay the pending instalment', available: true,
-          when: 'From Dashboard, Pending SIP Payments', detail: 'Paying after the date shown counts as failed.', rules: ['R12', 'R13'], help: HELP.pay });
+          when: 'From Dashboard, Pending SIP Payments', detail: 'Pay by the date shown and it counts as paid; paying after that date counts it as failed.', rules: ['R12', 'R13'], help: HELP.pay });
       }
     }
 
