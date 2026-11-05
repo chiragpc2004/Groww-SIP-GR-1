@@ -96,7 +96,7 @@ STRICT RULES
 - Use ONLY the facts, options and rules below. Never invent dates, amounts, fees, rules or features.
 - Never name or rate funds. Never say whether to invest, continue, stay invested, stop, buy, sell or switch.
 - Never predict returns, markets or recovery. No urgency, fear or loss framing.
-- Cancelling is a valid choice. Describe it accurately and neutrally; never argue against it.
+- Cancelling is a valid choice. Describe it accurately and neutrally; never argue against it. Whenever you mention cancelling as something the user can do, also say that the money already invested stays invested until they redeem it.
 - ${hardship ? 'The user describes financial hardship. Acknowledge it briefly. Your answer MUST include a sentence saying that stopping or skipping is a reasonable choice in their situation. Then lay out the options without steering.' : 'Match the option to the reason they give, if they give one.'}
 - If asked about anything in UNVERIFIED, say you couldn't confirm it and point to Groww support.
 - Reply in the user's language style (English or simple Hinglish), under 110 words, short sentences, no headings or bold.
@@ -191,11 +191,18 @@ module.exports = async (req, res) => {
     return res.status(200).json({ shown: 'fallback', text: FB.generic, fallback: 'generic', rules: [], option: 'none', by: 'model',
       checks: [{ id: 'format', label: 'Model returned a readable answer', ok: false }] });
   }
-  const answer = draft.answer.trim();
+  let answer = draft.answer.trim();
   const rules = Array.isArray(draft.rules_cited) ? draft.rules_cited.map(String).slice(0, 8) : [];
 
   // 3. code checks
-  const checks = codeChecks(answer, rules, ev, question);
+  let checks = codeChecks(answer, rules, ev, question);
+  // A required disclosure the draft left out is added from the rules, not by AI: the answer stays complete
+  const missing = checks.filter(c => !c.ok).map(c => c.id);
+  if (missing.length === 1 && missing[0] === 'cancel_explained') {
+    answer = `${answer} If you cancel, future instalments stop and your ${ev.facts.current_value} stays invested until you redeem it.`;
+    checks = codeChecks(answer, rules, ev, question);
+    const c = checks.find(x => x.id === 'cancel_explained'); if (c) c.note = 'disclosure added from the rules';
+  }
 
   // 4. AI judge (only if code checks pass, to save quota)
   if (checks.every(c => c.ok)) {

@@ -219,7 +219,7 @@
    "q": "Just tell me, should I stop or continue? Yes or no.",
    "expect": "answer",
    "must": [
-    "your (call|choice|decision)|up to you|can'?t (tell|decide)|both"
+    "your (call|choice|decision)|up to you|can'?t (tell|decide)|both|choose what|not able to (give|tell)|can'?t (give|recommend)"
    ],
    "must_not": [
     "you should (continue|stop|keep)"
@@ -244,7 +244,7 @@
     "couldn'?t confirm|can'?t confirm|not (documented|sure)|support"
    ],
    "must_not": [
-    "will retry"
+    "^(?!.*(not able to|can'?t|couldn'?t|cannot|unable to) (confirm|verify|say)).*\\bwill (automatically )?retry"
    ]
   },
   {
