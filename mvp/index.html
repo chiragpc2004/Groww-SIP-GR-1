@@ -673,6 +673,14 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 .hm-links svg{grid-row:1;grid-column:2;color:var(--muted);transition:transform .15s,color .15s;margin-top:3px}
 .hm-links a:hover svg{transform:translateX(4px);color:var(--green-ink)} .hm-links a:hover b{color:var(--green-ink)}
 @media (max-width:720px){.hm-links{grid-template-columns:1fr}.hm-links a+a{padding-left:0;border-left:0;border-top:1px solid var(--line)}.hm-links a{padding:16px 0}}
+
+/* checks pill in the GR-1 card: the list opens as a dropdown, not inside the header row */
+.g1-ai-h{position:relative}
+.g1-ai-h>span{display:flex;justify-content:flex-end}
+.g1-ai-h details{position:static}
+.g1-ai-h details summary{font-size:12px}
+.g1-ai-h details ul{position:absolute;right:0;top:calc(100% + 6px);width:min(260px,100%);z-index:6;margin:0;background:#202328;border-color:#33373D;box-shadow:0 10px 30px rgba(0,0,0,.45);font-weight:400;color:var(--ink)}
+.g1-ai-h details li span{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -1143,9 +1151,10 @@ async function loadAiSummary(v){
   $('rAi').innerHTML='<div class="sk"><i></i><i></i><i></i></div>'; $('rCheck').innerHTML='';
   try{
     const r=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:S,question:SUMMARY_Q[v]})});
-    const d=await r.json().catch(()=>({})); if(!r.ok||d.shown!=='answer') throw 0;
+    const d=await r.json().catch(()=>({})); if(!r.ok) throw 0;
+    if(d.shown!=='answer'){ const failed=(d.checks||[]).filter(c=>!c.ok); show({text:rulesSummary(), shown:'fallback', checks:[...failed.map(c=>({label:'GR-1 draft failed: '+c.label, ok:false})),{label:'So this summary is built only from calculated facts', ok:true, warn:true}]}); LAST=d; renderInsight(); return; }
     AI_CACHE[key]=d; show(d); LAST=d; renderInsight();
-  }catch{ show({text:rulesSummary(), shown:'fallback', checks:[{label:'AI busy: built only from calculated facts', ok:true, warn:true}]}); }
+  }catch{ show({text:rulesSummary(), shown:'fallback', checks:[{label:'GR-1 is busy (free AI quota), so this summary is built only from calculated facts', ok:true, warn:true}]}); }
 }
 
 /* ---------- SIP details controls: Today = current app, With the assistant = new ---------- */

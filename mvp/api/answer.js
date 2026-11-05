@@ -206,7 +206,7 @@ module.exports = async (req, res) => {
     }
   }
   const pass = checks.every(c => c.ok);
-  console.log(`answer ${pass ? 'shown' : 'fallback'} in ${Date.now() - t0} ms; failed: ${checks.filter(c => !c.ok).map(c => c.id).join(',') || 'none'}`);
+  console.log(`answer ${pass ? 'shown' : 'fallback'} in ${Date.now() - t0} ms; failed: ${checks.filter(c => !c.ok).map(c => c.id + (c.note ? ` (${c.note})` : '')).join(', ') || 'none'}`);
   return res.status(200).json({
     shown: pass ? 'answer' : 'fallback', text: pass ? answer : FB.generic,
     fallback: pass ? null : 'generic', rules: rules.filter(id => R.RULES[id]), option: draft.best_fit_option || 'none',

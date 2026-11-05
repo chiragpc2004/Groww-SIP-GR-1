@@ -179,7 +179,10 @@
     const allowedDates = new Set([today, next, skipTarget, add(next, -3), add(next, 1)].map(fmt));
     if (facts.pay_now_deadline) allowedDates.add(facts.pay_now_deadline);
     if (s.lastFailure) allowedDates.add(fmt(s.lastFailure));
-    const allowedAmounts = new Set([s.amount, s.invested, s.currentValue].map(Number));
+    // every date the engine itself shows (option deadlines, facts) is fair to repeat
+    const shown = [...options.flatMap(o => [o.title, o.when, o.detail]), ...Object.values(facts)].join(' ');
+    for (const m of shown.matchAll(new RegExp(`\\b(\\d{1,2}) (${MONTHS.join('|')})\\b`, 'g'))) allowedDates.add(`${+m[1]} ${m[2]}`);
+    const allowedAmounts = new Set([s.amount, s.invested, s.currentValue, Math.abs(s.currentValue - s.invested)].map(Number));
     return { facts, options, warnings, nextTs: next, allowedDates: [...allowedDates], allowedAmounts: [...allowedAmounts] };
   }
   function suffix(n) { return (n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th'); }
