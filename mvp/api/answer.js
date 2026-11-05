@@ -64,7 +64,7 @@ const PREDICT_ASK = /\b(will|when will|kab)\b.{0,40}\b(market|nifty|sensex|retur
 const HARDSHIP = /\b(lost (my )?job|laid off|layoff|no job|unemployed|medical|hospital|emergency|can'?t afford|cannot afford|no money|debt|loan (is )?due|naukri (chali|gayi))\b/i;
 
 const FUND_WORDS = /\b(HDFC|SBI|ICICI|Nippon|Axis|Parag Parikh|PPFAS|Quant|Motilal|Kotak|Mirae|UTI|Tata|Bandhan|DSP|Aditya Birla|Edelweiss|Franklin|Canara|Invesco|Navi|Groww (Nifty|Large|Value)|small[- ]?cap fund|mid[- ]?cap fund|flexi[- ]?cap fund|index fund|ELSS fund)\b/i;
-const ADVICE_SAY = /\b(you should (invest|buy|sell|switch|continue|keep|stay|not cancel)|i (would )?(recommend|suggest) (you )?(invest|buy|switch|continu|keep|stay)|switch to (a|an|another)|better fund|best fund|(you should|better to|best to|i'?d) (keep investing|stay invested)|don'?t (cancel|stop)|do not (cancel|stop)|shouldn'?t (cancel|stop))\b/i;
+const ADVICE_SAY = /\b(you should (invest|buy|sell|switch|continue|keep|stay|not cancel)|i (would )?(recommend|suggest) (you )?(invest|buy|switch|continu|keep|stay)|switch to (a|an|another)|better fund|best fund|(you should|better to|best to|i'?d) (keep investing|stay invested)|don'?t (cancel|stop)|do not (cancel|stop)|shouldn'?t (cancel|stop)|(best|simplest|easiest|most direct|safest|smartest) (option|route|choice|path|thing to do)|sabse (accha|achha|acha|seedha|sahi|best))\b/i;
 const PREDICT_SAY = /\b(will (recover|bounce back|go up|grow|rise|increase|turn positive)|guarantee[ds]?|assured returns?|surely (grow|recover)|markets? always (recover|go up))\b/i;
 const URGENCY_SAY = /\b(act now|hurry|don'?t miss|last chance|before it'?s too late|you'?ll lose|you will lose|lose out|limited time|immediately or)\b/i;
 const RETRY_CLAIM = /\b(will|would|automatically|auto)\b[^.]{0,25}\bretr(y|ies|ied)\b|\bretr(y|ies) (it )?automatically\b/i;
@@ -218,6 +218,14 @@ module.exports = async (req, res) => {
     answer = `${answer} If you cancel, future instalments stop and your ${ev.facts.current_value} stays invested until you redeem it.`;
     checks = codeChecks(answer, rules, ev, question);
     const c = checks.find(x => x.id === 'cancel_explained'); if (c) c.note = 'disclosure added from the rules';
+  }
+  // An answer that states whether Groww retries a failed debit (unverified, U1) is replaced by the rules' own wording
+  const retryOnly = checks.filter(c => !c.ok).length === 1 && (checks.find(c => c.id === 'rules_exist') || {}).note === 'claims an automatic retry, which is unverified';
+  if (retryOnly) {
+    const pay = (ev.options || []).find(o => o.id === 'pay' && o.available);
+    answer = `I couldn't confirm whether Groww retries a failed debit automatically; Groww support can confirm that.${pay ? ` What is confirmed: ${pay.when}, and paying by then counts this instalment as paid.` : ''}`;
+    checks = codeChecks(answer, [], ev, question);
+    const c = checks.find(x => x.id === 'rules_exist'); if (c) c.note = 'unverified retry claim replaced with the rules\' wording';
   }
 
   // 4. AI judge (only if code checks pass, to save quota)
