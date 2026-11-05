@@ -687,6 +687,11 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 .g1-tell svg{flex:none;margin-top:2px} .g1-tell>span{display:grid;gap:2px} .g1-tell b{font-size:14.5px;color:var(--head)} .g1-tell>span>span{font-size:12.5px;color:var(--muted)}
 .g1-moved{justify-self:start;font-size:12px;color:var(--muted);margin-top:-4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.cf-lead{margin:2px 0 10px;line-height:1.45} .cf-pick{display:flex;gap:8px;margin:4px 0 10px} .cf-pick button{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--line,#ddd);background:none;font:inherit;font-weight:600;color:inherit} .cf-pick button[aria-pressed="true"]{border-color:var(--green);color:var(--green)}
+.cf-sel{display:flex;align-items:center;gap:8px;margin:4px 0 6px;font-weight:600} .cf-sel select{font:inherit;padding:8px 10px;border-radius:10px}
+.cf-done{display:flex;align-items:center;gap:10px;margin:2px 0 12px;font-size:17px} .cf-done i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;font-style:normal}
+.cf-rows{margin:0 0 10px;display:grid;gap:8px} .cf-rows div{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--line,#e6e6e6)} .cf-rows dt{color:var(--muted)} .cf-rows dd{margin:0;font-weight:600;text-align:right}
 </style>
 </head>
 <body>
@@ -817,8 +822,8 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 <!-- ================= QUALITY REPORT ================= -->
 <div id="qualityView" class="page" hidden><div class="wrap">
   <div class="ph"><h1>Every answer is tested before anyone sees it</h1>
-  <p class="lede">26 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
-  <div class="bigrow"><div><b>26</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
+  <p class="lede">29 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
+  <div class="bigrow"><div><b>29</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
   <div class="runbar"><div><h2 class="h2">Run the suite</h2><p class="fine">Each case is one live answer: a draft and a review. On Gemini's free tier the run spaces cases out and saves progress, so if the quota runs out you can continue later from where it stopped.</p></div><div class="runacts"><button class="pbtn ghost" id="resetEval" hidden>Start over</button><button class="pbtn ghost" id="copyEval" disabled>Download results</button><button class="pbtn" id="runEval">Run all 26</button></div></div>
   <div class="pcard"><div class="kpis" id="evKpis"></div></div>
   <p class="fine evnote" id="evNote"></p>
@@ -1019,7 +1024,7 @@ function showDetail(id){
 document.addEventListener('click', e=>{
   const sh=e.target.closest('[data-sheet]'); if(sh){ showOptions(); return; }
   const d=e.target.closest('[data-detail]'); if(d){ showDetail(d.dataset.detail); return; }
-  const a=e.target.closest('[data-act]'); if(a){ closeSheet(); toast(`Demo: in the app this would open "${ACT[a.dataset.act]||'Continue'}". Nothing was changed.`); return; }
+  const a=e.target.closest('[data-act]'); if(a){ if(MODE==='after') return confirmAct(a.dataset.act); closeSheet(); toast(`Demo: in the app this would open "${ACT[a.dataset.act]||'Continue'}". Nothing was changed.`); return; }
   const qa=e.target.closest('[data-ask]'); if(qa){ closeSheet(); if(!$('gr1').classList.contains('on')) openGR1(G1||'help'); setTimeout(()=>{ $('q').value=qa.dataset.ask; ask(); },350); return; }
   const cn=e.target.closest('[data-cancel]'); if(cn){ MODE==='after'?openGR1('cancel'):oldCancel(); return; }
 });
@@ -1151,7 +1156,7 @@ function whatHappens(v){
   if(v==='failed') return `${pay&&pay.available?`Pay with Pay Now by ${f.pay_now_deadline} and this instalment counts. After that, paying late or through a one-time investment leaves it counted as failed.`:'Pay Now has closed, so this instalment stays counted as failed.'} Groww doesn't charge for a failed SIP; your bank may.`;
   if(v==='tight') return `${f.amount} goes out on ${f.next_debit}. If this month is tight, you can skip it (${sk.when.charAt(0).toLowerCase()+sk.when.slice(1)}) or lower the amount (${rd.when.charAt(0).toLowerCase()+rd.when.slice(1)}). ${f.cancel}.`;
   if(v==='blocked') return `This fund doesn't allow skipping, so ${f.amount} goes out on ${f.next_debit} unless you change it. You can lower the amount (${rd.when.charAt(0).toLowerCase()+rd.when.slice(1)}) or move the date. ${f.cancel}.`;
-  return `Cancelling stops future ${f.amount} instalments. Your ${f.current_value} stays invested until you redeem it separately, and a cancel can't be undone. If you just need a break, you can skip the next instalment instead (${sk.when.charAt(0).toLowerCase()+sk.when.slice(1)}); two skips in a row are safe.`;
+  return `Cancelling stops future ${f.amount} instalments. Your ${f.current_value} stays invested until you redeem it separately, and a cancel can't be undone. If you need a break, skip one month instead (${sk.when.charAt(0).toLowerCase()+sk.when.slice(1)}): that instalment isn't debited and your SIP continues on ${sk.resumes}. There's no multi-month pause; two skips in a row are safe, a third cancels the SIP.`;
 }
 function cardHTML(v){
   const f=EV.facts, failed=S.status==='failed';
@@ -1183,8 +1188,31 @@ function renderActs(v){
 document.addEventListener('click', e=>{
   const b=e.target.closest('[data-reason-r]'); if(b){ REASON = REASON===b.dataset.reasonR ? null : b.dataset.reasonR; document.querySelectorAll('[data-reason-r]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.reasonR===REASON)); renderActs(); return; }
   const a=e.target.closest('[data-g1act]'); if(a){ const id=a.dataset.g1act;
-    toast(id==='cancel' ? 'Demo: in the app this would cancel the SIP (second tap). Nothing was changed.' : `Demo: in the app GR-1 would ${DONE[id]}. Nothing was changed.`); return; }
+    if(id==='cancel') toast('Demo: in the app this would cancel the SIP (second tap). Nothing was changed.'); else confirmAct(id); return; }
   const g=e.target.closest('[data-g1]'); if(g){ openGR1(g.dataset.g1); return; }
+});
+/* ---------- act: confirm, then show what changed (user tests: P6 wanted proof a change worked, P1/P2 the next debit date) ---------- */
+let PICK=null;
+function confirmAct(id){
+  const o=O(id), f=EV.facts; if(!o) return;
+  if(id==='pay') return openSheet('Pay the failed instalment', `<p class="cf-lead">Pay <b>${esc(f.amount)}</b> with Pay Now. Paid by ${esc(f.pay_now_deadline)}, this instalment counts as paid.</p><button class="btn primary" data-cf="pay">Pay ${esc(f.amount)}</button>`);
+  if(id==='skip') return openSheet('Skip one instalment', `<p class="cf-lead">The <b>${esc(o.target)}</b> instalment won't be debited. Your SIP continues on <b>${esc(o.resumes)}</b> at ${esc(f.amount)}.</p><p class="fine">One month only; there's no multi-month pause. It counts toward the 3-in-a-row limit.</p><button class="btn primary" data-cf="skip">Skip ${esc(o.target)}</button>`);
+  if(id==='reduce'){ const ch=[...new Set([.5,.75].map(k=>Math.max(500,Math.round(S.amount*k/500)*500)))].filter(a=>a<S.amount); PICK=ch[0];
+    return openSheet('Lower the amount', `<p class="cf-lead">New monthly amount, from <b>${esc(o.effective)}</b>:</p><div class="cf-pick">${ch.map((a,i)=>`<button type="button" data-pick="${a}" aria-pressed="${i===0}">${R.inr(a)}</button>`).join('')}</div><p class="fine">You can raise it again any time.</p><button class="btn primary" data-cf="reduce">Confirm</button>`); }
+  if(id==='date'){ PICK=o.suggestedDay; const days=Array.from({length:28},(_,i)=>i+1);
+    return openSheet('Change the debit date', `<p class="cf-lead">${o.suggested?`Suggested: the ${PICK}${ordS(PICK)}, two days after your pay usually lands. `:''}Pick the day; nothing changes until you confirm.</p><label class="cf-sel">Debit on the <select id="cfDay">${days.map(d=>`<option value="${d}" ${d===PICK?'selected':''}>${d}${ordS(d)}</option>`).join('')}</select></label><p class="fine" id="cfFirst">First debit on the new date: ${esc(R.firstDebitOnDay(PICK,today))}</p><button class="btn primary" data-cf="date">Confirm</button>`); }
+}
+function ordS(n){ return (n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'); }
+function doneSheet(title, rows){ openSheet('Done', `<div class="cf-done"><i>✓</i><b>${esc(title)}</b></div><dl class="cf-rows">${rows.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl><p class="fine" style="color:var(--muted)">Demo: sample data, nothing was changed.</p><button class="btn outline" data-close>Done</button>`); }
+document.addEventListener('change', e=>{ if(e.target.id==='cfDay'){ PICK=+e.target.value; $('cfFirst').textContent=`First debit on the new date: ${R.firstDebitOnDay(PICK,today)}`; } });
+document.addEventListener('click', e=>{
+  const pk=e.target.closest('[data-pick]'); if(pk){ PICK=+pk.dataset.pick; document.querySelectorAll('[data-pick]').forEach(b=>b.setAttribute('aria-pressed', b===pk)); return; }
+  if(e.target.closest('[data-close]')){ closeSheet(); return; }
+  const c=e.target.closest('[data-cf]'); if(!c) return; const id=c.dataset.cf, o=O(id), f=EV.facts;
+  if(id==='pay') doneSheet('Instalment paid', [['Paid', f.amount], ['Counts as', 'Paid, not missed'], ['Next debit', `${f.next_debit} · ${f.amount}`]]);
+  if(id==='skip') doneSheet('Skip requested', [['Not debited', o.target], ['SIP continues', `${o.resumes} · ${f.amount}`], ['Status', 'Active']]);
+  if(id==='reduce') doneSheet('Amount lowered', [['New amount', `${R.inr(PICK)} a month`], ['Applies from', o.effective], ['Was', f.amount]]);
+  if(id==='date') doneSheet('Debit date changed', [['New date', `${PICK}${ordS(PICK)} of every month`], ['Next debit', `${R.firstDebitOnDay(PICK,today)} · ${f.amount}`], ['Was', `${S.sipDay}${ordS(S.sipDay)}`]]);
 });
 function pillHTML(d){ const ok=d.shown==='answer'; const n=(d.checks||[]).length, p=(d.checks||[]).filter(c=>c.ok).length;
   return `<details class="qc ${ok?'ok':'warn'}" style="margin:0"><summary>${ok?'✓ Checked · '+p+' of '+n:'! Rules summary'}</summary><ul>${(d.checks||[]).map(c=>`<li class="${!c.ok?'bad':c.warn?'warn':'ok'}"><i>${!c.ok?'✕':c.warn?'!':'✓'}</i><span>${esc(c.label)}</span></li>`).join('')}</ul></details>`; }

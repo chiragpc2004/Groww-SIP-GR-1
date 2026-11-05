@@ -28,6 +28,7 @@
     U1: 'Whether a failed autopay is retried automatically, and the exact wording of the failure alert.',
     U2: 'Exact bank bounce-fee amounts.',
     U3: 'Which funds do not allow skipping or one-time orders.',
+    U4: 'Exit loads or other charges on redeeming; they vary by fund and by how long the money was invested.',
   };
   const HELP = {
     skip: 'https://groww.in/help/mutual-funds/mf-sip/how-to-skip-an-sip-instalment--79',
@@ -135,6 +136,7 @@
     const skipCountsNow = daysToNext > 2;
     const skipTarget = skipCountsNow ? next : nextDateForDay(add(next, 1), s.sipDay, false);
     const skipWouldCancel = s.missedInARow >= 2;
+    const resumeAfterSkip = nextDateForDay(add(skipTarget, 1), s.sipDay, false);   // the SIP continues with the next one
     if (s.skipAllowed === false) {
       options.push({ id: 'skip', title: 'Skip an instalment', available: false, blocked: true,
         when: "This fund doesn't allow skipping", detail: 'The fund house has turned skipping off for this fund. Lowering the amount or moving the date still work.',
@@ -142,15 +144,17 @@
     } else
     options.push({ id: 'skip', title: `Skip the ${fmt(skipTarget)} instalment`, available: !skipWouldCancel, risk: skipWouldCancel,
       when: skipWouldCancel ? 'Possible, but this skip would cancel the SIP' : skipCountsNow ? `Request by ${fmt(add(next, -3))} to skip ${fmt(next)}` : `Too close to ${fmt(next)}; a skip now applies to ${fmt(skipTarget)}`,
-      detail: skipWouldCancel ? `You already have ${s.missedInARow} missed in a row. A skip would be the 3rd and cancel the SIP.` : 'One instalment only. It counts toward the 3-in-a-row limit.',
-      rules: skipWouldCancel ? ['R1', 'R3'] : ['R1', 'R2', 'R3'], help: HELP.skip });
+      detail: skipWouldCancel ? `You already have ${s.missedInARow} missed in a row. A skip would be the 3rd and cancel the SIP.` : `One instalment only; your SIP continues on ${fmt(resumeAfterSkip)}. It counts toward the 3-in-a-row limit.`,
+      rules: skipWouldCancel ? ['R1', 'R3'] : ['R1', 'R2', 'R3'], help: HELP.skip, target: fmt(skipTarget), resumes: fmt(resumeAfterSkip) });
+    if (s.skipAllowed !== false && !skipWouldCancel) facts.sip_continues_after_skip = fmt(resumeAfterSkip);
     if (skipWouldCancel) warnings.push(`${s.missedInARow} instalments missed in a row: one more missed, failed or skipped instalment cancels this SIP automatically (R3).`);
 
     // Reduce amount (R5)
     const editCountsNow = wdToNext > 2;
     options.push({ id: 'reduce', title: 'Lower the amount', available: true,
       when: editCountsNow ? `Applies from ${fmt(next)} if changed by ${fmt(addWorkingDays(today, Math.max(0, wdToNext - 3)))}` : `Too close to ${fmt(next)}; applies from the instalment after`,
-      detail: 'Keeps the SIP running at a size that fits this month.', rules: ['R5'], help: HELP.edit });
+      detail: 'Keeps the SIP running at a size that fits this month.', rules: ['R5'], help: HELP.edit,
+      effective: fmt(editCountsNow ? next : nextDateForDay(add(next, 1), s.sipDay, false)) });
 
     // Move date (R5) - suggested when salary lands after the debit
     const salaryAfterDebit = s.salaryDay > s.sipDay;
@@ -162,7 +166,7 @@
     options.push({ id: 'date', title: salaryAfterDebit ? `Move the debit to the ${suggestedDay}${suffix(suggestedDay)}` : 'Change the debit date', available: true,
       when: salaryAfterDebit ? `If changed now, the first debit on the ${suggestedDay}${suffix(suggestedDay)} is ${fmt(firstOnNewDay)}` : editCountsNow ? `Applies from the next instalment if changed now` : `Applies from the instalment after ${fmt(next)}`,
       detail: salaryAfterDebit ? `Your pay usually lands on the ${s.salaryDay}${suffix(s.salaryDay)}, after the debit on the ${s.sipDay}${suffix(s.sipDay)}.` : 'Pick a date a couple of days after pay arrives.',
-      rules: ['R5'], help: HELP.edit, suggested: salaryAfterDebit });
+      rules: ['R5'], help: HELP.edit, suggested: salaryAfterDebit, suggestedDay });
     if (salaryAfterDebit) facts.salary_vs_debit = `Pay lands on the ${s.salaryDay}${suffix(s.salaryDay)}, debit is on the ${s.sipDay}${suffix(s.sipDay)}`;
 
     // Cancel (R7, R8, R9)
@@ -185,6 +189,11 @@
   }
   function suffix(n) { return (n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th'); }
 
-  const api = { RULES, UNVERIFIED, HELP, istToday, sampleScenarios, evaluate, fmt, inr, addWorkingDays };
+  function firstDebitOnDay(day, today = istToday()) {      // R5: a change within 2 working days applies from the month after
+    let t = nextDateForDay(today, day, false);
+    if (workingDaysBetween(today, t) <= 2) t = nextDateForDay(add(t, 1), day, false);
+    return fmt(t);
+  }
+  const api = { firstDebitOnDay, RULES, UNVERIFIED, HELP, istToday, sampleScenarios, evaluate, fmt, inr, addWorkingDays };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SIPRules = api;
 })(typeof window !== 'undefined' ? window : globalThis);

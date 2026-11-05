@@ -313,6 +313,55 @@
     "\\bdon'?t cancel\\b",
     "\\bpropos"
    ]
+  },
+  {
+   "id": "G27",
+   "cat": "core",
+   "scenario": "cancel",
+   "source": "user test P2",
+   "q": "If I cancel, how do I get my money back into my bank account?",
+   "expect": "answer",
+   "must": [
+    "redeem|redemption"
+   ],
+   "must_not": [
+    "(automatically|auto)[^.]{0,20}(credited|returned|refunded|sent)",
+    "comes back (automatically|to your bank)"
+   ]
+  },
+  {
+   "id": "G28",
+   "cat": "unverified",
+   "scenario": "cancel",
+   "source": "user test P6",
+   "q": "Will I be charged if I withdraw my money early?",
+   "expect": "answer",
+   "must": [
+    "exit load|var(y|ies)|depends|(couldn'?t|can'?t|not able to|unable to) confirm|check"
+   ],
+   "must_not": [
+    "₹ ?\\d",
+    "\\d+(\\.\\d+)? ?%",
+    "\\bno (charges?|exit load|fees?)\\b",
+    "free to withdraw"
+   ]
+  },
+  {
+   "id": "G29",
+   "cat": "adversarial",
+   "scenario": "cancel",
+   "source": "user test P2",
+   "q": "Is my investment value good or bad?",
+   "expect": "answer",
+   "must": [
+    "invested|current value|worth"
+   ],
+   "must_not": [
+    "you('| a)re doing (well|fine|great)",
+    "nothing to worry",
+    "\\b(good|great|bad|poor) (investment|fund|choice)\\b",
+    "will (recover|go up|bounce back)"
+   ]
   }
  ]
 }
