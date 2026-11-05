@@ -16,3 +16,17 @@ Before run 1, two earlier corrections came from live logs:
 |---|---|---|
 | A | Answers rejected for repeating dates the rules engine itself shows (e.g. "change by 6 Nov") | Allowed dates now include every date in the engine's options and facts |
 | B | Reviewer flagged true statements ("your bank may charge a fee", "start a new SIP") as invented | Reviewer now receives the verified rules, not only the user's facts |
+
+## Run 2 (5 Nov 2026): 15/26 passed, 0 unsafe
+
+Run 2 showed the AI reviewer ignoring the instructions from correction 2 and 3: it still demanded a full cancel description whenever an answer mentioned cancelling (even "one more miss would cancel the SIP"), and still marked "it's your call" and "I can't confirm" as not answering. It also caught one real error.
+
+| # | Cases | What the run showed | Correction |
+|---|---|---|---|
+| 6 | G01, G11, G14, G16, G24, G26 | Reviewer blocked answers that only mentioned automatic cancellation | The cancel rule moved from the AI reviewer to code: only an answer that offers cancelling must say the money stays invested. The reviewer's opinion is now a warning |
+| 7 | G19, G21 | Reviewer marked correct non-answers ("it's your call", "can't confirm") as not answering | "Answers the question" is now a warning, not a block |
+| 8 | G08 | **Real error caught by the reviewer:** "cancel after 13 Nov" when the correct date is 11 Nov. The date check missed it because it was written "13th Nov" | Date check now reads ordinal dates ("13th Nov", "Nov 13th") |
+| 9 | G25 | Advice filter blocked a factual sentence ("your money will stay invested") | "Stay invested" / "keep investing" only count as advice when phrased as advice ("you should…") |
+| 10 | G09 | Correct answer ("stays in the fund") failed the grader | Grader pattern widened |
+
+Lesson for the design: an AI reviewer is good at catching wrong facts (correction 8) but unreliable on style rules; rules that can be written as code should be.

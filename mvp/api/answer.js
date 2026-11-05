@@ -49,7 +49,7 @@ const PREDICT_ASK = /\b(will|when will|kab)\b.{0,40}\b(market|nifty|sensex|retur
 const HARDSHIP = /\b(lost (my )?job|laid off|layoff|no job|unemployed|medical|hospital|emergency|can'?t afford|cannot afford|no money|debt|loan (is )?due|naukri (chali|gayi))\b/i;
 
 const FUND_WORDS = /\b(HDFC|SBI|ICICI|Nippon|Axis|Parag Parikh|PPFAS|Quant|Motilal|Kotak|Mirae|UTI|Tata|Bandhan|DSP|Aditya Birla|Edelweiss|Franklin|Canara|Invesco|Navi|Groww (Nifty|Large|Value)|small[- ]?cap fund|mid[- ]?cap fund|flexi[- ]?cap fund|index fund|ELSS fund)\b/i;
-const ADVICE_SAY = /\b(you should (invest|buy|sell|switch|continue|keep|stay|not cancel)|i (would )?(recommend|suggest) (you )?(invest|buy|switch|continu|keep|stay)|switch to (a|an|another)|better fund|best fund|keep investing|stay invested|don'?t (cancel|stop)|do not (cancel|stop)|shouldn'?t (cancel|stop))\b/i;
+const ADVICE_SAY = /\b(you should (invest|buy|sell|switch|continue|keep|stay|not cancel)|i (would )?(recommend|suggest) (you )?(invest|buy|switch|continu|keep|stay)|switch to (a|an|another)|better fund|best fund|(you should|better to|best to|i'?d) (keep investing|stay invested)|don'?t (cancel|stop)|do not (cancel|stop)|shouldn'?t (cancel|stop))\b/i;
 const PREDICT_SAY = /\b(will (recover|bounce back|go up|grow|rise|increase|turn positive)|guarantee[ds]?|assured returns?|surely (grow|recover)|markets? always (recover|go up))\b/i;
 const URGENCY_SAY = /\b(act now|hurry|don'?t miss|last chance|before it'?s too late|you'?ll lose|you will lose|lose out|limited time|immediately or)\b/i;
 const RETRY_CLAIM = /\b(will|would|automatically|auto)\b[^.]{0,25}\bretr(y|ies|ied)\b|\bretr(y|ies) (it )?automatically\b/i;
@@ -58,13 +58,15 @@ const RETRY_HEDGE = /(not (documented|confirmed|sure|stated|clear)|couldn'?t (co
 const MONTHS = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
 function datesIn(text) {
   const out = new Set(); let m;
-  const a = new RegExp(`\\b(\\d{1,2})\\s+(${MONTHS})[a-z]*\\b`, 'gi'), b = new RegExp(`\\b(${MONTHS})[a-z]*\\s+(\\d{1,2})\\b`, 'gi');
+  const a = new RegExp(`\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(?:of\\s+)?(${MONTHS})[a-z]*\\b`, 'gi'), b = new RegExp(`\\b(${MONTHS})[a-z]*\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b`, 'gi');
   while ((m = a.exec(text))) out.add(`${+m[1]} ${m[2].slice(0, 3).replace(/^./, c => c.toUpperCase())}`);
   while ((m = b.exec(text))) out.add(`${+m[2]} ${m[1].slice(0, 3).replace(/^./, c => c.toUpperCase())}`);
   return [...out];
 }
 function amountsIn(text) { return [...text.matchAll(/(?:₹|rs\.?|inr)\s?([\d,]+)/gi)].map(m => Number(m[1].replace(/,/g, ''))).filter(n => n > 0); }
 
+const OFFERS_CANCEL = /\b(you (can|could|may) (also )?cancel|cancel(ling)? (the |your )?sip (now|today|after)|if you (cancel|stop the sip)|cancelling (stops|would|will|means|only)|once you cancel|to cancel|cancel is (available|possible))\b/i;
+const CANCEL_KEEPS = /(stay(s)?|remain(s)?|rahe(ga|nge|gi)) (invested|in the fund)|until you redeem|redeem(ed)? (it )?separately|redeem|redemption/i;
 function codeChecks(answer, citedRules, ev, question) {
   const t = answer;
   const qAmounts = amountsIn(question || '');
@@ -78,6 +80,7 @@ function codeChecks(answer, citedRules, ev, question) {
       note: badRules.length ? `unknown rule ${badRules.join(', ')}` : (RETRY_CLAIM.test(t) && !RETRY_HEDGE.test(t)) ? 'claims an automatic retry, which is unverified' : '' },
     { id: 'numbers_match', label: 'Dates and amounts match your SIP', ok: !badDates.length && !badAmounts.length,
       note: [badDates.length ? `dates ${badDates.join(', ')}` : '', badAmounts.length ? `amounts ${badAmounts.map(R.inr).join(', ')}` : ''].filter(Boolean).join('; ') },
+    { id: 'cancel_explained', label: 'If cancelling is offered, it says the money stays invested', ok: !OFFERS_CANCEL.test(t) || CANCEL_KEEPS.test(t) },
   ];
 }
 
@@ -199,8 +202,9 @@ module.exports = async (req, res) => {
     let j = null;
     try { j = parseJSON(await generate(judgePrompt(ev, question, answer, hardship), true)); } catch (e) { j = null; }
     if (j) {
-      checks.push({ id: 'judge_facts', label: 'AI reviewer: facts match your situation', ok: j.facts_correct !== false && j.answers_question !== false, note: j.issue || '' });
-      checks.push({ id: 'judge_cancel', label: 'AI reviewer: cancelling described correctly', ok: j.cancel_correct !== false });
+      checks.push({ id: 'judge_facts', label: 'AI reviewer: facts match your situation', ok: j.facts_correct !== false, note: j.facts_correct === false ? (j.issue || '') : '' });
+      if (j.answers_question === false) checks.push({ id: 'judge_answers', label: 'AI reviewer: may not fully answer the question', ok: true, warn: true, note: j.issue || '' });
+      if (j.cancel_correct === false) checks.push({ id: 'judge_cancel', label: 'AI reviewer: cancel description could be fuller', ok: true, warn: true });
       checks.push({ id: 'judge_neutral', label: hardship ? 'AI reviewer: neutral, stopping treated as valid' : 'AI reviewer: neutral, no pressure', ok: j.neutral !== false });
     } else {
       checks.push({ id: 'judge_unavailable', label: 'AI reviewer unavailable; code checks passed', ok: true, warn: true });
@@ -212,6 +216,7 @@ module.exports = async (req, res) => {
     shown: pass ? 'answer' : 'fallback', text: pass ? answer : FB.generic,
     fallback: pass ? null : 'generic', rules: rules.filter(id => R.RULES[id]), option: draft.best_fit_option || 'none',
     checks, by: process.env.GROQ_API_KEY ? 'groq/gemini' : 'gemini', hardship,
+    ...(body.eval === true ? { draft: answer } : {}),
   });
 };
 module.exports._test = { codeChecks, ADVICE_ASK, PREDICT_ASK, HARDSHIP, datesIn, amountsIn, sanitizeScenario, draftPrompt };

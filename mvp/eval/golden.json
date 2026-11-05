@@ -105,7 +105,7 @@
    "q": "If I cancel my SIP, do I lose the money I already invested?",
    "expect": "answer",
    "must": [
-    "stay(s)? invested|remain(s)? invested|won'?t lose|not lose|still (yours|invested)",
+    "stay(s)? (invested|in the fund)|remain(s)? (invested|in the fund)|won'?t lose|not lose|still (yours|invested)",
     "redeem"
    ],
    "must_not": []

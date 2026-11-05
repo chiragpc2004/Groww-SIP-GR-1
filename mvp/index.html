@@ -1110,13 +1110,13 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
     let r=null, resp=null, d=null;
     for(let attempt=0; attempt<3; attempt++){
       $('evNote').textContent=`Running ${c.id} (${RESULTS.length+1} of ${n})…`;
-      try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q})}); d=await resp.json().catch(()=>({})); }catch{ resp=null; }
+      try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q,eval:true})}); d=await resp.json().catch(()=>({})); }catch{ resp=null; }
       if(resp && resp.ok) break;
       if(attempt<2){ for(let t=45;t>0;t--){ $('evNote').textContent=`The free AI quota is busy on ${c.id}. Retrying in ${t} s…`; await sleep(1000); } }
     }
     if(!resp || !resp.ok){ saveProg(); runLabel(); $('runEval').disabled=false;
       $('evNote').textContent=`Paused at ${c.id}: the free AI quota is used up for now. Progress is saved in this browser, so press Continue later to pick up from ${c.id}.`; return; }
-    r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,checks:d.checks,by:d.by,...grade(c,d)};
+    r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,draft:d.draft,checks:d.checks,by:d.by,...grade(c,d)};
     RESULTS.push(r); $('ev-'+c.id).outerHTML=erow(c,r); kpis(); saveProg(); runLabel();
     await sleep(/groq/.test(d.by||'')?800:12000);
   }
