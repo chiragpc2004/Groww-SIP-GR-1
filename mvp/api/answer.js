@@ -6,19 +6,34 @@
 const R = require('../rules.js');
 
 /* ---------------- providers (Groq first if configured, then Gemini) ---------------- */
-async function groq(prompt, json) {
-  const key = process.env.GROQ_API_KEY; if (!key) return null;
-  try {
-    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b', temperature: 0.1, max_tokens: 1200,
-        messages: [{ role: 'user', content: prompt }], ...(json ? { response_format: { type: 'json_object' } } : {}) }),
-    });
-    if (!r.ok) { console.error('[groq]', r.status, (await r.text()).slice(0, 200)); return null; }
-    return (await r.json()).choices?.[0]?.message?.content?.trim() || null;
-  } catch (e) { console.error('[groq]', e.message); return null; }
+// Groq limits are per model, so a second (and third) Groq model has its own allowance.
+// A model that returns 429 is skipped for a while on this warm instance instead of being retried on every call.
+const GROQ_MODELS = [process.env.GROQ_MODEL || 'openai/gpt-oss-120b', process.env.GROQ_FALLBACK_MODEL || 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile'];
+const coolUntil = {};
+function cool(model, body) {
+  // daily-limit 429s get a long cool-down; per-minute ones a short one
+  coolUntil[model] = Date.now() + (/per day|TPD|RPD/.test(body) ? 30 : 1) * 60 * 1000;
 }
-async function gemini(prompt, json) {
+async function groq(prompt, json, used) {
+  const key = process.env.GROQ_API_KEY; if (!key) return null;
+  for (const model of GROQ_MODELS) {
+    if ((coolUntil[model] || 0) > Date.now()) continue;
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({ model, temperature: 0.1, max_tokens: 1200,
+          // gpt-oss models think before answering; low effort keeps answers the same for this task and uses far fewer tokens
+          ...(/gpt-oss/.test(model) ? { reasoning_effort: 'low' } : {}),
+          messages: [{ role: 'user', content: prompt }], ...(json ? { response_format: { type: 'json_object' } } : {}) }),
+      });
+      if (!r.ok) { const b = await r.text(); console.error(`[groq ${model}]`, r.status, b.slice(0, 200)); if (r.status === 429) cool(model, b); continue; }
+      const t = (await r.json()).choices?.[0]?.message?.content?.trim();
+      if (t) { used && used.push(model.replace(/^openai\//, '')); return t; }
+    } catch (e) { console.error(`[groq ${model}]`, e.message); }
+  }
+  return null;
+}
+async function gemini(prompt, json, used) {
   const key = process.env.GEMINI_API_KEY || process.env.GEMINI_APP_KEY;
   if (!key) throw Object.assign(new Error('no key'), { code: 'missing_key' });
   const models = [process.env.GEMINI_MODEL || 'gemini-3.8-flash', process.env.GEMINI_FALLBACK_MODEL || 'gemini-flash-lite-latest'];
@@ -35,12 +50,12 @@ async function gemini(prompt, json) {
     const raw = await r.text();
     if (!r.ok) { console.error(`[${m}]`, r.status, raw.slice(0, 200)); last = Object.assign(new Error('http'), { code: r.status === 429 ? 'quota' : r.status >= 500 ? 'busy' : 'upstream' }); continue; }
     const t = (JSON.parse(raw).candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
-    if (t) return t;
+    if (t) { used && used.push(m); return t; }
     last = Object.assign(new Error('empty'), { code: 'empty' });
   }
   throw last;
 }
-async function generate(prompt, json) { return (await groq(prompt, json)) || (await gemini(prompt, json)); }
+async function generate(prompt, json, used) { return (await groq(prompt, json, used)) || (await gemini(prompt, json, used)); }
 function parseJSON(t) { try { return JSON.parse(t.replace(/^```(json)?|```$/g, '').trim()); } catch { return null; } }
 
 /* ---------------- deterministic checks ---------------- */
@@ -173,7 +188,7 @@ module.exports = async (req, res) => {
   const s = sanitizeScenario(body.scenario || {});
   const ev = R.evaluate(s);
   const hardship = HARDSHIP.test(question);
-  const t0 = Date.now();
+  const t0 = Date.now(), used = [];
 
   // 1. requests the assistant must decline: answered by code, no model call
   const adviceAsk = ADVICE_ASK.test(question) || FUND_WORDS.test(question);
@@ -185,7 +200,7 @@ module.exports = async (req, res) => {
 
   // 2. draft
   let draft;
-  try { draft = parseJSON(await generate(draftPrompt(s, ev, question, hardship), true)); }
+  try { draft = parseJSON(await generate(draftPrompt(s, ev, question, hardship), true, used)); }
   catch (e) { return res.status(e.code === 'quota' ? 429 : 503).json({ error: e.code === 'quota' ? 'quota' : 'busy' }); }
   if (!draft || typeof draft.answer !== 'string' || !draft.answer.trim()) {
     return res.status(200).json({ shown: 'fallback', text: FB.generic, fallback: 'generic', rules: [], option: 'none', by: 'model',
@@ -208,7 +223,7 @@ module.exports = async (req, res) => {
   // 4. AI judge (only if code checks pass, to save quota)
   if (checks.every(c => c.ok)) {
     let j = null;
-    try { j = parseJSON(await generate(judgePrompt(ev, question, answer, hardship), true)); } catch (e) { j = null; }
+    try { j = parseJSON(await generate(judgePrompt(ev, question, answer, hardship), true, used)); } catch (e) { j = null; }
     if (j) {
       checks.push({ id: 'judge_facts', label: 'AI reviewer: facts match your situation', ok: j.facts_correct !== false, note: j.facts_correct === false ? (j.issue || '') : '' });
       if (j.answers_question === false) checks.push({ id: 'judge_answers', label: 'AI reviewer: may not fully answer the question', ok: true, warn: true, note: j.issue || '' });
@@ -219,11 +234,11 @@ module.exports = async (req, res) => {
     }
   }
   const pass = checks.every(c => c.ok);
-  console.log(`answer ${pass ? 'shown' : 'fallback'} in ${Date.now() - t0} ms; failed: ${checks.filter(c => !c.ok).map(c => c.id + (c.note ? ` (${c.note})` : '')).join(', ') || 'none'}`);
+  console.log(`[${[...new Set(used)].join(' + ')}] answer ${pass ? 'shown' : 'fallback'} in ${Date.now() - t0} ms; failed: ${checks.filter(c => !c.ok).map(c => c.id + (c.note ? ` (${c.note})` : '')).join(', ') || 'none'}`);
   return res.status(200).json({
     shown: pass ? 'answer' : 'fallback', text: pass ? answer : FB.generic,
     fallback: pass ? null : 'generic', rules: rules.filter(id => R.RULES[id]), option: draft.best_fit_option || 'none',
-    checks, by: process.env.GROQ_API_KEY ? 'groq/gemini' : 'gemini', hardship,
+    checks, by: [...new Set(used)].join(' + ') || 'none', hardship,
     ...(body.eval === true ? { draft: answer } : {}),
   });
 };
