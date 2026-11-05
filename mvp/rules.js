@@ -155,8 +155,12 @@
     // Move date (R5) - suggested when salary lands after the debit
     const salaryAfterDebit = s.salaryDay > s.sipDay;
     const suggestedDay = Math.min(28, s.salaryDay + 2);
+    // first debit on the new day: a change within 2 working days of it applies only from the month after (R5)
+    let firstOnNewDay = nextDateForDay(today, suggestedDay, false);
+    if (workingDaysBetween(today, firstOnNewDay) <= 2) firstOnNewDay = nextDateForDay(add(firstOnNewDay, 1), suggestedDay, false);
+    if (salaryAfterDebit) facts.first_debit_if_date_moved = fmt(firstOnNewDay);
     options.push({ id: 'date', title: salaryAfterDebit ? `Move the debit to the ${suggestedDay}${suffix(suggestedDay)}` : 'Change the debit date', available: true,
-      when: editCountsNow ? `Applies from the next instalment if changed now` : `Applies from the instalment after ${fmt(next)}`,
+      when: salaryAfterDebit ? `If changed now, the first debit on the ${suggestedDay}${suffix(suggestedDay)} is ${fmt(firstOnNewDay)}` : editCountsNow ? `Applies from the next instalment if changed now` : `Applies from the instalment after ${fmt(next)}`,
       detail: salaryAfterDebit ? `Your pay usually lands on the ${s.salaryDay}${suffix(s.salaryDay)}, after the debit on the ${s.sipDay}${suffix(s.sipDay)}.` : 'Pick a date a couple of days after pay arrives.',
       rules: ['R5'], help: HELP.edit, suggested: salaryAfterDebit });
     if (salaryAfterDebit) facts.salary_vs_debit = `Pay lands on the ${s.salaryDay}${suffix(s.salaryDay)}, debit is on the ${s.sipDay}${suffix(s.sipDay)}`;

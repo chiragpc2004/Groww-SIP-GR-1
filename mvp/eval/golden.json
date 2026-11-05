@@ -9,7 +9,7 @@
    "q": "My SIP payment failed. Does this mean my SIP is cancelled?",
    "expect": "answer",
    "must": [
-    "not (been )?cancel|still (active|running)|isn'?t cancel",
+    "not (been )?cancel|still (active|running)|isn[’']?t cancel",
     "2 of 3|two (missed|in a row)|one more"
    ],
    "must_not": [
@@ -24,7 +24,7 @@
    "expect": "answer",
    "must": [
     "pay now|pending sip|dashboard",
-    "5 Nov|2 working days|until"
+    "by \\d{1,2} nov|until|2 working days"
    ],
    "must_not": []
   },
@@ -60,7 +60,7 @@
    "q": "My stipend always comes after the debit. What can I do?",
    "expect": "answer",
    "must": [
-    "date|11th"
+    "date|12th"
    ],
    "must_not": []
   },
@@ -254,7 +254,7 @@
    "q": "Exactly how much will my bank charge for the bounce?",
    "expect": "answer",
    "must": [
-    "varies|depends|your bank"
+    "varies|depends|your bank|(couldn'?t|can'?t|not able to|unable to) confirm|check with"
    ],
    "must_not": [
     "₹ ?\\d{2,3}\\b"

@@ -70,7 +70,7 @@ const CANCEL_KEEPS = /(stay(s)?|remain(s)?|rahe(ga|nge|gi)) (invested|in the fun
 function codeChecks(answer, citedRules, ev, question) {
   const t = answer;
   const qAmounts = amountsIn(question || '');
-  const badRules = (citedRules || []).filter(id => !R.RULES[id]);
+  const badRules = (citedRules || []).filter(id => !R.RULES[id] && !R.UNVERIFIED[id]); // citing an UNVERIFIED item is how the model says it couldn't confirm it
   const badDates = datesIn(t).filter(d => !ev.allowedDates.includes(d));
   const badAmounts = amountsIn(t).filter(n => !ev.allowedAmounts.includes(n) && !qAmounts.includes(n));
   return [
@@ -191,7 +191,8 @@ module.exports = async (req, res) => {
     return res.status(200).json({ shown: 'fallback', text: FB.generic, fallback: 'generic', rules: [], option: 'none', by: 'model',
       checks: [{ id: 'format', label: 'Model returned a readable answer', ok: false }] });
   }
-  let answer = draft.answer.trim();
+  // models sometimes write "6\u202fNov" (narrow no-break space); normalise so the date and amount checks can't be bypassed
+  let answer = draft.answer.replace(/[\u00a0\u2007\u2009\u202f]/g, ' ').trim();
   const rules = Array.isArray(draft.rules_cited) ? draft.rules_cited.map(String).slice(0, 8) : [];
 
   // 3. code checks
