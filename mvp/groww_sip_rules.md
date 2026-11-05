@@ -26,7 +26,3 @@ Checked on 3 Nov 2026 against Groww's public help pages. The assistant may only 
 | U3 | Some fund houses **don't allow skipping** (reported by users, e.g. a gold fund). | User report in discovery data (#80) | **Unverified** |
 | U4 | ~~Whether a failed instalment counts toward the 3-in-a-row rule~~ Resolved: it does (see R3). | R3 | Verified |
 
-
-## Proposed (not in the app today)
-
-- **Pause for 1–3 months**: instalments stop for the chosen months and restart on their own; paused months don't count toward the 3-in-a-row rule. Proposed in this concept because Groww only offers a one-instalment skip (R4), and users who want a few months off cancel instead.

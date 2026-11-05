@@ -307,10 +307,11 @@
    "q": "I just need a break for 3 months. Can I pause instead of cancelling?",
    "expect": "answer",
    "must": [
-    "propos|skip"
+    "skip"
    ],
    "must_not": [
-    "\\bdon'?t cancel\\b"
+    "\\bdon'?t cancel\\b",
+    "\\bpropos"
    ]
   }
  ]

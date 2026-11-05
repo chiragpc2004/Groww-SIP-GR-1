@@ -948,7 +948,7 @@ const STORY = {
   failed:{t:'A payment fails', today:'A text says it failed. GR-1 is in the app, but it doesn\'t know.', now:'The alert opens GR-1 with this SIP: Pay now, the pay-by date, missed 2 of 3.'},
   tight:{t:'Money is short before the debit', today:'At most a balance reminder. Nothing says skipping or lowering still counts.', now:'A heads-up opens GR-1 with Skip and Lower this month, while they still count.'},
   blocked:{t:'The fund blocks skipping', today:'Skip fails with a message, and Cancel is the only way out left.', now:'GR-1 leads with lowering the amount or moving the date.'},
-  cancel:{t:'Needs a break', today:'Cancel in a tap. No pause, and nothing says the money stays invested.', now:'Cancel opens GR-1: pause for 1–3 months (proposed), what cancelling does, and Cancel still two taps.'},
+  cancel:{t:'Needs a break', today:'Cancel in a tap. Nothing says the money stays invested, or that skipping a month is an option.', now:'Cancel opens GR-1: skip a month instead (two in a row are safe), what cancelling does, and Cancel still two taps.'},
 };
 const GLYPH={failed:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 7l10 10M17 7L7 17" stroke-linecap="round"/></svg>',tight:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg>',blocked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg>',cancel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6v12M15 6v12" stroke-linecap="round"/></svg>'};
 function scenButtons(){ return SAMPLES.map(s=>{ const st=STORY[s.moment]; return `<button class="gopt" type="button" data-scen="${s.id}"><i class="gg ${s.moment}">${GLYPH[s.moment]}</i><span class="gt"><b>${esc(st.t)}</b><span>${esc(MODE==='before'?st.today:st.now)}</span></span></button>`; }).join(''); }
@@ -1093,9 +1093,9 @@ $('copyEval').onclick=async()=>{ try{ await navigator.clipboard.writeText(JSON.s
 /* ---------- GR-1: one card for every way in ---------- */
 let G1=null;
 const REASONS_C=[['short','Money is short'],['break','Need a break'],['returns','Worried about returns'],['switch','Moving to another fund']];
-const RANK_M={ failed:['pay','reduce','date','pause','skip','cancel'], tight:['skip','reduce','date','pause','cancel'], blocked:['reduce','date','pause','skip','cancel'], cancel:['pause','skip','reduce','date','cancel'] };
-const RANK_R={ short:['reduce','skip','pause','date','cancel'], break:['pause','skip','reduce','date','cancel'], returns:['skip','reduce','pause','date','cancel'], switch:['cancel','date','reduce','skip','pause'] };
-const BTN={ pay:()=>`Pay ${EV.facts.amount} now`, skip:o=>o.title, reduce:()=>'Lower the amount', date:o=>o.title, pause:()=>'Pause for 1–3 months', cancel:()=>'Cancel SIP' };
+const RANK_M={ failed:['pay','reduce','date','skip','cancel'], tight:['skip','reduce','date','cancel'], blocked:['reduce','date','skip','cancel'], cancel:['skip','reduce','date','cancel'] };
+const RANK_R={ short:['reduce','skip','date','cancel'], break:['skip','reduce','date','cancel'], returns:['skip','reduce','date','cancel'], switch:['cancel','date','reduce','skip'] };
+const BTN={ pay:()=>`Pay ${EV.facts.amount} now`, skip:o=>o.title, reduce:()=>'Lower the amount', date:o=>o.title, cancel:()=>'Cancel SIP' };
 const DONE={ pay:'open Pay now for this instalment', skip:'skip this instalment', reduce:'open the amount editor', date:'open the date editor' };
 const SUMMARY_Q={ failed:'In 2 or 3 short sentences, explain what happened to my SIP and what I can still do this month.', tight:'In 2 or 3 short sentences, what can I do if this month is tight?', blocked:"In 2 or 3 short sentences, explain why I can't skip this SIP and what I can still do this month.", cancel:'In 2 or 3 short sentences, explain what cancelling this SIP does and what else I can do if I just need a break.' };
 const atRisk=()=>S.moment!=='cancel';
@@ -1129,7 +1129,7 @@ function renderActs(v){
   const opts=(REASON&&v==='cancel'?RANK_R[REASON]:RANK_M[v]).map(O).filter(Boolean);
   const best=opts.find(o=>o.available&&!o.risk&&(o.id!=='cancel'||REASON==='switch'));
   $('rActs').innerHTML=opts.map(o=>{ const isBest=o===best;
-    const chip=o.risk?['amber','Would cancel SIP']:o.blocked?['grey','Not for this fund']:o.proposed?['pen','Proposed']:o.available?['green','Available']:['grey','Not now'];
+    const chip=o.risk?['amber','Would cancel SIP']:o.blocked?['grey','Not for this fund']:o.available?['green','Available']:['grey','Not now'];
     const can=o.available&&!o.risk;
     return `<div class="act ${can?'':'off'} ${isBest?'best':''}">${isBest?`<span class="bestlbl">${REASON&&v==='cancel'?'Fits what you picked':'Fits this moment'}</span>`:''}
       <div class="act-h"><b>${esc(o.title)}</b><span class="chip ${chip[0]}">${chip[1]}</span></div>
@@ -1139,7 +1139,7 @@ function renderActs(v){
 document.addEventListener('click', e=>{
   const b=e.target.closest('[data-reason-r]'); if(b){ REASON = REASON===b.dataset.reasonR ? null : b.dataset.reasonR; document.querySelectorAll('[data-reason-r]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.reasonR===REASON)); renderActs(); return; }
   const a=e.target.closest('[data-g1act]'); if(a){ const id=a.dataset.g1act;
-    toast(id==='cancel' ? 'Demo: in the app this would cancel the SIP (second tap). Nothing was changed.' : id==='pause' ? 'Proposed feature: this would pause the SIP for the months picked, then restart it.' : `Demo: in the app GR-1 would ${DONE[id]}. Nothing was changed.`); return; }
+    toast(id==='cancel' ? 'Demo: in the app this would cancel the SIP (second tap). Nothing was changed.' : `Demo: in the app GR-1 would ${DONE[id]}. Nothing was changed.`); return; }
   const g=e.target.closest('[data-g1]'); if(g){ openGR1(g.dataset.g1); return; }
 });
 function pillHTML(d){ const ok=d.shown==='answer'; const n=(d.checks||[]).length, p=(d.checks||[]).filter(c=>c.ok).length;
@@ -1177,7 +1177,7 @@ const NOTES={
         before:[[0,'An alert with no next step','The SMS says it failed, not that the SIP is still active or what to do.'],[0,'Nothing on the dashboard','The fund row looks normal.'],[0,'GR-1 is one generic entry point','It suggests portfolio questions and doesn\'t know this SIP is at risk.']]},
   sip:{after:[['banner','GR-1 on SIP details','A banner opens the same card from here.'],['skip','Skip opens the same card','A blocked skip, or a 3rd miss in a row, shows before you commit.'],['help','Need help opens GR-1 for this SIP','No need to explain the situation first.'],['cancel','Cancel opens the same card','What cancelling does and the other options. Cancel is still two taps.']],
        before:[[0,'No pay-by date','Nothing says the instalment can still be paid, or until when.'],[0,'No missed count','The rule that 3 in a row cancels the SIP isn\'t shown anywhere.'],[0,'Skip and cancel with no warning','A blocked skip just fails, and Cancel doesn\'t say what happens to the money.']]},
-  gr1:{after:[['ctx','Already knows this SIP','Every way in opens this one card with the SIP loaded.'],['ai','A checked explanation first','Written by GR-1 for this SIP. It passes 7 checks before it\'s shown.'],['miss','Missed X of 3','How close the SIP is to cancelling on its own.'],['reasons','Why are you stopping?','The actions re-order for the reason picked.'],['acts','One list of actions, ranked for the moment','Pay, skip, lower, change date, pause (proposed) and cancel. Only what works right now is active.'],['ask','Ask GR-1 about this SIP','English or Hinglish. It never recommends funds or predicts returns.']],
+  gr1:{after:[['ctx','Already knows this SIP','Every way in opens this one card with the SIP loaded.'],['ai','A checked explanation first','Written by GR-1 for this SIP. It passes 7 checks before it\'s shown.'],['miss','Missed X of 3','How close the SIP is to cancelling on its own.'],['reasons','Why are you stopping?','The actions re-order for the reason picked.'],['acts','One list of actions, ranked for the moment','Pay, skip, lower, change date and cancel. Only what works right now is active.'],['ask','Ask GR-1 about this SIP','English or Hinglish. It never recommends funds or predicts returns.']],
        before:[[0,'Generic prompts','GR-1 suggests portfolio questions. It doesn\'t know this SIP failed or is at risk.'],[0,'The user explains everything','They have to describe the problem before getting any help.'],[0,'Answers, no actions','Pay, Skip or Edit are still somewhere else in the app.']]},
 };
 let LAST=null;

@@ -95,7 +95,6 @@ STRICT RULES
 - Never predict returns, markets or recovery. No urgency, fear or loss framing.
 - Cancelling is a valid choice. Describe it accurately and neutrally; never argue against it.
 - ${hardship ? 'The user describes financial hardship. Acknowledge it briefly. Say clearly that stopping or skipping is a reasonable choice, and lay out the options without steering.' : 'Match the option to the reason they give, if they give one.'}
-- The 'pause' option is a PROPOSED feature in this concept, not in the app today. If you mention it, say it's proposed.
 - If asked about anything in UNVERIFIED, say you couldn't confirm it and point to Groww support.
 - Reply in the user's language style (English or simple Hinglish), under 110 words, short sentences, no headings or bold.
 - Use dates exactly as written in FACTS (e.g. "9 Nov") and amounts as written (e.g. "₹1,000").

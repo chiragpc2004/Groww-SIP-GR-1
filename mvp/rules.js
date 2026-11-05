@@ -161,12 +161,6 @@
       rules: ['R5'], help: HELP.edit, suggested: salaryAfterDebit });
     if (salaryAfterDebit) facts.salary_vs_debit = `Pay lands on the ${s.salaryDay}${suffix(s.salaryDay)}, debit is on the ${s.sipDay}${suffix(s.sipDay)}`;
 
-    // Pause for 1-3 months: proposed feature, not in the app today (R4)
-    options.push({ id: 'pause', title: 'Pause for 1–3 months', available: true, proposed: true,
-      when: 'Proposed: not in the app today',
-      detail: "Instalments stop for the months you pick, then restart on their own. Paused months wouldn't count as missed.",
-      rules: ['R4'], help: HELP.skip });
-
     // Cancel (R7, R8, R9)
     const cancelOpen = daysToNext > 7;
     options.push({ id: 'cancel', title: 'Cancel the SIP', available: cancelOpen,
