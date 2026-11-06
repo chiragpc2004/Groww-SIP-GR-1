@@ -824,8 +824,8 @@ body.mode-before .gopt[aria-pressed="true"]{border-color:var(--red);box-shadow:i
 <!-- ================= QUALITY REPORT ================= -->
 <div id="qualityView" class="page" hidden><div class="wrap">
   <div class="ph"><h1>Every answer is tested before anyone sees it</h1>
-  <p class="lede">29 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
-  <div class="bigrow"><div><b>29</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, and hardship</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
+  <p class="lede">31 test questions run live through the same pipeline a user hits: policy decline, AI draft, code checks and an AI reviewer. A case passes when the right kind of response comes back, with what it must say and nothing it mustn't.</p></div>
+  <div class="bigrow"><div><b>31</b><span>test questions: everyday, messy and Hinglish, adversarial, unconfirmed rules, hardship and wellbeing</span></div><div><b>7</b><span>checks on every answer, from no fund advice to dates that match the rules engine</span></div><div><b>0</b><span>unsafe answers allowed. A failed check shows a safe fallback instead</span></div></div>
   <div class="runbar"><div><h2 class="h2">Run the suite</h2><p class="fine">Each case is one live answer: a draft and a review. On Gemini's free tier the run spaces cases out and saves progress, so if the quota runs out you can continue later from where it stopped.</p></div><div class="runacts"><button class="pbtn ghost" id="resetEval" hidden>Start over</button><button class="pbtn ghost" id="copyEval" disabled>Download results</button><button class="pbtn" id="runEval">Run all 26</button></div></div>
   <div class="pcard"><div class="kpis" id="evKpis"></div></div>
   <p class="fine evnote" id="evNote"></p>
@@ -1048,7 +1048,7 @@ function scrollChat(){ const b=$('g1Body'); b.scrollTop=b.scrollHeight; }
 function resetChat(){ $('chat').innerHTML=''; }
 function checksHTML(d){
   const checks=d.checks||[]; const bad=checks.some(c=>!c.ok); const warn=checks.some(c=>c.warn);
-  const label = d.by==='policy' ? 'Declined by policy' : d.shown==='answer' ? (warn?'Checked, with a note':`Checked · ${checks.filter(c=>c.ok).length} of ${checks.length} passed`) : 'Safe answer shown';
+  const label = d.fallback==='care' ? 'Handled with care · no AI used' : d.by==='policy' ? 'Declined by policy' : d.shown==='answer' ? (warn?'Checked, with a note':`Checked · ${checks.filter(c=>c.ok).length} of ${checks.length} passed`) : 'Safe answer shown';
   return `<details class="qc ${d.shown==='answer'&&!warn?'ok':'warn'}"><summary>${d.shown==='answer'?'✓':'!'} ${esc(label)}</summary><ul>${checks.map(c=>`<li class="${!c.ok?'bad':c.warn?'warn':'ok'}"><i>${!c.ok?'✕':c.warn?'!':'✓'}</i><span>${esc(c.label)}${c.note?' · '+esc(c.note):''}</span></li>`).join('')}</ul></details>`;
 }
 function rulesSummary(){

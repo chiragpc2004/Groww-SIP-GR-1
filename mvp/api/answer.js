@@ -61,6 +61,9 @@ function parseJSON(t) { try { return JSON.parse(t.replace(/^```(json)?|```$/g, '
 /* ---------------- deterministic checks ---------------- */
 const ADVICE_ASK = /\b(which|what|best|good|better|top)\b.{0,30}\b(fund|scheme|stock|mf|mutual fund)s?\b.{0,30}\b(buy|switch|invest|choose|pick|move|should)\b|\bshould i (buy|switch|invest in|move to)\b|\brecommend (a |some )?(fund|scheme|stock)|\b(which|konsa) fund\b/i;
 const PREDICT_ASK = /\b(will|when will|kab)\b.{0,40}\b(market|nifty|sensex|returns?|portfolio|fund|value)\b.{0,30}\b(recover|go up|rise|grow|increase|improve|bounce|be positive)\b|\bpredict\b|\bhow much (will|would) i (make|earn|get)\b/i;
+// Wellbeing: checked before anything else. Answered by fixed text, never by the model.
+const SELF_HARM = /\b(suicid\w*|kill (my ?self|me)|end (it all|my life)|take my (own )?life|don'?t want to (live|be alive|exist)|no reason to live|better off dead|want to die|wanna die|self[- ]?harm\w*|hurt(ing)? my ?self|marna (hai|chah\w*)|mar ?jaa?(u|o)o?n\w*|jeena nahi|khudkushi|aatmahatya)\b/i;
+const SERIOUS_LIFE = /\b((i'?m|i am|im)( \w+)? dying(?! to\b)|i('?m| am) going to die|i (will|might) die soon|terminal(ly)?( ill)?|months to live|weeks to live|last stage|stage (4|four|iv)\b|cancer|passed away|death in (the|my) family|(father|mother|dad|mom|mum|papa|husband|wife|son|daughter|parent)s? (died|has died|passed|is dying)|bereave\w*)/i;
 const HARDSHIP = /\b(lost (my )?job|laid off|layoff|no job|unemployed|medical|hospital|emergency|can'?t afford|cannot afford|no money|debt|loan (is )?due|naukri (chali|gayi))\b/i;
 
 const FUND_WORDS = /\b(HDFC|SBI|ICICI|Nippon|Axis|Parag Parikh|PPFAS|Quant|Motilal|Kotak|Mirae|UTI|Tata|Bandhan|DSP|Aditya Birla|Edelweiss|Franklin|Canara|Invesco|Navi|Groww (Nifty|Large|Value)|small[- ]?cap fund|mid[- ]?cap fund|flexi[- ]?cap fund|index fund|ELSS fund)\b/i;
@@ -115,6 +118,7 @@ STRICT RULES
 - ${hardship ? 'The user describes financial hardship. Acknowledge it briefly. Your answer MUST include a sentence saying that stopping or skipping is a reasonable choice in their situation. Then lay out the options without steering.' : 'Match the option to the reason they give, if they give one.'}
 - If asked about anything in UNVERIFIED, say you couldn't confirm it and point to Groww support.
 - If asked about exit loads or withdrawal charges: say they vary by fund and by how long the money was invested, that you couldn't confirm this fund's, and that the fund's details in the app or Groww support show them. Give no amounts or percentages.
+- If the user mentions serious illness, a death, grief, or feeling unable to cope: start with brief, genuine sympathy, say nothing about the SIP needs deciding right now, don't list deadlines, missed counts or actions, and suggest talking to family or Groww support. If they hint at ending their life, give only Tele-MANAS 14416 (free, 24/7) and 112 for emergencies.
 - If asked whether the value or returns are good or bad: don't judge either way. State invested_so_far and current_value from FACTS, and say a value below the amount invested can happen in the short term with market-linked funds without saying it will recover.
 - Reply in the user's language style (English or simple Hinglish), under 110 words, short sentences, no headings or bold.
 - Use dates exactly as written in FACTS (e.g. "9 Nov") and amounts as written (e.g. "₹1,000").
@@ -151,12 +155,16 @@ ANSWER: """${answer}"""
 Judge:
 1. facts_correct: every statement about dates, availability, deadlines, the 3-in-a-row rule and charges matches FACTS, OPTIONS or VERIFIED RULES (no contradictions, nothing invented). An answer does not need to use the facts: saying it couldn't confirm something and pointing to support or the fund's details is correct.
 2. cancel_correct: only if the answer explains what cancelling does or offers cancelling as an option, it must say future instalments stop AND existing money stays invested (until redeemed). A passing mention such as "instead of cancelling", or no mention, is true.
-3. neutral: no pressure to continue investing, no discouraging cancellation, no fear or urgency${hardship ? ', and it treats stopping as a reasonable choice given the hardship' : ''}.
+3. neutral: no pressure to continue investing, no discouraging cancellation, no fear or urgency${hardship ? ', and it treats stopping as a reasonable choice given the hardship' : ''} If the question mentions serious illness, death, grief or distress, the answer fails neutral when it leads with deadlines, missed counts or SIP actions instead of sympathy.
 4. answers_question: it actually addresses the question. For a request to decide for the user ("should I stop or continue?"), saying it's their call and laying out what each choice does IS answering.
 Reply with only JSON: {"facts_correct": bool, "cancel_correct": bool, "neutral": bool, "answers_question": bool, "issue": "one short sentence or empty"}`;
 }
 
 /* ---------------- fallbacks ---------------- */
+const FB_CARE = {
+  crisis: "I'm really sorry you're feeling this way. Your SIP can wait; you matter more than any of it. Please talk to someone right now: in India you can call Tele-MANAS on 14416 (free, 24/7), or call 112 if you're in danger. If you can, reach out to someone you trust and tell them how you're feeling.",
+  serious: "I'm so sorry you're going through this. Nothing about your SIP needs deciding today, and the money already invested stays invested whatever you choose. Whether to keep saving is a personal decision, and a family member or a financial adviser who knows your situation can help you think it through. One practical thing: make sure a nominee is added to your investments, so your family can claim them easily. If any of this has left you thinking about ending your life, please call Tele-MANAS on 14416 (free, 24/7).",
+};
 const FB = {
   advice: "I can explain how your SIP works and what each option does, but I can't recommend funds or tell you whether to invest, switch or stop. That's your call. If it helps, Groww's help pages explain each option.",
   predict: "I can't predict returns or when markets will move; nobody can do that reliably. I can explain what's happening with your SIP and what each option would do.",
@@ -191,6 +199,13 @@ module.exports = async (req, res) => {
   const ev = R.evaluate(s);
   const hardship = HARDSHIP.test(question);
   const t0 = Date.now(), used = [];
+
+  // 0. wellbeing comes first: fixed, caring text; no model call, no SIP pitch
+  const care = SELF_HARM.test(question) ? 'crisis' : SERIOUS_LIFE.test(question) ? 'serious' : null;
+  if (care) {
+    return res.status(200).json({ shown: 'fallback', text: FB_CARE[care], fallback: 'care', rules: [], option: 'none', by: 'policy',
+      checks: [{ id: 'care', label: care === 'crisis' ? 'Distress detected: support line shown, no SIP answer' : 'Serious life event detected: answered with care, no SIP answer', ok: true }] });
+  }
 
   // 1. requests the assistant must decline: answered by code, no model call
   const adviceAsk = ADVICE_ASK.test(question) || FUND_WORDS.test(question);
