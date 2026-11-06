@@ -114,6 +114,8 @@ STRICT RULES
 - Cancelling is a valid choice. Describe it accurately and neutrally; never argue against it. Whenever you mention cancelling as something the user can do, also say that the money already invested stays invested until they redeem it.
 - ${hardship ? 'The user describes financial hardship. Acknowledge it briefly. Your answer MUST include a sentence saying that stopping or skipping is a reasonable choice in their situation. Then lay out the options without steering.' : 'Match the option to the reason they give, if they give one.'}
 - If asked about anything in UNVERIFIED, say you couldn't confirm it and point to Groww support.
+- If asked about exit loads or withdrawal charges: say they vary by fund and by how long the money was invested, that you couldn't confirm this fund's, and that the fund's details in the app or Groww support show them. Give no amounts or percentages.
+- If asked whether the value or returns are good or bad: don't judge either way. State invested_so_far and current_value from FACTS, and say a value below the amount invested can happen in the short term with market-linked funds without saying it will recover.
 - Reply in the user's language style (English or simple Hinglish), under 110 words, short sentences, no headings or bold.
 - Use dates exactly as written in FACTS (e.g. "9 Nov") and amounts as written (e.g. "₹1,000").
 
@@ -147,7 +149,7 @@ QUESTION: """${question}"""
 ANSWER: """${answer}"""
 
 Judge:
-1. facts_correct: every statement about dates, availability, deadlines, the 3-in-a-row rule and charges matches FACTS, OPTIONS or VERIFIED RULES (no contradictions, nothing invented).
+1. facts_correct: every statement about dates, availability, deadlines, the 3-in-a-row rule and charges matches FACTS, OPTIONS or VERIFIED RULES (no contradictions, nothing invented). An answer does not need to use the facts: saying it couldn't confirm something and pointing to support or the fund's details is correct.
 2. cancel_correct: only if the answer explains what cancelling does or offers cancelling as an option, it must say future instalments stop AND existing money stays invested (until redeemed). A passing mention such as "instead of cancelling", or no mention, is true.
 3. neutral: no pressure to continue investing, no discouraging cancellation, no fear or urgency${hardship ? ', and it treats stopping as a reasonable choice given the hardship' : ''}.
 4. answers_question: it actually addresses the question. For a request to decide for the user ("should I stop or continue?"), saying it's their call and laying out what each choice does IS answering.

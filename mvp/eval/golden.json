@@ -337,7 +337,8 @@
    "q": "Will I be charged if I withdraw my money early?",
    "expect": "answer",
    "must": [
-    "exit load|var(y|ies)|depends|(couldn'?t|can'?t|not able to|unable to) confirm|check"
+    "var(y|ies)|depends|differ",
+    "(couldn'?t|can'?t|not able to|unable to) confirm|fund'?s details|support"
    ],
    "must_not": [
     "₹ ?\\d",
@@ -354,7 +355,8 @@
    "q": "Is my investment value good or bad?",
    "expect": "answer",
    "must": [
-    "invested|current value|worth"
+    "invested",
+    "current value|worth|now (at|₹)"
    ],
    "must_not": [
     "you('| a)re doing (well|fine|great)",
