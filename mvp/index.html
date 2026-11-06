@@ -1089,7 +1089,9 @@ function erow(c,r){ const res=!r?'<span class="chip grey">Not run</span>':r.erro
   return `<tr id="ev-${c.id}"><td class="mono">${c.id}</td><td><span class="cat ${c.cat}">${c.cat}</span></td><td>${MOMENT[SCEN[c.scenario].moment]}</td><td>${esc(c.q)}</td><td>${c.expect==='answer'?'Checked answer':'Decline or fallback'}</td><td>${res}</td></tr>`; }
 const EV_KEY='evalProgress.v2'; let PUB=null, SHOWPUB=false;
 const saveProg=()=>{ try{ localStorage.setItem(EV_KEY, JSON.stringify({n:GOLD.cases.length, results:RESULTS})); }catch{} };
-const loadProg=()=>{ try{ const d=JSON.parse(localStorage.getItem(EV_KEY)||'null'); return d&&d.n===GOLD.cases.length ? d.results : []; }catch{ return []; } };
+// keep saved results for every case still in the golden set, so adding cases continues the run instead of restarting it
+const ids=()=>new Set(GOLD.cases.map(c=>c.id));
+const loadProg=()=>{ try{ const d=JSON.parse(localStorage.getItem(EV_KEY)||'null'); const k=ids(); return d&&Array.isArray(d.results) ? d.results.filter(r=>k.has(r.id)) : []; }catch{ return []; } };
 function paintRows(list){ const by=Object.fromEntries(list.map(r=>[r.id,r])); $('evRows').innerHTML=GOLD.cases.map(c=>erow(c,by[c.id])).join(''); }
 function runLabel(){ const done=RESULTS.filter(r=>!r.error).length, n=GOLD.cases.length;
   $('runEval').textContent = done && done<n ? `Continue (${done} of ${n} done)` : done===n ? `Run all ${n} again` : `Run all ${n}`;
@@ -1099,7 +1101,7 @@ async function loadGold(){ if(GOLD) return;
   try{ const r=await fetch('eval/last_run.json'); if(r.ok) PUB=await r.json(); }catch{}
   RESULTS=loadProg();
   if(RESULTS.length){ paintRows(RESULTS); $('evNote').textContent='Showing your saved progress from this browser.'; }
-  else if(PUB){ RESULTS=PUB.results.slice(); SHOWPUB=true; paintRows(RESULTS); $('evNote').textContent=`Showing the last published run: ${new Date(PUB.run).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}${PUB.by?' · '+PUB.by:''}. Press Run to test it live.`; }
+  else if(PUB){ RESULTS=PUB.results.filter(r=>ids().has(r.id)); SHOWPUB=true; paintRows(RESULTS); $('evNote').textContent=`Showing the last published run: ${new Date(PUB.run).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}${PUB.by?' · '+PUB.by:''}. Press Run to test it live.`; }
   else paintRows([]);
   kpis(); runLabel(); }
 const sleep=ms=>new Promise(x=>setTimeout(x,ms));
@@ -1108,7 +1110,8 @@ function grade(c,d){ const t=(d.text||'').replace(/[\u00a0\u2007\u2009\u202f]/g,
   return {pass:!why.length, why:why.join('; '), unsafe:d.shown==='answer'&&c.cat==='adversarial'&&c.expect==='fallback'}; }
 $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
   const n=GOLD.cases.length;
-  if(RESULTS.filter(r=>!r.error).length===n || SHOWPUB) RESULTS=[]; SHOWPUB=false;
+  // a complete run starts fresh; a published run that predates new cases is continued with just the new ones
+  if(RESULTS.filter(r=>!r.error).length===n) RESULTS=[]; SHOWPUB=false;
   RESULTS=RESULTS.filter(r=>!r.error); paintRows(RESULTS); kpis();
   for(const c of GOLD.cases){
     if(RESULTS.some(r=>r.id===c.id)) continue;
@@ -1127,7 +1130,7 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
   }
   $('evNote').textContent=`Finished ${new Date().toLocaleString('en-IN')}. Download the results to publish them on this page.`; $('runEval').disabled=false; runLabel(); };
 $('copyEval').onclick=()=>{ const blob=new Blob([JSON.stringify({run:new Date().toISOString(),by:[...new Set(RESULTS.flatMap(r=>(r.by||'').split(' + ')).filter(b=>b&&b!=='policy'))].join(', '),results:RESULTS},null,1)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='last_run.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); };
-$('resetEval').onclick=()=>{ try{ localStorage.removeItem(EV_KEY); }catch{} RESULTS=PUB?PUB.results.slice():[]; SHOWPUB=!!PUB; paintRows(RESULTS); kpis(); runLabel(); $('evNote').textContent='Saved progress cleared.'; };
+$('resetEval').onclick=()=>{ try{ localStorage.removeItem(EV_KEY); }catch{} RESULTS=PUB?PUB.results.filter(r=>ids().has(r.id)):[]; SHOWPUB=!!PUB; paintRows(RESULTS); kpis(); runLabel(); $('evNote').textContent='Saved progress cleared.'; };
 
 /* ---------- GR-1: one card for every way in ---------- */
 let G1=null;
