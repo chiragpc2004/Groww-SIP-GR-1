@@ -569,6 +569,8 @@ td{font-size:14px}
 .page .wrap>*,.ahero>*{min-width:0}
 .runbar{align-items:flex-end}
 .runacts{display:flex;gap:10px;flex:none}
+@media (max-width:720px){.runbar{flex-direction:column;align-items:stretch}.runacts{flex-wrap:wrap}.runacts>*{flex:1 1 auto}}
+.tw{max-width:100%;min-width:0}
 .evnote{margin-top:10px!important}
 .foot .sw{max-width:calc(var(--container) + 2*var(--gutter))}
 
@@ -943,8 +945,9 @@ function setScenario(s){
   S={...s}; EV=R.evaluate(S,today); LAST=null; FIT=null; REASON=S.moment==='cancel'?'break':null; closeSheet(); closeGR1(true); resetStack(); renderAll(); resetChat();
   document.querySelectorAll('[data-scen]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.scen===S.id));
   $('notif').classList.remove('on'); $('sms').classList.remove('on');
-  if(S.moment==='cancel') setTimeout(()=>{ push('sip'); },400);
-  else setTimeout(()=>$(MODE==='after'?'notif':'sms').classList.add('on'),500);
+  clearTimeout(window._scenT);
+  if(S.moment==='cancel') window._scenT=setTimeout(()=>{ push('sip'); },400);
+  else window._scenT=setTimeout(()=>$(MODE==='after'?'notif':'sms').classList.add('on'),500);
 }
 function setMode(m){
   MODE=m; $('phone').dataset.mode=m; document.body.classList.toggle('mode-before',m==='before'); document.querySelectorAll('[data-mode-btn]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.modeBtn===m));
@@ -991,6 +994,8 @@ function renderAll(){
   const sk0=O('skip');
   $('nTitle').textContent = failed ? 'GR-1 · Your SIP is still active' : S.moment==='blocked' ? `GR-1 · ${f.amount} goes out on ${f.next_debit}` : `GR-1 · ${f.amount} goes out on ${f.next_debit}`;
   $('nBody').textContent = failed ? `${f.amount} didn't go through. Pay by ${f.pay_now_deadline||f.next_debit} to keep it on track. Tap to see your options.` : S.moment==='blocked' ? `Skipping is off for this fund. You can still lower the amount or move the date.` : `Short this month? ${sk0.when}, or lower it, and it still counts.`;
+  $('notif').setAttribute('aria-label', 'Notification: '+$('nTitle').textContent+'. Open GR-1');
+  $('sms').setAttribute('aria-label', 'SMS: '+(failed?'SIP payment failed':'SIP due soon'));
   $('smsBody').textContent = failed ? `Your SIP instalment of Rs.${S.amount} has failed due to insufficient funds.` : `Your SIP of Rs.${S.amount} is due on ${f.next_debit}. Please maintain sufficient balance.`;
   // SIP details
   $('dAmt').textContent=f.amount; $('dDay').textContent=`${ord(S.sipDay)} of every month`;
