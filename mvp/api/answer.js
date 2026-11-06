@@ -103,7 +103,7 @@ function codeChecks(answer, citedRules, ev, question) {
 }
 
 /* ---------------- prompts ---------------- */
-function draftPrompt(s, ev, question, hardship) {
+function draftPrompt(s, ev, qModel, hardship) {
   const opts = ev.options.map(o => `- ${o.id}: ${o.title}. ${o.available ? 'Available' : 'NOT available'}. ${o.when}. ${o.detail} [${o.rules.join(', ')}]`).join('\n');
   const rules = Object.entries(R.RULES).map(([k, v]) => `${k}: ${v}`).join('\n');
   const unv = Object.entries(R.UNVERIFIED).map(([k, v]) => `${k}: ${v}`).join('\n');
@@ -140,7 +140,7 @@ QUESTION: """${question}"""
 
 Reply with only JSON: {"answer": string, "rules_cited": ["R3", ...], "best_fit_option": one of ${JSON.stringify(ev.options.map(o => o.id).concat('none'))}}`;
 }
-function judgePrompt(ev, question, answer, hardship) {
+function judgePrompt(ev, qModel, answer, hardship) {
   return `You are a strict reviewer for a mutual fund app's assistant. Check the ANSWER against the FACTS, OPTIONS and VERIFIED RULES only. A statement that matches a verified rule is correct, not invented.
 
 FACTS
@@ -163,7 +163,8 @@ Reply with only JSON: {"facts_correct": bool, "cancel_correct": bool, "neutral":
 /* ---------------- fallbacks ---------------- */
 const FB_CARE = {
   crisis: "I'm really sorry you're feeling this way. Your SIP can wait; you matter more than any of it. Please talk to someone right now: in India you can call Tele-MANAS on 14416 (free, 24/7), or call 112 if you're in danger. If you can, reach out to someone you trust and tell them how you're feeling.",
-  serious: "I'm so sorry you're going through this. Nothing about your SIP needs deciding today, and the money already invested stays invested whatever you choose. Whether to keep saving is a personal decision, and a family member or a financial adviser who knows your situation can help you think it through. One practical thing: make sure a nominee is added to your investments, so your family can claim them easily. If any of this has left you thinking about ending your life, please call Tele-MANAS on 14416 (free, 24/7).",
+  serious: "I'm so sorry you're going through this. Nothing about your SIP needs deciding today, and the money already invested stays invested whatever you choose. Whether to keep saving is a personal decision; someone you trust, or a financial adviser who knows your situation, can help you think it through. One practical thing: make sure a nominee is added to your investments, so the person you choose can claim them easily. If any of this has left you thinking about ending your life, please call Tele-MANAS on 14416 (free, 24/7).",
+  later: "Thank you for telling me. You don't have to work through this alone: a close friend, your doctor, or Tele-MANAS on 14416 (free, 24/7, anyone can call) can help. Nothing about your SIP needs to happen now. Whenever you're ready, ask me anything about it and I'll explain it plainly.",
 };
 const FB = {
   advice: "I can explain how your SIP works and what each option does, but I can't recommend funds or tell you whether to invest, switch or stop. That's your call. If it helps, Groww's help pages explain each option.",
@@ -200,11 +201,16 @@ module.exports = async (req, res) => {
   const hardship = HARDSHIP.test(question);
   const t0 = Date.now(), used = [];
 
+  // 0a. earlier messages in this chat (sent by the page) keep the care context for follow-ups
+  const history = (Array.isArray(body.history) ? body.history : []).slice(-4).map(x => String(x).slice(0, 300));
+  const careBefore = history.some(h => SELF_HARM.test(h)) ? 'crisis' : history.some(h => SERIOUS_LIFE.test(h)) ? 'serious' : null;
+  const SIP_ASK = /\b(sip|debit\w*|instal\w*|pay\w*|skip\w*|cancel\w*|amount|date|redeem\w*|withdraw\w*|nominee|fund|money|invest\w*|charge\w*|when|how much)\b/i;
   // 0. wellbeing comes first: fixed, caring text; no model call, no SIP pitch
-  const care = SELF_HARM.test(question) ? 'crisis' : SERIOUS_LIFE.test(question) ? 'serious' : null;
+  const care = SELF_HARM.test(question) ? 'crisis' : SERIOUS_LIFE.test(question) ? 'serious'
+    : careBefore === 'crisis' ? 'crisis' : careBefore && !SIP_ASK.test(question) ? 'later' : null;
   if (care) {
     return res.status(200).json({ shown: 'fallback', text: FB_CARE[care], fallback: 'care', rules: [], option: 'none', by: 'policy',
-      checks: [{ id: 'care', label: care === 'crisis' ? 'Distress detected: support line shown, no SIP answer' : 'Serious life event detected: answered with care, no SIP answer', ok: true }] });
+      checks: [{ id: 'care', label: care === 'crisis' ? 'Distress detected: support line shown, no SIP answer' : care === 'later' ? 'Follow-up to a serious life event: answered with care, no SIP answer' : 'Serious life event detected: answered with care, no SIP answer', ok: true }] });
   }
 
   // 1. requests the assistant must decline: answered by code, no model call
@@ -215,9 +221,10 @@ module.exports = async (req, res) => {
       checks: [{ id: 'policy', label: kind === 'advice' ? 'Advice request detected: declined by policy' : 'Prediction request detected: declined by policy', ok: true }] });
   }
 
+  const qModel = careBefore ? `${question}\n(Context: earlier in this chat the user mentioned a serious illness, a death or distress. Answer only what they ask, gently; no unrequested actions or deadlines.)` : question;
   // 2. draft
   let draft;
-  try { draft = parseJSON(await generate(draftPrompt(s, ev, question, hardship), true, used)); }
+  try { draft = parseJSON(await generate(draftPrompt(s, ev, qModel, hardship), true, used)); }
   catch (e) { return res.status(e.code === 'quota' ? 429 : 503).json({ error: e.code === 'quota' ? 'quota' : 'busy' }); }
   if (!draft || typeof draft.answer !== 'string' || !draft.answer.trim()) {
     return res.status(200).json({ shown: 'fallback', text: FB.generic, fallback: 'generic', rules: [], option: 'none', by: 'model',
@@ -248,7 +255,7 @@ module.exports = async (req, res) => {
   // 4. AI judge (only if code checks pass, to save quota)
   if (checks.every(c => c.ok)) {
     let j = null;
-    try { j = parseJSON(await generate(judgePrompt(ev, question, answer, hardship), true, used)); } catch (e) { j = null; }
+    try { j = parseJSON(await generate(judgePrompt(ev, qModel, answer, hardship), true, used)); } catch (e) { j = null; }
     if (j) {
       checks.push({ id: 'judge_facts', label: 'AI reviewer: facts match your situation', ok: j.facts_correct !== false, note: j.facts_correct === false ? (j.issue || '') : '' });
       if (j.answers_question === false) checks.push({ id: 'judge_answers', label: 'AI reviewer: may not fully answer the question', ok: true, warn: true, note: j.issue || '' });
