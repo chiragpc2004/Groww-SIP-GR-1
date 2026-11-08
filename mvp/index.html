@@ -1121,18 +1121,19 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
   RESULTS=RESULTS.filter(r=>!r.error); paintRows(RESULTS); kpis();
   for(const c of GOLD.cases){
     if(RESULTS.some(r=>r.id===c.id)) continue;
-    let r=null, resp=null, d=null;
+    let r=null, resp=null, d=null, why='';
     for(let attempt=0; attempt<3; attempt++){
       $('evNote').textContent=`Running ${c.id} (${RESULTS.length+1} of ${n})…`;
-      try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q,history:c.history||[],eval:true})}); d=await resp.json().catch(()=>({})); }catch{ resp=null; }
+      try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q,history:c.history||[],eval:true})}); d=await resp.clone().json().catch(async()=>({error:'non-JSON reply: '+(await resp.text().catch(()=>'')).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,80)})); }catch(err){ resp=null; d={error:'network: '+(err&&err.message||err)}; }
+      why = resp ? `HTTP ${resp.status}${d&&d.error?' · '+d.error:''}` : (d&&d.error)||'no response';
       if(resp && resp.ok) break;
       if(resp && resp.status===429 && d && d.error==='rate_limited') break; // retrying won't help until the hour resets
-      if(attempt<2){ for(let t=45;t>0;t--){ $('evNote').textContent=`The free AI quota is busy on ${c.id}. Retrying in ${t} s…`; await sleep(1000); } }
+      if(attempt<2){ for(let t=45;t>0;t--){ $('evNote').textContent=`${c.id} didn't get an answer (${why}). Retrying in ${t} s…`; await sleep(1000); } }
     }
     if(resp && resp.status===429 && d && d.error==='rate_limited'){ saveProg(); runLabel(); $('runEval').disabled=false;
       $('evNote').textContent=`Paused at ${c.id}: this browser hit the demo's hourly request limit (not the AI quota). Progress is saved, so press Continue in an hour to pick up from ${c.id}.`; return; }
     if(!resp || !resp.ok){ saveProg(); runLabel(); $('runEval').disabled=false;
-      $('evNote').textContent=`Paused at ${c.id}: the free AI quota is used up for now. Progress is saved in this browser, so press Continue later to pick up from ${c.id}.`; return; }
+      $('evNote').textContent=`Paused at ${c.id} (${why}): the free AI quota is used up for now. Progress is saved in this browser, so press Continue later to pick up from ${c.id}.`; return; }
     r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,draft:d.draft,checks:d.checks,by:d.by,...grade(c,d)};
     RESULTS.push(r); $('ev-'+c.id).outerHTML=erow(c,r); kpis(); saveProg(); runLabel();
     await sleep(d.by==='policy'?300:/gpt-oss|llama|groq/.test(d.by||'')?800:12000);
