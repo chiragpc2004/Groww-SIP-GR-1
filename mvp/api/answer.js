@@ -174,7 +174,8 @@ const FB = {
 
 /* ---------------- handler ---------------- */
 const HITS = new Map();
-function allowed(ip) { const now = Date.now(); const l = (HITS.get(ip) || []).filter(t => now - t < 3600e3); if (l.length >= Number(process.env.RATE_LIMIT_PER_HOUR || 40)) return false; l.push(now); HITS.set(ip, l); return true; }
+// separate hourly budgets: chat (40) and the eval suite (150, enough for a full run plus retries)
+function allowed(ip, evalRun) { const key = ip + (evalRun ? '#eval' : ''); const now = Date.now(); const l = (HITS.get(key) || []).filter(t => now - t < 3600e3); if (l.length >= Number(evalRun ? (process.env.RATE_LIMIT_EVAL_PER_HOUR || 150) : (process.env.RATE_LIMIT_PER_HOUR || 40))) return false; l.push(now); HITS.set(key, l); return true; }
 
 function sanitizeScenario(x) {
   const n = (v, lo, hi, d) => { v = Number(v); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : d; };
@@ -192,8 +193,8 @@ function sanitizeScenario(x) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
-  if (!allowed(ip)) return res.status(429).json({ error: 'rate_limited' });
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  if (!allowed(ip, !!body.eval)) { console.warn(`[rate limit] ${body.eval ? 'eval' : 'chat'} requests from one address over the hourly limit`); return res.status(429).json({ error: 'rate_limited' }); }
   const question = String(body.question || '').trim().slice(0, 600);
   if (question.length < 3) return res.status(400).json({ error: 'question_too_short' });
   const s = sanitizeScenario(body.scenario || {});

@@ -1074,7 +1074,7 @@ async function ask(){
     LAST=d; renderInsight(); FIT = d.shown==='answer' && d.option && d.option!=='none' ? d.option : null;
     if(FIT){ const o=O(FIT); if(o&&o.available&&!o.risk){ html+=`<button class="qc" type="button" data-g1act="${FIT}" style="font-size:13px;font-weight:600;color:var(--green-ink);text-align:left">${esc(BTN[FIT]?BTN[FIT](o):o.title)}</button><div class="g1-moved">Moved to the top of the card: ${esc(o.title)}</div>`; if($('rActs')) renderActs(); } }
   }catch(e){
-    html=`<div class="msg bot fb">${esc(rulesSummary())}</div><details class="qc warn"><summary>! AI busy · rules summary shown</summary><ul><li class="ok"><i>✓</i><span>Built only from calculated facts; no AI text. Try again in a minute.</span></li></ul></details>`;
+    html=`<div class="msg bot fb">${esc(rulesSummary())}</div><details class="qc warn"><summary>! ${e&&e.code==='rate_limited'?'Hourly limit reached':'AI busy'} · rules summary shown</summary><ul><li class="ok"><i>✓</i><span>Built only from calculated facts; no AI text. ${e&&e.code==='rate_limited'?'This demo allows 40 questions an hour per person, to protect the free AI quota. Try again later.':'Try again in a minute.'}</span></li></ul></details>`;
   }
   $('typing').remove(); $('chat').insertAdjacentHTML('beforeend',html); scrollChat(); busy=false; $('send').disabled=false;
 }
@@ -1126,8 +1126,11 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
       $('evNote').textContent=`Running ${c.id} (${RESULTS.length+1} of ${n})…`;
       try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q,history:c.history||[],eval:true})}); d=await resp.json().catch(()=>({})); }catch{ resp=null; }
       if(resp && resp.ok) break;
+      if(resp && resp.status===429 && d && d.error==='rate_limited') break; // retrying won't help until the hour resets
       if(attempt<2){ for(let t=45;t>0;t--){ $('evNote').textContent=`The free AI quota is busy on ${c.id}. Retrying in ${t} s…`; await sleep(1000); } }
     }
+    if(resp && resp.status===429 && d && d.error==='rate_limited'){ saveProg(); runLabel(); $('runEval').disabled=false;
+      $('evNote').textContent=`Paused at ${c.id}: this browser hit the demo's hourly request limit (not the AI quota). Progress is saved, so press Continue in an hour to pick up from ${c.id}.`; return; }
     if(!resp || !resp.ok){ saveProg(); runLabel(); $('runEval').disabled=false;
       $('evNote').textContent=`Paused at ${c.id}: the free AI quota is used up for now. Progress is saved in this browser, so press Continue later to pick up from ${c.id}.`; return; }
     r={id:c.id,cat:c.cat,expect:c.expect,shown:d.shown,text:d.text,draft:d.draft,checks:d.checks,by:d.by,...grade(c,d)};
