@@ -1136,7 +1136,8 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
   }
   $('evNote').textContent=`Finished ${new Date().toLocaleString('en-IN')}. Download the results to publish them on this page.`; $('runEval').disabled=false; runLabel(); };
 $('copyEval').onclick=()=>{ const blob=new Blob([JSON.stringify({run:new Date().toISOString(),by:[...new Set(RESULTS.flatMap(r=>(r.by||'').split(' + ')).filter(b=>b&&b!=='policy'))].join(', '),results:RESULTS},null,1)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='last_run.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); };
-$('resetEval').onclick=()=>{ try{ localStorage.removeItem(EV_KEY); }catch{} RESULTS=PUB?PUB.results.filter(r=>ids().has(r.id)):[]; SHOWPUB=!!PUB; paintRows(RESULTS); kpis(); runLabel(); $('evNote').textContent='Saved progress cleared.'; };
+// Start over = a fresh run of every case: drop saved progress and the published results, then run
+$('resetEval').onclick=()=>{ if($('runEval').disabled) return; try{ localStorage.removeItem(EV_KEY); }catch{} RESULTS=[]; SHOWPUB=false; paintRows(RESULTS); kpis(); runLabel(); $('evNote').textContent='Starting a fresh run of all cases…'; $('runEval').click(); };
 
 /* ---------- GR-1: one card for every way in ---------- */
 let G1=null;
