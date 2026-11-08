@@ -145,6 +145,6 @@ Runs 5 and 6 were resumed partway after the free AI quota ran out, so they mix t
 - [Live discovery engine](https://nextleap-groww-sip-discovery-engine.vercel.app): ask the evidence a question, code a new post, browse all 219 coded posts and the method page
 - [Live MVP](https://nextleap-groww-mvp.vercel.app/#demo): today's app and GR-1 side by side for all four moments
 - [Quality report](https://nextleap-groww-mvp.vercel.app/#quality): the 29-question golden set, the latest published run, and a button to run it again
-- [PRD](https://claude.ai/artifact/4AaSLqVSQm6wHZHTddSHv6) and [User test kit](https://claude.ai/artifact/1EHJMUH6ncN4Cx2SjBKqyD): the solution spec, and the user-test script, notes and results
+- [PRD](https://docs.google.com/document/d/15IkRaFvojVCPeecSs3dqd1-j4UgmtxaIYOWaZnHi8Oo/edit?usp=sharing) and [User test kit](https://docs.google.com/document/d/18nbQ8Xvh_sbkxC9EhYv-Wqeaj-e0BbLrAZPBxjckaUg/edit?usp=sharing): the solution spec, and the user-test script, notes and results
 
 Independent student case study built on public posts. Not affiliated with or endorsed by Groww. Not investment advice.

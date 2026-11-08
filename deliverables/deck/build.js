@@ -14,9 +14,9 @@ const LINKS = {
   mvp: 'https://nextleap-groww-mvp.vercel.app/#demo',
   quality: 'https://nextleap-groww-mvp.vercel.app/#quality',
   engine: 'https://nextleap-groww-sip-discovery-engine.vercel.app',
-  prd: 'https://claude.ai/artifact/4AaSLqVSQm6wHZHTddSHv6',
-  tests: 'https://claude.ai/artifact/1EHJMUH6ncN4Cx2SjBKqyD',
-  evidence: 'https://claude.ai/artifact/F51anAi4TndxhBdw576Lf1',
+  prd: 'https://docs.google.com/document/d/15IkRaFvojVCPeecSs3dqd1-j4UgmtxaIYOWaZnHi8Oo/edit?usp=sharing',
+  tests: 'https://docs.google.com/document/d/18nbQ8Xvh_sbkxC9EhYv-Wqeaj-e0BbLrAZPBxjckaUg/edit?usp=sharing',
+  evidence: 'https://docs.google.com/document/d/1rOa15ajC9i40yp3Z6H8mM2E17BNe3hbAsPHTqn2Xvtg/edit?usp=sharing',
   amfi: 'https://www.angelone.in/news/mutual-funds/sip-stoppage-ratio-falls-for-5th-straight-month-to-78-53-in-september-2026',
 };
 const IMG = f => path.join('/home/claude/deck/img', f);

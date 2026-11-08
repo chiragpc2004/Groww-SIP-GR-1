@@ -5,9 +5,9 @@
 | 10-slide deck | [NL_Groww.pdf](NL_Groww.pdf) (editable: [NL_Groww.pptx](NL_Groww.pptx)) | |
 | AI Discovery Engine | [`../discovery-engine`](../discovery-engine) | https://nextleap-groww-sip-discovery-engine.vercel.app |
 | Deployed AI-native MVP | [`../mvp`](../mvp) | https://nextleap-groww-mvp.vercel.app |
-| AI Evidence Log | [AI_Evidence_Log.md](AI_Evidence_Log.md) | https://claude.ai/artifact/F51anAi4TndxhBdw576Lf1 |
-| PRD | [PRD.md](PRD.md) | https://claude.ai/artifact/4AaSLqVSQm6wHZHTddSHv6 |
-| User test kit and results | [User_Test_Kit.md](User_Test_Kit.md) | https://claude.ai/artifact/1EHJMUH6ncN4Cx2SjBKqyD |
+| AI Evidence Log | [AI_Evidence_Log.md](AI_Evidence_Log.md) | https://docs.google.com/document/d/1rOa15ajC9i40yp3Z6H8mM2E17BNe3hbAsPHTqn2Xvtg/edit?usp=sharing |
+| PRD | [PRD.md](PRD.md) | https://docs.google.com/document/d/15IkRaFvojVCPeecSs3dqd1-j4UgmtxaIYOWaZnHi8Oo/edit?usp=sharing |
+| User test kit and results | [User_Test_Kit.md](User_Test_Kit.md) | https://docs.google.com/document/d/18nbQ8Xvh_sbkxC9EhYv-Wqeaj-e0BbLrAZPBxjckaUg/edit?usp=sharing |
 | MVP golden set and eval runs | [`../mvp/eval`](../mvp/eval) | https://nextleap-groww-mvp.vercel.app/#quality |
 | Engine golden set (20 hand-labelled posts) | [`../research/golden-set`](../research/golden-set) | |
 
