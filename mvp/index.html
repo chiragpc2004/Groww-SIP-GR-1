@@ -1125,7 +1125,7 @@ $('runEval').onclick=async()=>{ if(!GOLD) return; $('runEval').disabled=true;
     for(let attempt=0; attempt<3; attempt++){
       $('evNote').textContent=`Running ${c.id} (${RESULTS.length+1} of ${n})…`;
       try{ resp=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:SCEN[c.scenario],question:c.q,history:c.history||[],eval:true})}); d=await resp.clone().json().catch(async()=>({error:'non-JSON reply: '+(await resp.text().catch(()=>'')).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,80)})); }catch(err){ resp=null; d={error:'network: '+(err&&err.message||err)}; }
-      why = resp ? `HTTP ${resp.status}${d&&d.error?' · '+d.error:''}` : (d&&d.error)||'no response';
+      why = resp ? `HTTP ${resp.status}${d&&d.error?' · '+d.error:''}${d&&d.detail?' · '+d.detail:''}` : (d&&d.error)||'no response';
       if(resp && resp.ok) break;
       if(resp && resp.status===429 && d && d.error==='rate_limited') break; // retrying won't help until the hour resets
       if(attempt<2){ for(let t=45;t>0;t--){ $('evNote').textContent=`${c.id} didn't get an answer (${why}). Retrying in ${t} s…`; await sleep(1000); } }

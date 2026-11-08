@@ -10,14 +10,15 @@ const R = require('../rules.js');
 // A model that returns 429 is skipped for a while on this warm instance instead of being retried on every call.
 const GROQ_MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map(x => x.trim()).filter(Boolean); // llama-3.3-70b-versatile retired by Groq (404 model_not_found)
 const coolUntil = {};
+const note = (used, who, status, body) => { if (used) (used.fails = used.fails || []).push(`${who}: ${status} ${String(body || '').replace(/\s+/g, ' ').match(/"message": ?"([^"]{0,90})/)?.[1] || String(body || '').slice(0, 60)}`); };
 function cool(model, body) {
   // daily-limit 429s get a long cool-down; per-minute ones a short one
   coolUntil[model] = Date.now() + (/per day|TPD|RPD/.test(body) ? 30 : 1) * 60 * 1000;
 }
 async function groq(prompt, json, used) {
-  const key = process.env.GROQ_API_KEY; if (!key) return null;
+  const key = process.env.GROQ_API_KEY; if (!key) { note(used, 'groq', 'no key', 'GROQ_API_KEY not set'); return null; }
   for (const model of GROQ_MODELS) {
-    if ((coolUntil[model] || 0) > Date.now()) continue;
+    if ((coolUntil[model] || 0) > Date.now()) { note(used, model.replace(/^openai\//, ''), 'cooling', `skipped for ${Math.ceil((coolUntil[model] - Date.now()) / 1000)} s after a limit`); continue; }
     for (let attempt = 0; attempt < 3; attempt++) try {
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
@@ -27,7 +28,7 @@ async function groq(prompt, json, used) {
           messages: [{ role: 'user', content: prompt }], ...(json ? { response_format: { type: 'json_object' } } : {}) }),
       });
       if (!r.ok) {
-        const b = await r.text(); console.error(`[groq ${model}]`, r.status, b.slice(0, 200));
+        const b = await r.text(); console.error(`[groq ${model}]`, r.status, b.slice(0, 200)); note(used, model.replace(/^openai\//, ''), r.status, b);
         // per-minute limit: Groq says how long to wait; if it's short, wait and retry the same model instead of falling through
         const m = r.status === 429 && !/per day|TPD|RPD/.test(b) && b.match(/try again in (?:(\d+)m)?([\d.]+)(ms|s)/);
         const wait = m ? (Number(m[1] || 0) * 60 + Number(m[2]) / (m[3] === 'ms' ? 1000 : 1)) * 1000 + 300 : 0;
@@ -38,7 +39,7 @@ async function groq(prompt, json, used) {
       const t = (await r.json()).choices?.[0]?.message?.content?.trim();
       if (t) { used && used.push(model.replace(/^openai\//, '')); return t; }
       break;
-    } catch (e) { console.error(`[groq ${model}]`, e.message); break; }
+    } catch (e) { console.error(`[groq ${model}]`, e.message); note(used, model, 'network', e.message); break; }
   }
   return null;
 }
@@ -55,9 +56,9 @@ async function gemini(prompt, json, used) {
         body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { temperature: 0.1, maxOutputTokens: 4096, ...(json ? { responseMimeType: 'application/json' } : {}) } }),
       });
-    } catch (e) { last = Object.assign(new Error(e.message), { code: 'network' }); continue; }
+    } catch (e) { note(used, m, 'network', e.message); last = Object.assign(new Error(e.message), { code: 'network' }); continue; }
     const raw = await r.text();
-    if (!r.ok) { console.error(`[${m}]`, r.status, raw.slice(0, 200)); last = Object.assign(new Error('http'), { code: r.status === 429 ? 'quota' : r.status >= 500 ? 'busy' : 'upstream' }); continue; }
+    if (!r.ok) { console.error(`[${m}]`, r.status, raw.slice(0, 200)); note(used, m, r.status, raw); last = Object.assign(new Error('http'), { code: r.status === 429 ? 'quota' : r.status >= 500 ? 'busy' : 'upstream' }); continue; }
     const t = (JSON.parse(raw).candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
     if (t) { used && used.push(m); return t; }
     last = Object.assign(new Error('empty'), { code: 'empty' });
@@ -112,7 +113,7 @@ function codeChecks(answer, citedRules, ev, question) {
 }
 
 /* ---------------- prompts ---------------- */
-function draftPrompt(s, ev, qModel, hardship) {
+function draftPrompt(s, ev, question, hardship) {
   const opts = ev.options.map(o => `- ${o.id}: ${o.title}. ${o.available ? 'Available' : 'NOT available'}. ${o.when}. ${o.detail} [${o.rules.join(', ')}]`).join('\n');
   const rules = Object.entries(R.RULES).map(([k, v]) => `${k}: ${v}`).join('\n');
   const unv = Object.entries(R.UNVERIFIED).map(([k, v]) => `${k}: ${v}`).join('\n');
@@ -149,7 +150,7 @@ QUESTION: """${question}"""
 
 Reply with only JSON: {"answer": string, "rules_cited": ["R3", ...], "best_fit_option": one of ${JSON.stringify(ev.options.map(o => o.id).concat('none'))}}`;
 }
-function judgePrompt(ev, qModel, answer, hardship) {
+function judgePrompt(ev, question, answer, hardship) {
   return `You are a strict reviewer for a mutual fund app's assistant. Check the ANSWER against the FACTS, OPTIONS and VERIFIED RULES only. A statement that matches a verified rule is correct, not invented.
 
 FACTS
@@ -235,7 +236,10 @@ module.exports = async (req, res) => {
   // 2. draft
   let draft;
   try { draft = parseJSON(await generate(draftPrompt(s, ev, qModel, hardship), true, used)); }
-  catch (e) { return res.status(e.code === 'quota' ? 429 : 503).json({ error: e.code === 'quota' ? 'quota' : 'busy' }); }
+  catch (e) {
+    if (!e.code) { console.error('[bug]', e.stack); return res.status(500).json({ error: 'internal', detail: String(e.message).slice(0, 120) }); } // a code bug, not the AI
+    return res.status(e.code === 'quota' ? 429 : 503).json({ error: e.code === 'quota' ? 'quota' : 'busy', detail: (used.fails || []).join(' | ') || e.code });
+  }
   if (!draft || typeof draft.answer !== 'string' || !draft.answer.trim()) {
     return res.status(200).json({ shown: 'fallback', text: FB.generic, fallback: 'generic', rules: [], option: 'none', by: 'model',
       checks: [{ id: 'format', label: 'Model returned a readable answer', ok: false }] });
