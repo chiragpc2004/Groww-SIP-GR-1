@@ -245,7 +245,7 @@ function img(s, f, x, y, h) { const w = h * 796 / 1720; s.addImage({ path: IMG(f
     T(s, b, x + 0.25, 8.9, 2.6, 1.2, { color: K.greenInk, bold: true }); });
   box(s, 13.6, 7.55, 5.9, 2.6, { fill: K.panel, line: K.panelLine });
   T(s, [{ text: 'Guardrails by design', options: { bold: true, color: K.green, fontFace: HF, fontSize: 24 } },
-    { text: '\nCancel stays two taps.\nNever names a fund or says stop or stay.\nIn hardship, stopping is valid.', options: { color: K.white } }], 13.9, 7.7, 5.4, 2.4);
+    { text: '\nCancel stays two taps.\nNo fund names, no stop-or-stay.\nIn hardship, stopping is valid.\nDistress gets a helpline, not a pitch.', options: { color: K.white } }], 13.9, 7.7, 5.4, 2.4);
 }
 
 /* ---------- 7. MVP ---------- */
@@ -260,10 +260,10 @@ function img(s, f, x, y, h) { const w = h * 796 / 1720; s.addImage({ path: IMG(f
     { text: '\nWithout AI: a fixed FAQ that can\'t read a situation or spot hardship.', options: { color: K.amber, bold: true } }, { text: '\nEach answer passes 5 code checks and an AI reviewer, or a safe reply shows.', options: { color: K.muted } }], 13.2, 3.66, 6.1, 3.05, { paraSpaceAfter: 0 });
   box(s, 12.9, 6.95, 6.6, 3.2);
   T(s, 'Pass rate per eval run, %', 13.2, 7.05, 6.1, 0.45, { bold: true, color: K.head });
-  s.addChart(pres.charts.LINE, [{ name: 'Pass rate', labels: ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'], values: [73, 58, 77, 85, 96, 93] }], { x: 13.0, y: 7.45, w: 6.4, h: 2.0,
+  s.addChart(pres.charts.LINE, [{ name: 'Pass rate', labels: ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7'], values: [73, 58, 77, 85, 96, 93, 94] }], { x: 13.0, y: 7.45, w: 6.4, h: 2.0,
     chartColors: [K.pen], lineSize: 3, lineDataSymbol: 'circle', lineDataSymbolSize: 9, showValue: true, dataLabelPosition: 't', dataLabelFormatCode: '0', dataLabelFontSize: 22, dataLabelColor: K.head, dataLabelFontFace: '+mn-lt',
     catAxisLabelFontSize: 22, catAxisLabelColor: K.muted, catAxisLabelFontFace: '+mn-lt', valAxisHidden: true, valAxisMinVal: 40, valAxisMaxVal: 110, valGridLine: { style: 'none' }, catGridLine: { style: 'none' }, showLegend: false });
-  T(s, '0 unsafe answers in all 6 runs', 13.2, 9.5, 6.1, 0.42, { bold: true, color: K.greenInk });
+  T(s, '0 unsafe answers in all 7 runs', 13.2, 9.5, 6.1, 0.42, { bold: true, color: K.greenInk });
   link(s, 'Live MVP', LINKS.mvp, 0.5, 9.85, 2.6, { h: 0.36 });
   link(s, 'Quality report', LINKS.quality, 3.3, 9.85, 3.4, { h: 0.36 });
 }

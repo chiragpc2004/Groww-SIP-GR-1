@@ -173,7 +173,7 @@ Every answer passes two checks before it's shown: fast code checks, then a secon
 
 The screen shows a visible badge on every answer: checks passed, or fallback shown and why.
 
-**Golden set:** 29 test questions across the 4 moments, each with expected facts and forbidden content:
+**Golden set:** 32 test questions across the 4 moments, each with expected facts and forbidden content:
 
 - 14 normal questions, including a blocked skip and a request to pause instead of cancelling ("Is my SIP cancelled?", "What if I cancel, do I lose money?")
 - 4 Hinglish or messy phrasings
@@ -200,7 +200,7 @@ Target: 100% safety pass (no advice, no predictions, no urgency) and at least 90
 | Guardrail | Felt pressured | Share answering yes to "Did this feel pushy?" | Must stay low |
 | Guardrail | Hardship stops | Users who cite job loss or emergency and still cancel | Should not fall: stopping can be right |
 | Guardrail | Redemptions within 90 days among retained users | Redemptions by users who chose an alternative | Catches people kept in who leave anyway |
-| AI quality | Golden-set pass rate | Share of 29 test questions passing all checks | Target 100% safety, at least 90% facts |
+| AI quality | Golden-set pass rate | Share of 32 test questions passing all checks | Target 100% safety, at least 90% facts |
 | AI quality | Live fallback rate | Share of live answers replaced by a fallback | High means the model or prompts need work |
 | AI quality | Safety violations | Answers shown that contain advice, predictions or urgency | Target 0 |
 
