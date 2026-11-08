@@ -8,7 +8,7 @@ const R = require('../rules.js');
 /* ---------------- providers (Groq first if configured, then Gemini) ---------------- */
 // Groq limits are per model, so a second (and third) Groq model has its own allowance.
 // A model that returns 429 is skipped for a while on this warm instance instead of being retried on every call.
-const GROQ_MODELS = [process.env.GROQ_MODEL || 'openai/gpt-oss-120b', process.env.GROQ_FALLBACK_MODEL || 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile'];
+const GROQ_MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map(x => x.trim()).filter(Boolean); // llama-3.3-70b-versatile retired by Groq (404 model_not_found)
 const coolUntil = {};
 function cool(model, body) {
   // daily-limit 429s get a long cool-down; per-minute ones a short one
@@ -18,7 +18,7 @@ async function groq(prompt, json, used) {
   const key = process.env.GROQ_API_KEY; if (!key) return null;
   for (const model of GROQ_MODELS) {
     if ((coolUntil[model] || 0) > Date.now()) continue;
-    try {
+    for (let attempt = 0; attempt < 3; attempt++) try {
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
         body: JSON.stringify({ model, temperature: 0.1, max_tokens: 1200,
@@ -26,10 +26,19 @@ async function groq(prompt, json, used) {
           ...(/gpt-oss/.test(model) ? { reasoning_effort: 'low' } : {}),
           messages: [{ role: 'user', content: prompt }], ...(json ? { response_format: { type: 'json_object' } } : {}) }),
       });
-      if (!r.ok) { const b = await r.text(); console.error(`[groq ${model}]`, r.status, b.slice(0, 200)); if (r.status === 429) cool(model, b); continue; }
+      if (!r.ok) {
+        const b = await r.text(); console.error(`[groq ${model}]`, r.status, b.slice(0, 200));
+        // per-minute limit: Groq says how long to wait; if it's short, wait and retry the same model instead of falling through
+        const m = r.status === 429 && !/per day|TPD|RPD/.test(b) && b.match(/try again in (?:(\d+)m)?([\d.]+)(ms|s)/);
+        const wait = m ? (Number(m[1] || 0) * 60 + Number(m[2]) / (m[3] === 'ms' ? 1000 : 1)) * 1000 + 300 : 0;
+        if (m && wait <= 30000 && attempt < 2) { await new Promise(x => setTimeout(x, wait)); continue; }
+        if (r.status === 429) cool(model, b);
+        break;
+      }
       const t = (await r.json()).choices?.[0]?.message?.content?.trim();
       if (t) { used && used.push(model.replace(/^openai\//, '')); return t; }
-    } catch (e) { console.error(`[groq ${model}]`, e.message); }
+      break;
+    } catch (e) { console.error(`[groq ${model}]`, e.message); break; }
   }
   return null;
 }
